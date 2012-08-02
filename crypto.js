@@ -129,8 +129,7 @@ $(document).ready(function() {
 		yField = yField/3;
 		char = lines[yField][xField];
 		if (char >= "A" && char <= "Z" && letter != char) {
-			letter = char;
-			repaintPuzzle();
+			updatePuzzle(char);
 			save();
 		}
 		
@@ -147,18 +146,21 @@ $(document).ready(function() {
 		
 		char = alphabet[xField];
 		if (char >= "a" && char <= "z") {
+			var drops = {};
 			if (char in dict) {
+				drops[dict[char]] = 1;
 				delete dict[dict[char]];
 				delete dict[char];
 			}
 			if (letter in dict) {
+				drops[dict[letter]] = 1;
 				delete dict[dict[letter]];
 				delete dict[letter];
 			}
 			
 			dict[letter] = char;
 			dict[char] = letter;			
-			repaintPuzzle();
+			changeSub(char, drops);
 		}
 		save();
 		
@@ -171,27 +173,87 @@ $(document).ready(function() {
 		return ' ';
 	}
 	
+	/* Change the highlighted letter */
+	function updatePuzzle(l) {
+		if (l == letter)
+			return;
+		var ctx = puzzle.getContext("2d");
+		ctx.font = "24pt courier";
+		ctx.textAlign = "center";
+
+		for(var i = 0; i < lines.length; i++) {
+			var line = lines[i];  
+			for (var j = 0; j<line.length; j++) {
+				c = line[j];
+				if (c != l && c != letter)
+					continue;
+				ctx.fillStyle = c == l ? "#DC143C" : "#006400";
+				var x = j*q12Delta;
+				var y = i*delta*3;
+				ctx.clearRect(x, y, q12Delta, delta);
+				ctx.fillText(c, x + q12Delta/2, y+delta);
+			}
+		}
+		letter = l;
+	}
+	
+	/* Change the highlighted letter */
+	function changeSub(s, drops) {
+		var ctx = puzzle.getContext("2d");
+		ctx.font = "24pt courier";
+		ctx.textAlign = "center";
+		ctx.fillStyle = '#000000';
+
+		for(var i = 0; i < lines.length; i++) {
+			var line = lines[i];  
+			for (var j = 0; j<line.length; j++) {
+				var c = line[j];
+				if (c == letter || c in drops) {
+					var x = j*q12Delta;
+					var y = i*delta*3+delta;
+					ctx.clearRect(x, y, q12Delta, delta);
+					if (c == letter)
+						ctx.fillText(s, x + q12Delta/2, y+delta);
+				}
+			}
+		}
+		
+		ctx = selection.getContext("2d");
+		ctx.font = "32pt courier";
+		ctx.textAlign = "center";
+		
+		for (var j = 0; j<alphabet.length; j++) {
+			var c=alphabet[j];
+			if (c == s || c in drops) {
+				var x = j*q20Width;
+				ctx.clearRect(x, 0, q20Width, 30);
+				ctx.fillStyle = c == s ? '#A00000' : '#000000';
+				ctx.fillText(c, x + q20Width/2, 30);
+			}
+		}
+		
+	}
+	
 	/*
 	 * Repaints the puzzle
 	 */
 	function repaintPuzzle() {
 		
+		puzzle.height = lines.length * 3 * delta;
+
 		// Get the context to draw on
 		var ctx = puzzle.getContext("2d");
-	    
-		// Create the fields
 		ctx.font = "24pt courier";
-		ctx.textAlign = "center";
 		if (q12Delta == 0) {
-			metrics = ctx.measureText("Q");
-			q12Delta = metrics.width;
+			q12Delta = ctx.measureText("Q").width;
 			puzzle.width = size * q12Delta + 10;
 			repaintPuzzle();
 			return;
 		}
 		
-		// clear the canvas
 		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+		ctx.textAlign = "center";
 		for(var i = 0; i < lines.length; i++) {
 			var line = lines[i];  
 			for (var j = 0; j<line.length; j++) {
@@ -215,13 +277,9 @@ $(document).ready(function() {
 		
 		// Get the context to draw on
 		var ctx = selection.getContext("2d");
-	    
-		// draw the alphabet
 		ctx.font = "32pt courier";
-		ctx.textAlign = "center";
 		if (q20Width == 0) {
-			metrics = ctx.measureText("Q");
-			q20Width = metrics.width;
+			q20Width = ctx.measureText("Q").width;
 			selection.width = alphabet.length * q20Width + 10;
 			ctx.width = selection.width;
 			repaintSelection();
@@ -231,6 +289,7 @@ $(document).ready(function() {
 		// clear the canvas
 		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 		
+		ctx.textAlign = "center";
 		for (var j = 0; j<alphabet.length; j++) {
 			var c=alphabet[j];
 			ctx.fillStyle = c in dict ? '#A00000' : '#000000';
