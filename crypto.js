@@ -118,6 +118,9 @@ $(document).ready(function() {
 		
 		var id = 'crypt_' + words[0] + "_" + words[1];
 		$("#" + id).remove();
+		
+		quip.value = "";
+		dict = {};
 	});
 	run_b.hidden = true;
 
@@ -251,16 +254,16 @@ $(document).ready(function() {
 
 		// Get the context to draw on
 		var ctx = puzzle.getContext("2d");
-		ctx.font = "24pt courier";
 		if (q12Delta == 0) {
+			ctx.font = "24pt courier";
 			q12Delta = ctx.measureText("Q").width;
 			puzzle.width = size * q12Delta + 10;
-			repaintPuzzle();
-			return;
+			ctx = puzzle.getContext("2d");
 		}
 		
 		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
+		ctx.font = "24pt courier";
 		ctx.textAlign = "center";
 		for(var i = 0; i < lines.length; i++) {
 			var line = lines[i];  
@@ -275,28 +278,21 @@ $(document).ready(function() {
 				ctx.fillText(line[j], j*q12Delta + q12Delta/2, i*delta*3+2*delta);
 			}
 		}
-		repaintSelection();
-	}
-	
-	/*
-	 * Repaints the selection
-	 */
-	function repaintSelection() {
 		
 		// Get the context to draw on
-		var ctx = selection.getContext("2d");
-		ctx.font = "32pt courier";
+		ctx = selection.getContext("2d");
 		if (q20Width == 0) {
+			ctx.font = "32pt courier";
 			q20Width = ctx.measureText("Q").width;
 			selection.width = alphabet.length * q20Width + 10;
 			ctx.width = selection.width;
-			repaintSelection();
-			return
+			ctx = selection.getContext("2d");
 		}
 		
 		// clear the canvas
 		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-		
+
+		ctx.font = "32pt courier";
 		ctx.textAlign = "center";
 		for (var j = 0; j<alphabet.length; j++) {
 			var c=alphabet[j];
