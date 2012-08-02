@@ -18,20 +18,15 @@ $(document).ready(function() {
 		quip.value = localStorage["quip"];
 	}
 
-	var keys = {};
-	$("option").each(function () {
-		keys[this.value] = 1;
-	});
 	for (var i=0; i<localStorage.length; i++) {
 		var s = localStorage.key(i);
 		if (s.indexOf("keep ") == 0) {
 			var value = localStorage[s];
-			if (value in keys)
-				continue;
 			var words = value.split(" ");
 			var key = words[0] + " " + words[1];
-			$("#load").append('<option value="' + value + '">'+key+'</option>');
-			keys[value] = 1;
+			var id = 'crypt_' + words[0] + "_" + words[1];
+			$("#" + id).remove();
+			$("#load").append('<option id="' + id +'" value="' + value + '">'+key+'</option>');
 		}
 	}
 
@@ -104,12 +99,25 @@ $(document).ready(function() {
 	$("#keep").click(function(e) {
 		var value = quip.value.toUpperCase();
 		var words = value.split(" ");
-		if (words.length < 2 || value in keys)
+		if (words.length < 2)
 			return;
 		var key = words[0] + " " + words[1];
 		localStorage["keep " + key] = value;
-		$("#load").append('<option value="' + value + '">'+key+'</option>');
-		keys[value] = 1;
+		
+		var id = 'crypt_' + words[0] + "_" + words[1];
+		$("#" + id).remove();
+		$("#load").append('<option id="' + id +'" value="' + value + '">'+key+'</option>');
+	});
+	$("#delete").click(function(e) {
+		var value = quip.value.toUpperCase();
+		var words = value.split(" ");
+		if (words.length < 2)
+			return;
+		var key = words[0] + " " + words[1];
+		delete localStorage["keep " + key];
+		
+		var id = 'crypt_' + words[0] + "_" + words[1];
+		$("#" + id).remove();
 	});
 	run_b.hidden = true;
 
