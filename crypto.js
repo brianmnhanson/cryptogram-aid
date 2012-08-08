@@ -3,9 +3,10 @@ $(document).ready(function() {
 	// Two dimensional array that represents the playing field
 	var lines = [];
 
-	var delta = 30;
 	var q12Delta = 0;
+	var q12DeltaY = 30;
 	var q20Width = 0;
+	var q20DeltaY = 40;
 	var size = 40;
 
 	var puzzle = document.getElementById("puzzle");
@@ -122,6 +123,10 @@ $(document).ready(function() {
 		quip.value = "";
 		dict = {};
 	});
+	$("#clear").click(function(e) {
+		quip.value = "";
+		dict = {};
+	});
 	run_b.hidden = true;
 
 	$(puzzle).click(function(e) {
@@ -132,7 +137,7 @@ $(document).ready(function() {
 		var ox = e.pageX - pos.left;
 		var oy = e.pageY - pos.top;
 		
-		var yField = Math.floor(oy / delta);
+		var yField = Math.floor(oy / q12DeltaY);
 		var xField = Math.floor(ox / q12Delta);
 		if (yField % 3 > 0)
 			return;
@@ -143,6 +148,8 @@ $(document).ready(function() {
 			updatePuzzle(char);
 			save();
 		}
+		
+		//e.stopPropagation();
 		
 	});
 
@@ -174,6 +181,7 @@ $(document).ready(function() {
 			changeSub(char, drops);
 		}
 		save();
+		//e.stopPropagation();
 		
 	});
 	
@@ -191,6 +199,7 @@ $(document).ready(function() {
 		var ctx = puzzle.getContext("2d");
 		ctx.font = "24pt courier";
 		ctx.textAlign = "center";
+		ctx.textBaseline = "bottom";
 
 		for(var i = 0; i < lines.length; i++) {
 			var line = lines[i];  
@@ -200,9 +209,9 @@ $(document).ready(function() {
 					continue;
 				ctx.fillStyle = c == l ? "#DC143C" : "#006400";
 				var x = j*q12Delta;
-				var y = i*delta*3;
-				ctx.clearRect(x, y, q12Delta, delta);
-				ctx.fillText(c, x + q12Delta/2, y+delta);
+				var y = i*q12DeltaY*3;
+				ctx.clearRect(x, y, q12Delta, q12DeltaY);
+				ctx.fillText(c, x + q12Delta/2, y+q12DeltaY);
 			}
 		}
 		letter = l;
@@ -213,6 +222,7 @@ $(document).ready(function() {
 		var ctx = puzzle.getContext("2d");
 		ctx.font = "24pt courier";
 		ctx.textAlign = "center";
+		ctx.textBaseline = "bottom";
 		ctx.fillStyle = '#000000';
 
 		for(var i = 0; i < lines.length; i++) {
@@ -221,10 +231,10 @@ $(document).ready(function() {
 				var c = line[j];
 				if (c == letter || c in drops) {
 					var x = j*q12Delta;
-					var y = i*delta*3+delta;
-					ctx.clearRect(x, y, q12Delta, delta);
+					var y = i*q12DeltaY*3+q12DeltaY;
+					ctx.clearRect(x, y, q12Delta, q12DeltaY);
 					if (c == letter)
-						ctx.fillText(s, x + q12Delta/2, y+delta);
+						ctx.fillText(s, x + q12Delta/2, y+q12DeltaY);
 				}
 			}
 		}
@@ -232,14 +242,15 @@ $(document).ready(function() {
 		ctx = selection.getContext("2d");
 		ctx.font = "32pt courier";
 		ctx.textAlign = "center";
+		ctx.textBaseline = "bottom";
 		
 		for (var j = 0; j<alphabet.length; j++) {
 			var c=alphabet[j];
 			if (c == s || c in drops) {
 				var x = j*q20Width;
-				ctx.clearRect(x, 0, q20Width, 30);
+				ctx.clearRect(x, 0, q20Width, q20DeltaY);
 				ctx.fillStyle = c == s ? '#A00000' : '#000000';
-				ctx.fillText(c, x + q20Width/2, 30);
+				ctx.fillText(c, x + q20Width/2, q20DeltaY);
 			}
 		}
 		
@@ -250,7 +261,7 @@ $(document).ready(function() {
 	 */
 	function repaintPuzzle() {
 		
-		puzzle.height = lines.length * 3 * delta;
+		puzzle.height = lines.length * 3 * q12DeltaY;
 
 		// Get the context to draw on
 		var ctx = puzzle.getContext("2d");
@@ -265,17 +276,18 @@ $(document).ready(function() {
 
 		ctx.font = "24pt courier";
 		ctx.textAlign = "center";
+		ctx.textBaseline = "bottom";
 		for(var i = 0; i < lines.length; i++) {
 			var line = lines[i];  
 			for (var j = 0; j<line.length; j++) {
 				c = line[j];
 				ctx.fillStyle = c == letter ? "#DC143C" : "#006400";
-				ctx.fillText(c, j*q12Delta + q12Delta/2, i*delta*3+delta);
+				ctx.fillText(c, j*q12Delta + q12Delta/2, i*q12DeltaY*3+q12DeltaY);
 			}
 			line = line.replace(/[A-Z]/g, decode);
 			ctx.fillStyle = '#000000';
 			for (var j = 0; j<line.length; j++) {
-				ctx.fillText(line[j], j*q12Delta + q12Delta/2, i*delta*3+2*delta);
+				ctx.fillText(line[j], j*q12Delta + q12Delta/2, i*q12DeltaY*3+2*q12DeltaY);
 			}
 		}
 		
@@ -294,10 +306,11 @@ $(document).ready(function() {
 
 		ctx.font = "32pt courier";
 		ctx.textAlign = "center";
+		ctx.textBaseline = "bottom";
 		for (var j = 0; j<alphabet.length; j++) {
 			var c=alphabet[j];
 			ctx.fillStyle = c in dict ? '#A00000' : '#000000';
-			ctx.fillText(c, j*q20Width + q20Width/2, 30);
+			ctx.fillText(c, j*q20Width + q20Width/2, q20DeltaY);
 		}
 	}
 

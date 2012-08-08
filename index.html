@@ -14,12 +14,15 @@ div {
 textarea {
 	font: 14pt courier;
 }
+canvas {
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+}
 </style>
 </head>
 <body>
 	<h1 align="Center">	Cryptogram Aid </h1>
 	<div id="setup" align="Center">
-		<textarea id="quip" rows="10" cols="50"></textarea>
+		<textarea id="quip" rows="10" cols="50" autocorrect="off"></textarea>
 		<div>
 			<button type="button" id="go" name="go">Solve</button>
 			<select id="load">
@@ -27,6 +30,7 @@ textarea {
 			</select>
 			<button type="button" id="keep">Keep</button>
 			<button type="button" id="delete">Delete</button>
+			<button type="button" id="clear">Clear</button>
 		</div>
 	</div>
 	<div id="run" align="Center">
