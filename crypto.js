@@ -27,7 +27,7 @@ $(document).ready(function() {
 			var key = words[0] + " " + words[1];
 			var id = 'crypt_' + words[0] + "_" + words[1];
 			$("#" + id).remove();
-			$("#load").append('<option id="' + id +'" value="' + value + '">'+key+'</option>');
+			$("#load").append('<option id="' + id +'" value="' + s + '">'+key+'</option>');
 		}
 	}
 
@@ -95,7 +95,7 @@ $(document).ready(function() {
 		repaintPuzzle();
 	});
 	$("#load").change(function(e) {
-		quip.value = this.value;
+		quip.value = localStorage[this.value];
 	});
 	$("#keep").click(function(e) {
 		var value = quip.value.toUpperCase();
@@ -103,11 +103,12 @@ $(document).ready(function() {
 		if (words.length < 2)
 			return;
 		var key = words[0] + " " + words[1];
-		localStorage["keep " + key] = value;
+		var lsKey = "keep " +key;
+		localStorage[lsKey] = value;
 		
 		var id = 'crypt_' + words[0] + "_" + words[1];
 		$("#" + id).remove();
-		$("#load").append('<option id="' + id +'" value="' + value + '">'+key+'</option>');
+		$("#load").append('<option id="' + id +'" value="' + lsKey + '">'+key+'</option>');
 	});
 	$("#delete").click(function(e) {
 		var value = quip.value.toUpperCase();
