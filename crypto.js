@@ -14,30 +14,43 @@ $(document).ready(function() {
 	var quip_ta = document.getElementById("quip");
 	var setup_b = document.getElementById("setup");
 	var run_b = document.getElementById("run");
-	
-	if ("quip" in localStorage) {
-		quip.value = localStorage["quip"];
+	var delete_b = document.getElementById("delete");
+	var keep_b = document.getElementById("keep");
+	var title_t = document.getElementById("title");
+
+	function make_id(key) {
+		return "crypt_" + key.replace("[^A-Za-z0-9-]", "_");
 	}
 
-	for (var i=0; i<localStorage.length; i++) {
-		var s = localStorage.key(i);
-		if (s.indexOf("keep ") == 0) {
-			var value = localStorage[s];
-			var words = value.split(" ");
-			var key = words[0] + " " + words[1];
-			var id = 'crypt_' + words[0] + "_" + words[1];
-			$("#" + id).remove();
-			$("#load").append('<option id="' + id +'" value="' + s + '">'+key+'</option>');
+	function loadFromStorage() {
+		var keys = [];
+		for (var i=0; i<localStorage.length; i++) {
+			var s = localStorage.key(i);
+			if (s.indexOf("keep ") == 0) {
+				keys.push(s.substring(s.indexOf(" ")+1));
+			}
+		}
+
+		keys.sort();
+		for (k in keys) {
+			var key = keys[k];
+			$("#load").append('<option id="' + make_id(key) +'" value="' + key + '">'+key+'</option>');
+		}
+		
+		if ("quip" in localStorage) {
+			quip_ta.value = localStorage["quip"];
 		}
 	}
 
 	var letter = 'a';
 	var alphabet = "aeiou bcdfghjklmnpqrstvwxyz";
 	var dict = {};
+	var key = "";
+	
+	loadFromStorage();
 	
 	function buildLines(quip)
 	{
-		dict = {};
 		if (localStorage["quip"] != quip) {
 			localStorage["quip"] = quip;
 			letter = quip[0];
@@ -95,38 +108,45 @@ $(document).ready(function() {
 		repaintPuzzle();
 	});
 	$("#load").change(function(e) {
-		quip.value = localStorage[this.value];
+		quip_ta.value = localStorage["keep " +this.value];
+		key = this.value;
+		title_t.value = key;
+		delete_b.disabled = false;
+		keep_b.disabled = false;
+	});
+	$("#title").change(function(e) {
+		keep_b.disabled = this.value == ""; 
 	});
 	$("#keep").click(function(e) {
-		var value = quip.value.toUpperCase();
-		var words = value.split(" ");
-		if (words.length < 2)
-			return;
-		var key = words[0] + " " + words[1];
-		var lsKey = "keep " +key;
-		localStorage[lsKey] = value;
+		var value = quip_ta.value.toUpperCase();
+		if (key != title_t.value) {
+			if ( key != "") {
+				delete localStorage["keep " + key];
+				$("#" + make_id(key)).remove();
+				document.getElementById("keep").selectedIndex = 0;
+			}
+			key = title_t.value;
+			$("#load").append('<option id="' + make_id(key) +'" value="' + key + '">'+key+'</option>');
+		}
 		
-		var id = 'crypt_' + words[0] + "_" + words[1];
-		$("#" + id).remove();
-		$("#load").append('<option id="' + id +'" value="' + lsKey + '">'+key+'</option>');
+		localStorage["keep " + key] = value;
+		
+		delete_b.disabled = false;
 	});
 	$("#delete").click(function(e) {
-		var value = quip.value.toUpperCase();
-		var words = value.split(" ");
-		if (words.length < 2)
-			return;
-		var key = words[0] + " " + words[1];
 		delete localStorage["keep " + key];
-		
-		var id = 'crypt_' + words[0] + "_" + words[1];
-		$("#" + id).remove();
-		
-		quip.value = "";
-		dict = {};
+		$("#" + make_id(key)).remove();
+		this.disabled = true;
 	});
 	$("#clear").click(function(e) {
-		quip.value = "";
+		quip_ta.value = "";
+		key = "";
+		var date = new Date().toDateString();
+		date = date.substring(date.indexOf(" ")+1);
+		title_t.value = "STrib " + date;
 		dict = {};
+		quip_ta.focus();
+		keep_b.disabled = false;
 	});
 	run_b.hidden = true;
 
