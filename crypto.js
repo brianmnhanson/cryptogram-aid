@@ -14,8 +14,9 @@ $(document)
 					var puzzle = document.getElementById("puzzle");
 					var selection = document.getElementById("selection");
 					var quip_ta = document.getElementById("quip");
+					var quips_ta = document.getElementById("quips");
 					var delete_b = document.getElementById("delete");
-					var keep_b = document.getElementById("keep");
+					var store_b = document.getElementById("store");
 					var title_t = document.getElementById("title");
 
 					function make_id(key) {
@@ -84,7 +85,7 @@ $(document)
 						localStorage["dict"] = key;
 					}
 
-					function keep(e) {
+					function store(e) {
 						var value = quip_ta.value.toUpperCase();
 						if (key != title_t.value) {
 							if (key != ""
@@ -97,6 +98,10 @@ $(document)
 							localStorage["keep " + key] = value;
 							add(key);
 							quip_ta.value = value;
+						} else if (localStorage["keep " + key] != value) {
+							localStorage["keep " + key] = value;
+							find(key).remove();
+							add(key);
 						}
 
 						delete_b.disabled = false;
@@ -107,17 +112,12 @@ $(document)
 						quip_ta.value = localStorage["keep " + key];
 						title_t.value = key;
 						delete_b.disabled = false;
-						keep_b.disabled = false;
+						store_b.disabled = false;
 						buildLines(quip_ta.value);
 						repaintPuzzle();
-						$("#setup").hide();
-						$("#choose").hide();
-						$("#run").show();
-					}
-					function showSetup() {
-						$("#setup").show();
-						$("#choose").hide();
-						$("#run").hide();
+						dict = {};
+						delete localStorage["dict"];
+						showPanel("run");
 					}
 					function add(key) {
 						var solved = localStorage["solved " + key] ? "&check;"
@@ -140,12 +140,66 @@ $(document)
 							return localStorage["solved " + this.title] == "Y";
 						});
 					}
+					function showPanel(p) {
+						$("#setup").hide();
+						$("#choose").hide();
+						$("#run").hide();
+						$("#load").hide();
+						if (p == "setup")
+							$("#setup").show();
+						else if (p == "choose")
+							$("#choose").show();
+						else if (p == "run")
+							$("#run").show();
+						else if (p == "load") {
+							quips_ta.value = "";
+							$("#load").show();
+						}
+					}
 
-					// Check if the browser supports <puzzle>
+					// Check if the browser supports <canvas>
 					if (!puzzle.getContext) {
-						alert("This demo requires a browser that supports the <puzzle> element.");
+						alert("This demo requires a browser that supports the <canvas> element.");
 						return;
 					}
+
+					// Global actions
+					$('button[name^="new"]').click(function(e) {
+						quip_ta.value = "";
+						key = "";
+						var date = new Date().toDateString();
+						date = date.substring(date.indexOf(" ") + 1);
+						title_t.value = "STrib " + date;
+						dict = {};
+						quip_ta.focus();
+						store_b.disabled = false;
+						showPanel("setup");
+					});
+					$('button[name^="open"]').click(function(e) {
+						showPanel("choose");
+					});
+					$('button[name^="back"]').click(function(e) {
+						showPanel("setup");
+					});
+
+					// Setup panel actions
+					$("#solve").click(function(e) {
+						buildLines(quip_ta.value);
+						repaintPuzzle();
+						showPanel("run");
+					});
+					$("#title").change(function(e) {
+						store_b.disabled = this.value == "";
+					});
+					$("#store").click(store);
+					$("#delete").click(function(e) {
+						delete localStorage["keep " + key];
+						delete localStorage["solved " + key];
+						find(key).remove();
+						this.disabled = true;
+					});
+
+					// Choose panel actions
 					$("#hide").click(function(e) {
 						findSolved().hide();
 						$("#show").show();
@@ -156,52 +210,50 @@ $(document)
 						$("#hide").show();
 						$("#show").hide();
 					});
-					$("#open").click(function(e) {
-						$("#setup").hide();
-						$("#choose").show();
-						$("#run").hide();
+					$("#maint").click(function(e) {
+						showPanel("load");
 					});
-					$("#go").click(function(e) {
-						buildLines(quip_ta.value);
-						repaintPuzzle();
-						$("#setup").hide();
-						$("#choose").hide();
-						$("#run").show();
-					});
-					$("#done").click(showSetup);
+
+					// Solve panel actions
 					$("#solved").click(function(e) {
 						localStorage["solved " + key] = "Y";
 						find(key).remove();
 						add(key);
-						showSetup();
+						showPanel("setup");
 					});
-					$("#back").click(showSetup);
 					$("#reset").click(function(e) {
 						dict = {};
 						delete localStorage["dict"];
 						repaintPuzzle();
 					});
-					$("#title").change(function(e) {
-						keep_b.disabled = this.value == "";
+
+					// Load panel actions
+					$("#export").click(function(e) {
+						var map = {};
+						for ( var i = 0; i < localStorage.length; i++) {
+							var s = localStorage.key(i);
+							if (s.indexOf("keep ") == 0) {
+								var key = s.substring(s.indexOf(" ") + 1);
+								map[key] = {
+									v : localStorage[s],
+									s : localStorage["solved " + key]
+								};
+							}
+						}
+
+						quips_ta.value = JSON.stringify(map);
 					});
-					$("#keep").click(keep);
-					$("#delete").click(function(e) {
-						delete localStorage["keep " + key];
-						delete localStorage["solved " + key];
-						find(key).remove();
-						this.disabled = true;
+					$("#import").click(function(e) {
+						var map = JSON.parse(quips_ta.value);
+						for ( var key in map) {
+							localStorage["keep " + key] = map[key].v;
+							if (map[key].s == "Y")
+								localStorage["solved " + key] = "Y";
+							find(key).remove();
+							add(key);
+						}
 					});
-					$("#clear").click(function(e) {
-						quip_ta.value = "";
-						key = "";
-						var date = new Date().toDateString();
-						date = date.substring(date.indexOf(" ") + 1);
-						title_t.value = "STrib " + date;
-						dict = {};
-						quip_ta.focus();
-						keep_b.disabled = false;
-					});
-					showSetup();
+					showPanel("setup");
 
 					$(puzzle).click(function(e) {
 

@@ -28,30 +28,41 @@ canvas {
 		<input type="text" id="title" name="title" value=""/><br>
 		<textarea id="quip" rows="10" cols="50" autocorrect="off"></textarea>
 		<div>
-			<button type="button" id="clear">New</button>
-			<button type="button" id="go" name="go">Solve</button>
-			<button type="button" id="keep" disabled>Save</button>
+			<button type="button" name="new">New</button>
+			<button type="button" id="solve">Solve</button>
+			<button type="button" id="store" disabled>Store</button>
 			<button type="button" id="delete" disabled>Delete</button>
-			<button type="button" id="open">Open</button>
+			<button type="button" name="open">List</button>
 		</div>
 	</div>
 	<div id="choose" align="Center" style="display: none">
 		<div>
-			<button type="button" id="back" name="done">Back</button>
-			<button type="button" id="hide" name="hide">Hide &check;</button>
-			<button type="button" id="show" name="show"  style="display: none" >All</button>
+			<button type="button" name="back">Edit</button>
+			<button type="button" id="hide">Hide &check;</button>
+			<button type="button" id="show" style="display: none" >All</button>
+			<button type="button" name="new">New</button>
+			<button type="button" id="maint">Load</button>
 		</div>
 		<table id="items">
 			<tr><th style="width:1em"></th><th style="width:12em">Date</th><th>Puzzle</th></tr>
 		</table>
 	</div>
+	<div id="load" align="Center" style="display: none">
+		<div>
+			<button type="button" id="import">Import</button>
+			<button type="button" id="export">Export</button>
+			<button type="button" name="open">List</button>
+		</div>
+		<textarea id="quips" rows="10" cols="50" autocorrect="off"></textarea>
+	</div>
 	<div id="run" align="Center" style="display: none">
-		<canvas id="selection" width="100" height="60"></canvas>
+		<canvas id="selection" width="100" height="60"></canvas><br/>
 		<canvas id="puzzle" width="100" height="500"></canvas>
 		<div>
-			<button type="button" id="done" name="done">Back</button>
-			<button type="button" id="solved" name="solved">Solved</button>
-			<button type="button" id="reset" name="reset">Clear</button>
+			<button type="button" name="back">Edit</button>
+			<button type="button" id="solved">Solved</button>
+			<button type="button" id="reset">Clear</button>
+			<button type="button" name="open">List</button>
 		</div>
 	</div>
 </body>
