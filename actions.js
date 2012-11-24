@@ -18,7 +18,6 @@ $(document)
 					var delete_b = document.getElementById("delete");
 					var store_b = document.getElementById("store");
 					var title_t = document.getElementById("title");
-					var startTime = 0;
 					var hide = false;
 
 					var theQuip = {
@@ -65,6 +64,7 @@ $(document)
 					}
 
 					loadFromStorage();
+					showPanel("setup");
 
 					function save() {
 						theQuip.value = quip_ta.value.toUpperCase();
@@ -121,10 +121,10 @@ $(document)
 								find(theQuip.name).remove();
 							}
 							theQuip.name = title_t.value;
-						} 
+						}
 						theQuip.value = value;
 						quip_ta.value = theQuip.value;
-						
+
 						if (localStorage["keep " + theQuip.name] != theQuip.value) {
 							find(theQuip.name).remove();
 							localStorage["keep " + theQuip.name] = theQuip.value;
@@ -176,22 +176,29 @@ $(document)
 						$("#choose").hide();
 						$("#run").hide();
 						$("#load").hide();
-						if (startTime > 0) {
-							theQuip.time += new Date().time() / 10000 - startTime;
-							startTime = 0;
-						}
-						if (p == "setup")
+						if (p == "setup") {
 							$("#setup").show();
+							setEditButtons(p);
+						}
 						else if (p == "choose")
 							$("#choose").show();
 						else if (p == "run") {
 							buildLines();
 							repaintPuzzle();
 							$("#run").show();
-							startTime = new Date().time() / 10000 - theQuip.time;
 						} else if (p == "load") {
 							quips_ta.value = "";
 							$("#load").show();
+						}
+					}
+					function setEditButtons(p) {
+						if (title_t.value == "") {
+							store_b.disabled = true;
+							delete_b.disabled = true;
+						} else {
+							var found = "keep " + title_t.value in localStorage;
+							delete_b.disabled = ! found;
+							store_b.disabled = quip_ta.value == "" || found && quip_ta.value == localStorage["keep " + title_t.value];
 						}
 					}
 
@@ -229,9 +236,8 @@ $(document)
 					$("#solve").click(function(e) {
 						showPanel("run");
 					});
-					$("#title").change(function(e) {
-						store_b.disabled = this.value == "";
-					});
+					$("#title").keyup(setEditButtons);
+					$("#quip").keyup(setEditButtons);
 					$("#store").click(store);
 					$("#delete").click(function(e) {
 						delete localStorage["keep " + theQuip.name];
