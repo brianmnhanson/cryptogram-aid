@@ -18,7 +18,7 @@ $(document)
 					var delete_b = document.getElementById("delete");
 					var store_b = document.getElementById("store");
 					var title_t = document.getElementById("title");
-					var hide = false;
+					var hide = true;
 
 					var theQuip = {
 						value : "",
