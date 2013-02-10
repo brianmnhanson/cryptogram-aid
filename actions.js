@@ -64,7 +64,6 @@ $(document)
 					}
 
 					loadFromStorage();
-					showPanel("setup");
 
 					function save() {
 						theQuip.value = quip_ta.value.toUpperCase();
@@ -134,6 +133,31 @@ $(document)
 						delete_b.disabled = false;
 						store_b.disabled = true;
 					}
+					function inc_title(n) {
+						var v = /\w+ \d+ 20\d+$/g.exec(title_t.value);
+						if (v) {
+							var d = new Date(v[0]);
+							d.setTime(d.getTime() + n * 24*3600000);
+							var date = d.toDateString();
+							date = date.substring(date.indexOf(" ") + 1);
+							title_t.value = title_t.value.substring(0, v.index) + date;
+							delete_b.disabled = true;
+							store_b.disabled = false;
+							return;
+						}
+						v = /\d+$/g.exec(title_t.value);
+						if (v) {
+							var num = parseInt(v[0]) + n;
+							var str = num.toFixed(0);
+							while (str.length < v[0].length) {
+								str = "0" + str;
+							}
+							title_t.value = title_t.value.substring(0, v.index) + str;
+							delete_b.disabled = true;
+							store_b.disabled = false;
+							return;
+						}
+					}
 
 					function select_row(e) {
 						theQuip.name = e.currentTarget.title;
@@ -176,20 +200,21 @@ $(document)
 						$("#choose").hide();
 						$("#run").hide();
 						$("#load").hide();
-						if (p == "setup") {
-							$("#setup").show();
-							setEditButtons(p);
-						}
-						else if (p == "choose")
-							$("#choose").show();
-						else if (p == "run") {
+						if (p == "run") {
 							buildLines();
 							repaintPuzzle();
 							$("#run").show();
-						} else if (p == "load") {
+						}  else if (p == "choose") {
+							$("#choose").show();
+						} else  if (p == "load") {
 							quips_ta.value = "";
 							$("#load").show();
+						} else {
+							// must be setup
+							$("#setup").show();
+							setEditButtons(p);
 						}
+						localStorage["panel"] = p;
 					}
 					function setEditButtons(p) {
 						if (title_t.value == "") {
@@ -245,6 +270,18 @@ $(document)
 						find(theQuip.name).remove();
 						this.disabled = true;
 					});
+					$("#exportone").click(function(e) {
+						showPanel("load");
+						var map = {};
+						var name = theQuip.name;
+						map[name] = {
+								v : localStorage["keep " + name],
+								s : localStorage["solved " + name]
+							};
+						quips_ta.value = JSON.stringify(map, 0, 1);
+					});
+					$("#inctitle").click(function (e) {inc_title(1);});
+					$("#dectitle").click(function (e) {inc_title(-1);});
 
 					// Choose panel actions
 					$("#hide").click(function(e) {
@@ -262,6 +299,22 @@ $(document)
 					$("#maint").click(function(e) {
 						showPanel("load");
 					});
+					$("#exportlist").click(function(e) {
+						showPanel("load");
+						var map = {};
+						for ( var i = 0; i < localStorage.length; i++) {
+							var s = localStorage.key(i);
+							if (s.indexOf("keep ") == 0) {
+								var name = s.substring(s.indexOf(" ") + 1);
+								map[name] = {
+									v : localStorage[s],
+									s : localStorage["solved " + name]
+								};
+							}
+						}
+
+						quips_ta.value = JSON.stringify(map, 0, 1);
+					});
 
 					// Solve panel actions
 					$("#solved").click(function(e) {
@@ -278,21 +331,6 @@ $(document)
 					});
 
 					// Load panel actions
-					$("#export").click(function(e) {
-						var map = {};
-						for ( var i = 0; i < localStorage.length; i++) {
-							var s = localStorage.key(i);
-							if (s.indexOf("keep ") == 0) {
-								var name = s.substring(s.indexOf(" ") + 1);
-								map[name] = {
-									v : localStorage[s],
-									s : localStorage["solved " + name]
-								};
-							}
-						}
-
-						quips_ta.value = JSON.stringify(map, 0, 1);
-					});
 					$("#import").click(function(e) {
 						var map = JSON.parse(quips_ta.value);
 						for ( var name in map) {
@@ -303,7 +341,6 @@ $(document)
 							add(name);
 						}
 					});
-					showPanel("setup");
 
 					$(puzzle).click(function(e) {
 
@@ -521,5 +558,7 @@ $(document)
 
 						$("#solved")[0].disabled = !complete();
 					}
+					
+					showPanel(localStorage["panel"]);
 
 				});

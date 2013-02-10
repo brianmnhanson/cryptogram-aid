@@ -25,23 +25,27 @@ canvas {
 <body>
 	<h1 align="Center">	Cryptogram Aid </h1>
 	<div id="setup" align="Center">
-		<input type="text" id="title" name="title" value=""/><br>
+		<button id="dectitle">&#9664;</button>
+		</button></button><input type="text" id="title" name="title" value=""/>
+		<button id="inctitle">&#9654;</button><br>
 		<textarea id="quip" rows="10" cols="50" autocorrect="off"></textarea>
 		<div>
-			<button type="button" name="new">New</button>
-			<button type="button" id="solve">Solve</button>
-			<button type="button" id="store" disabled>Store</button>
-			<button type="button" id="delete" disabled>Delete</button>
-			<button type="button" name="open">List</button>
+			<button name="new">New</button>
+			<button id="solve">Solve</button>
+			<button id="store" disabled>Store</button>
+			<button id="delete" disabled>Delete</button>
+			<button name="open">List</button>
+			<button id="exportone">Export</button>
 		</div>
 	</div>
 	<div id="choose" align="Center" style="display: none">
 		<div>
-			<button type="button" name="back">Edit</button>
-			<button type="button" id="hide" style="display: none">Hide &check;</button>
-			<button type="button" id="show" >All</button>
-			<button type="button" name="new">New</button>
-			<button type="button" id="maint">Load</button>
+			<button name="back">Edit</button>
+			<button id="hide" style="display: none">Hide &check;</button>
+			<button id="show" >All</button>
+			<button name="new">New</button>
+			<button id="maint">Load</button>
+			<button id="exportlist">Export</button>
 		</div>
 		<table id="items">
 			<tr><th style="width:1em"></th><th style="width:12em">Date</th><th>Puzzle</th></tr>
@@ -49,9 +53,8 @@ canvas {
 	</div>
 	<div id="load" align="Center" style="display: none">
 		<div>
-			<button type="button" id="import">Import</button>
-			<button type="button" id="export">Export</button>
-			<button type="button" name="open">List</button>
+			<button id="import">Import</button>
+			<button name="open">List</button>
 		</div>
 		<textarea id="quips" rows="34" cols="80" autocorrect="off"></textarea>
 	</div>
@@ -59,11 +62,11 @@ canvas {
 		<canvas id="selection" width="100" height="60"></canvas><br/>
 		<canvas id="puzzle" width="100" height="500"></canvas>
 		<div>
-			<button type="button" name="back">Edit</button>
-			<button type="button" id="solved">Solved</button>
-			<button type="button" id="reset">Clear</button>
-			<button type="button" name="new">New</button>
-			<button type="button" name="open">List</button>
+			<button name="back">Edit</button>
+			<button id="solved">Solved</button>
+			<button id="reset">Clear</button>
+			<button name="new">New</button>
+			<button name="open">List</button>
 		</div>
 	</div>
 </body>
