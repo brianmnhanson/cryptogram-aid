@@ -60,6 +60,7 @@ $(document)
 							}
 							quip_ta.value = theQuip.value;
 							title_t.value = theQuip.name;
+							updateLink();
 						}
 					}
 
@@ -171,6 +172,7 @@ $(document)
 						delete_b.disabled = false;
 						store_b.disabled = false;
 						showPanel("run");
+						updateLink();
 					}
 					function add(name) {
 						var solved = localStorage["solved " + name] ? "&check;"
@@ -226,11 +228,29 @@ $(document)
 							store_b.disabled = quip_ta.value == "" || found && quip_ta.value == localStorage["keep " + title_t.value];
 						}
 					}
+					function updateLink() {
+						var link_a = document.getElementById("link");
+						link_a.href = document.URL.split("?")[0] + "?" + 
+							encodeURI(theQuip.name) + "&" + encodeURI(theQuip.value);
+					}
 
 					// Check if the browser supports <canvas>
 					if (!puzzle.getContext) {
 						alert("This demo requires a browser that supports the <canvas> element.");
 						return;
+					}
+					
+					// Initialize quip from URL query if present
+					if (document.URL.indexOf("?") > 0) {
+						var query = document.URL.substring(document.URL.indexOf("?")+1);
+						var pos = query.indexOf("&");
+						if (pos > 0) {
+							quip_ta.value = decodeURI(query.substring(pos+1));
+							title_t.value = decodeURI(query.substring(0, pos));
+						} else {
+							quip_ta.value = decodeURI(query);
+						}
+						updateLink();
 					}
 
 					// Global actions
@@ -249,6 +269,7 @@ $(document)
 						quip_ta.focus();
 						store_b.disabled = false;
 						showPanel("setup");
+						updateLink();
 					});
 					$('button[name^="open"]').click(function(e) {
 						showPanel("choose");
@@ -259,6 +280,7 @@ $(document)
 
 					// Setup panel actions
 					$("#solve").click(function(e) {
+						updateLink();
 						showPanel("run");
 					});
 					$("#title").keyup(setEditButtons);
