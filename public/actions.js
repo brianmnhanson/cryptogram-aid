@@ -250,6 +250,7 @@ $(document)
 						} else {
 							quip_ta.value = decodeURI(query);
 						}
+						dict = {};
 						updateLink();
 					}
 
