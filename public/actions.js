@@ -251,6 +251,7 @@ $(document)
 							quip_ta.value = decodeURI(query);
 						}
 						dict = {};
+						saveDict();
 						updateLink();
 					}
 
