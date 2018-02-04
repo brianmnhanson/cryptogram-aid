@@ -5,14 +5,15 @@ $(document)
 					// Two dimensional array that represents the playing field
 					var lines = [];
 
-					var puzzleFont = "32pt courier";
-					var puzzleDelta = 0;
+					var puzzleFont = "30pt courier";
+					var puzzleDeltaX = 0;
 					var puzzleDeltaY = 40;
+					var puzzleLettersPerLine = 38;
+					var puzzleSpaceing = 2.5;
 					
 					var selectionFont = "36pt courier";
-					var selectionWidth = 0;
+					var selectionDeltaX = 0;
 					var selectionDeltaY = 50;
-					var size = 40;
 
 					var puzzle = document.getElementById("puzzle");
 					var selection = document.getElementById("selection");
@@ -102,17 +103,7 @@ $(document)
 							letter = theQuip.value[0];
 						}
 
-						lines = [ "" ];
-						var words = theQuip.value.split(" ");
-						var line = 0;
-						for ( var i = 0; i < words.length; i++) {
-							if (words[i].length + lines[line].length + 1 > size) {
-								lines[++line] = "";
-							} else if (lines[line].length > 0) {
-								lines[line] += " ";
-							}
-							lines[line] += words[i];
-						}
+						puzzleDeltaX = 0;
 					}
 
 					function store(e) {
@@ -378,11 +369,11 @@ $(document)
 						var oy = e.pageY - pos.top;
 
 						var yField = Math.floor(oy / puzzleDeltaY);
-						var xField = Math.floor(ox / puzzleDelta);
-						if (yField % 3 > 0)
+						var xField = Math.floor(ox / puzzleDeltaX);
+						if (yField % puzzleSpaceing > 0)
 							return;
 
-						yField = yField / 3;
+						yField = yField / puzzleSpaceing;
 						char = lines[yField][xField];
 						if (char >= "A" && char <= "Z" && letter != char) {
 							updatePuzzle(char);
@@ -400,7 +391,7 @@ $(document)
 						var pos = $(selection).position();
 						var ox = e.pageX - pos.left;
 
-						var xField = Math.floor(ox / selectionWidth);
+						var xField = Math.floor(ox / selectionDeltaX);
 
 						char = alphabet[xField];
 						if (char >= "a" && char <= "z") {
@@ -473,11 +464,11 @@ $(document)
 								if (c != l && c != letter)
 									continue;
 								ctx.fillStyle = c == l ? "#DC143C" : "#006400";
-								var x = j * puzzleDelta;
-								var y = i * puzzleDeltaY * 3;
-								ctx.clearRect(x, y, puzzleDelta, puzzleDeltaY);
+								var x = j * puzzleDeltaX;
+								var y = i * puzzleDeltaY * puzzleSpaceing;
+								ctx.clearRect(x, y, puzzleDeltaX, puzzleDeltaY);
 								ctx
-										.fillText(c, x + puzzleDelta / 2, y
+										.fillText(c, x + puzzleDeltaX / 2, y
 												+ puzzleDeltaY);
 							}
 						}
@@ -497,11 +488,11 @@ $(document)
 							for ( var j = 0; j < line.length; j++) {
 								var c = line[j];
 								if (c == letter || c in drops) {
-									var x = j * puzzleDelta;
-									var y = i * puzzleDeltaY * 3 + puzzleDeltaY;
-									ctx.clearRect(x, y, puzzleDelta, puzzleDeltaY);
+									var x = j * puzzleDeltaX;
+									var y = i * puzzleDeltaY * puzzleSpaceing + puzzleDeltaY;
+									ctx.clearRect(x, y, puzzleDeltaX, puzzleDeltaY);
 									if (c == letter)
-										ctx.fillText(s, x + puzzleDelta / 2, y
+										ctx.fillText(s, x + puzzleDeltaX / 2, y
 												+ puzzleDeltaY);
 								}
 							}
@@ -515,10 +506,10 @@ $(document)
 						for ( var j = 0; j < alphabet.length; j++) {
 							var c = alphabet[j];
 							if (c == s || c in drops) {
-								var x = j * selectionWidth;
-								ctx.clearRect(x, 0, selectionWidth, selectionDeltaY);
+								var x = j * selectionDeltaX;
+								ctx.clearRect(x, 0, selectionDeltaX, selectionDeltaY);
 								ctx.fillStyle = c == s ? '#A00000' : '#000000';
-								ctx.fillText(c, x + selectionWidth / 2, selectionDeltaY);
+								ctx.fillText(c, x + selectionDeltaX / 2, selectionDeltaY);
 							}
 						}
 
@@ -530,14 +521,52 @@ $(document)
 					 */
 					function repaintPuzzle() {
 
-						/* puzzle.height = lines.length * 3 * puzzleDeltaY; */
+						// Get the context to draw on
+						ctx = selection.getContext("2d");
+						if (selectionDeltaX == 0) {
+							ctx.font = selectionFont;
+							selectionDeltaX = ctx.measureText("Q").width+2;
+							selection.width = alphabet.length * selectionDeltaX;
+							selection.height = 2 * selectionDeltaY; 
+							ctx = selection.getContext("2d");
+						}
+
+						// clear the canvas
+						ctx
+								.clearRect(0, 0, ctx.canvas.width,
+										ctx.canvas.height);
+
+						// Write the alphabet line
+						ctx.font = selectionFont;
+						ctx.textAlign = "center";
+						ctx.textBaseline = "bottom";
+						for ( var j = 0; j < alphabet.length; j++) {
+							var c = alphabet[j];
+							ctx.fillStyle = c in dict ? '#A00000' : '#000000';
+							ctx.fillText(c, j * selectionDeltaX + selectionDeltaX / 2,
+									selectionDeltaY);
+						}
+
+						/* puzzle.height = lines.length * puzzleSpaceing * puzzleDeltaY; */
 						// Get the context to draw on
 						var ctx = puzzle.getContext("2d");
-						if (puzzleDelta == 0) {
+						if (puzzleDeltaX == 0) {
 							ctx.font = puzzleFont;
-							puzzleDelta = ctx.measureText("Q").width;
-							puzzle.width = size * puzzleDelta + 10; 
-							puzzle.height = lines.length * puzzleDeltaY * 3; 
+							puzzleDeltaX = ctx.measureText("Q").width + 1;
+							puzzleLettersPerLine = selection.width / puzzleDeltaX + 2;
+							lines = [ "" ];
+							var words = theQuip.value.split(" ");
+							var line = 0;
+							for ( var i = 0; i < words.length; i++) {
+								if (words[i].length + lines[line].length + 1 > puzzleLettersPerLine) {
+									lines[++line] = "";
+								} else if (lines[line].length > 0) {
+									lines[line] += " ";
+								}
+								lines[line] += words[i];
+							}
+							puzzle.width = puzzleLettersPerLine * puzzleDeltaX; 
+							puzzle.height = lines.length * puzzleDeltaY * puzzleSpaceing; 
 							ctx = puzzle.getContext("2d");
 						}
 
@@ -555,41 +584,15 @@ $(document)
 								var c = line[j];
 								ctx.fillStyle = c == letter ? "#DC143C"
 										: "#006400";
-								ctx.fillText(c, j * puzzleDelta + puzzleDelta / 2, i
-										* puzzleDeltaY * 3 + puzzleDeltaY);
+								ctx.fillText(c, j * puzzleDeltaX + puzzleDeltaX / 2, i
+										* puzzleDeltaY * puzzleSpaceing + puzzleDeltaY);
 								c = decode(c);
 								if (c == ' ')
 									continue;
 								ctx.fillStyle = '#000000';
-								ctx.fillText(c, j * puzzleDelta + puzzleDelta / 2, i
-										* puzzleDeltaY * 3 + 2 * puzzleDeltaY);
+								ctx.fillText(c, j * puzzleDeltaX + puzzleDeltaX / 2, i
+										* puzzleDeltaY * puzzleSpaceing + 2 * puzzleDeltaY);
 							}
-						}
-
-						// Get the context to draw on
-						ctx = selection.getContext("2d");
-						if (selectionWidth == 0) {
-							ctx.font = selectionFont;
-							selectionWidth = ctx.measureText("Q").width+2;
-							selection.width = alphabet.length * selectionWidth + 10;
-							selection.height = 2 * selectionDeltaY; 
-							ctx = selection.getContext("2d");
-						}
-
-						// clear the canvas
-						ctx
-								.clearRect(0, 0, ctx.canvas.width,
-										ctx.canvas.height);
-
-						// Write the alphabet line
-						ctx.font = selectionFont;
-						ctx.textAlign = "center";
-						ctx.textBaseline = "bottom";
-						for ( var j = 0; j < alphabet.length; j++) {
-							var c = alphabet[j];
-							ctx.fillStyle = c in dict ? '#A00000' : '#000000';
-							ctx.fillText(c, j * selectionWidth + selectionWidth / 2,
-									selectionDeltaY);
 						}
 
 						$("#solved")[0].disabled = !complete();
