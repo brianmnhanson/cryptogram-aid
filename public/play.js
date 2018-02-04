@@ -5,11 +5,11 @@ $(document)
 					// Two dimensional array that represents the playing field
 					var lines = [];
 
-					var puzzleFont = "26pt courier";
+					var puzzleFont = "32pt courier";
 					var puzzleDelta = 0;
-					var puzzleDeltaY = 35;
+					var puzzleDeltaY = 40;
 					
-					var selectionFont = "32pt courier";
+					var selectionFont = "36pt courier";
 					var selectionWidth = 0;
 					var selectionDeltaY = 50;
 					var size = 40;
@@ -537,7 +537,7 @@ $(document)
 							ctx.font = puzzleFont;
 							puzzleDelta = ctx.measureText("Q").width;
 							puzzle.width = size * puzzleDelta + 10; 
-							puzzle.height = 30*3*3; 
+							puzzle.height = lines.length * puzzleDeltaY * 3; 
 							ctx = puzzle.getContext("2d");
 						}
 
@@ -569,8 +569,8 @@ $(document)
 						// Get the context to draw on
 						ctx = selection.getContext("2d");
 						if (selectionWidth == 0) {
-							ctx.font = "36pt courier";
-							selectionWidth = ctx.measureText("Q").width;
+							ctx.font = selectionFont;
+							selectionWidth = ctx.measureText("Q").width+2;
 							selection.width = alphabet.length * selectionWidth + 10;
 							selection.height = 2 * selectionDeltaY; 
 							ctx = selection.getContext("2d");
@@ -582,7 +582,7 @@ $(document)
 										ctx.canvas.height);
 
 						// Write the alphabet line
-						ctx.font = "36pt courier";
+						ctx.font = selectionFont;
 						ctx.textAlign = "center";
 						ctx.textBaseline = "bottom";
 						for ( var j = 0; j < alphabet.length; j++) {
