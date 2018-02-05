@@ -9,7 +9,7 @@ $(document)
 					var puzzleDeltaX = 0;
 					var puzzleDeltaY = 40;
 					var puzzleLettersPerLine = 38;
-					var puzzleSpaceing = 2.5;
+					var puzzleSpacing = 2.5;
 					
 					var selectionFont = "36pt courier";
 					var selectionDeltaX = 0;
@@ -89,8 +89,7 @@ $(document)
 						save();
 					}
 
-					function buildLines() {
-						save();
+					function setDictFromKey() {
 
 						if (theQuip.key.length > 1) {
 							var key = theQuip.key;
@@ -102,8 +101,6 @@ $(document)
 						} else {
 							letter = theQuip.value[0];
 						}
-
-						puzzleDeltaX = 0;
 					}
 
 					function store(e) {
@@ -128,6 +125,7 @@ $(document)
 						delete_b.disabled = false;
 						store_b.disabled = true;
 					}
+					
 					function inc_title(n) {
 						var v = /\w+ \d+ 20\d+$/g.exec(title_t.value);
 						if (v) {
@@ -168,6 +166,7 @@ $(document)
 						showPanel("run");
 						updateLink();
 					}
+					
 					function add(name) {
 						var solved = localStorage["solved " + name] ? "&check;"
 								: "";
@@ -181,23 +180,27 @@ $(document)
 						if (hide && solved)
 							$("tr:last").hide();
 					}
+					
 					function find(name) {
 						return $("tr").filter(function(i) {
 							return this.title == name;
 						});
 					}
+					
 					function findSolved() {
 						return $("tr").filter(function(i) {
 							return localStorage["solved " + this.title] == "Y";
 						});
 					}
+					
 					function showPanel(p) {
 						$("#setup").hide();
 						$("#choose").hide();
 						$("#run").hide();
 						$("#load").hide();
 						if (p == "run") {
-							buildLines();
+							save();
+							setDictFromKey();
 							repaintPuzzle();
 							$("#run").show();
 						}  else if (p == "choose") {
@@ -212,6 +215,7 @@ $(document)
 						}
 						localStorage["panel"] = p;
 					}
+					
 					function setEditButtons(p) {
 						if (title_t.value == "") {
 							store_b.disabled = true;
@@ -222,6 +226,7 @@ $(document)
 							store_b.disabled = quip_ta.value == "" || found && quip_ta.value == localStorage["keep " + title_t.value];
 						}
 					}
+					
 					function updateLink() {
 						var link_a = document.getElementById("link");
 						link_a.href = document.URL.split("?")[0] + "?" + 
@@ -247,6 +252,7 @@ $(document)
 						dict = {};
 						saveDict();
 						updateLink();
+						localStorage["panel"] = "run";
 					}
 
 					// Global actions
@@ -368,12 +374,11 @@ $(document)
 						var ox = e.pageX - pos.left;
 						var oy = e.pageY - pos.top;
 
-						var yField = Math.floor(oy / puzzleDeltaY);
+						var yField = Math.floor(oy / puzzleDeltaY / puzzleSpacing);
 						var xField = Math.floor(ox / puzzleDeltaX);
-						if (yField % puzzleSpaceing > 0)
+						if (oy > yField * puzzleDeltaY * puzzleSpacing + puzzleDeltaY)
 							return;
 
-						yField = yField / puzzleSpaceing;
 						char = lines[yField][xField];
 						if (char >= "A" && char <= "Z" && letter != char) {
 							updatePuzzle(char);
@@ -465,7 +470,7 @@ $(document)
 									continue;
 								ctx.fillStyle = c == l ? "#DC143C" : "#006400";
 								var x = j * puzzleDeltaX;
-								var y = i * puzzleDeltaY * puzzleSpaceing;
+								var y = i * puzzleDeltaY * puzzleSpacing;
 								ctx.clearRect(x, y, puzzleDeltaX, puzzleDeltaY);
 								ctx
 										.fillText(c, x + puzzleDeltaX / 2, y
@@ -489,7 +494,7 @@ $(document)
 								var c = line[j];
 								if (c == letter || c in drops) {
 									var x = j * puzzleDeltaX;
-									var y = i * puzzleDeltaY * puzzleSpaceing + puzzleDeltaY;
+									var y = i * puzzleDeltaY * puzzleSpacing + puzzleDeltaY;
 									ctx.clearRect(x, y, puzzleDeltaX, puzzleDeltaY);
 									if (c == letter)
 										ctx.fillText(s, x + puzzleDeltaX / 2, y
@@ -522,19 +527,22 @@ $(document)
 					function repaintPuzzle() {
 
 						// Get the context to draw on
-						ctx = selection.getContext("2d");
-						if (selectionDeltaX == 0) {
-							ctx.font = selectionFont;
-							selectionDeltaX = ctx.measureText("Q").width+2;
-							selection.width = alphabet.length * selectionDeltaX;
-							selection.height = 2 * selectionDeltaY; 
-							ctx = selection.getContext("2d");
+						var ctx = selection.getContext("2d");
+						
+						ctx.font = selectionFont;
+						selectionDeltaX = ctx.measureText("Q").width + 2;
+						var selectionWidth = alphabet.length * selectionDeltaX;
+						if (window.innerWidth - 5 < selectionWidth) {
+							ctx.font = selectionFont = selectionFont.replace("36", "30");
+							selectionDeltaX = ctx.measureText("Q").width + 2;
+							selectionWidth = alphabet.length * selectionDeltaX;
 						}
-
+						selection.width = selectionWidth;
+						selection.height = selectionDeltaY; 
+						ctx = selection.getContext("2d");
+						
 						// clear the canvas
-						ctx
-								.clearRect(0, 0, ctx.canvas.width,
-										ctx.canvas.height);
+						ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
 						// Write the alphabet line
 						ctx.font = selectionFont;
@@ -547,33 +555,33 @@ $(document)
 									selectionDeltaY);
 						}
 
-						/* puzzle.height = lines.length * puzzleSpaceing * puzzleDeltaY; */
+						/* puzzle.height = lines.length * puzzleSpacing * puzzleDeltaY; */
 						// Get the context to draw on
-						var ctx = puzzle.getContext("2d");
-						if (puzzleDeltaX == 0) {
-							ctx.font = puzzleFont;
-							puzzleDeltaX = ctx.measureText("Q").width + 1;
-							puzzleLettersPerLine = selection.width / puzzleDeltaX + 2;
-							lines = [ "" ];
-							var words = theQuip.value.split(" ");
-							var line = 0;
-							for ( var i = 0; i < words.length; i++) {
-								if (words[i].length + lines[line].length + 1 > puzzleLettersPerLine) {
-									lines[++line] = "";
-								} else if (lines[line].length > 0) {
-									lines[line] += " ";
-								}
-								lines[line] += words[i];
+						ctx = puzzle.getContext("2d");
+						
+						ctx.font = puzzleFont;
+						puzzleDeltaX = ctx.measureText("Q").width + 1;
+						var width = selection.width + puzzleDeltaX * 4;
+						if (window.innerWidth - 30 < width) 
+							width = selectionWidth;
+						puzzleLettersPerLine = Math.floor(width / puzzleDeltaX);
+						lines = [ "" ];
+						var words = theQuip.value.split(" ");
+						var line = 0;
+						for ( var i = 0; i < words.length; i++) {
+							if (words[i].length + lines[line].length + 1 > puzzleLettersPerLine) {
+								lines[++line] = "";
+							} else if (lines[line].length > 0) {
+								lines[line] += " ";
 							}
-							puzzle.width = puzzleLettersPerLine * puzzleDeltaX; 
-							puzzle.height = lines.length * puzzleDeltaY * puzzleSpaceing; 
-							ctx = puzzle.getContext("2d");
+							lines[line] += words[i];
 						}
+						puzzle.width = puzzleLettersPerLine * puzzleDeltaX; 
+						puzzle.height = lines.length * puzzleDeltaY * puzzleSpacing; 
+						ctx = puzzle.getContext("2d");
 
-						ctx
-								.clearRect(0, 0, ctx.canvas.width,
-										ctx.canvas.height);
-
+						ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+								
 						// Write the cryptogram and current solution
 						ctx.font = puzzleFont;
 						ctx.textAlign = "center";
@@ -585,13 +593,13 @@ $(document)
 								ctx.fillStyle = c == letter ? "#DC143C"
 										: "#006400";
 								ctx.fillText(c, j * puzzleDeltaX + puzzleDeltaX / 2, i
-										* puzzleDeltaY * puzzleSpaceing + puzzleDeltaY);
+										* puzzleDeltaY * puzzleSpacing + puzzleDeltaY);
 								c = decode(c);
 								if (c == ' ')
 									continue;
 								ctx.fillStyle = '#000000';
 								ctx.fillText(c, j * puzzleDeltaX + puzzleDeltaX / 2, i
-										* puzzleDeltaY * puzzleSpaceing + 2 * puzzleDeltaY);
+										* puzzleDeltaY * puzzleSpacing + 2 * puzzleDeltaY);
 							}
 						}
 

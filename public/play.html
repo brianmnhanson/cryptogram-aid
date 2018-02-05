@@ -10,27 +10,29 @@ body {
 	justify-items: center;
 	background: #efefef;
 }
+.content {
+	display: grid;
+}
 #puzzle {
 	background: white;
+	padding: 5px;
 }
 #setup {
-	display: grid;
 	justify-items: center;
 	align-items: center;
 	grid-template-rows: 1fr 4fr 1fr
 }
 #choose, #load {
-	display: grid;
 	justify-items: center;
 	align-items: center;
 	grid-template-rows: 1fr 6fr
 }
 #run {
-	display: grid;
 	justify-items: center;
 	align-items: center;
 	grid-template-rows: 1fr 3fr 1fr
 	grid-template-columns: 1fr;
+	grid-row-gap: 1em;
 }
 div {
     font: 16pt courier;
@@ -55,7 +57,7 @@ selection {
 </style>
 </head>
 <body>
-	<h1> Cryptogram Aid </h1>
+	<h1> Crypto-Quip Aid (DEBUG)</h1>
     
     <div id="setup" class="content">
 		<div id="entry">
@@ -105,5 +107,6 @@ selection {
 			<a id="link" href="index.html">Link</a>
         </div>
     </div>
+	<div id="debug"></div>
 
 </body></html>
