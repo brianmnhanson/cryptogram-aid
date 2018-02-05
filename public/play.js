@@ -488,6 +488,7 @@ $(document)
 						ctx.textBaseline = "bottom";
 						ctx.fillStyle = '#000000';
 
+						var makeCap = true;
 						for ( var i = 0; i < lines.length; i++) {
 							var line = lines[i];
 							for ( var j = 0; j < line.length; j++) {
@@ -497,8 +498,15 @@ $(document)
 									var y = i * puzzleDeltaY * puzzleSpacing + puzzleDeltaY;
 									ctx.clearRect(x, y, puzzleDeltaX, puzzleDeltaY);
 									if (c == letter)
-										ctx.fillText(s, x + puzzleDeltaX / 2, y
+									{
+										ctx.fillText(makeCap? s.toUpperCase(): s, x + puzzleDeltaX / 2, y
 												+ puzzleDeltaY);
+									}
+								}
+								if (c == ".") {
+									makeCap = true;
+								} else if (c != " " && makeCap) {
+									makeCap = false;
 								}
 							}
 						}
@@ -586,6 +594,7 @@ $(document)
 						ctx.font = puzzleFont;
 						ctx.textAlign = "center";
 						ctx.textBaseline = "bottom";
+						var makeCap = true;
 						for ( var i = 0; i < lines.length; i++) {
 							var line = lines[i];
 							for ( var j = 0; j < line.length; j++) {
@@ -598,8 +607,9 @@ $(document)
 								if (c == ' ')
 									continue;
 								ctx.fillStyle = '#000000';
-								ctx.fillText(c, j * puzzleDeltaX + puzzleDeltaX / 2, i
+								ctx.fillText(makeCap?c.toUpperCase():c, j * puzzleDeltaX + puzzleDeltaX / 2, i
 										* puzzleDeltaY * puzzleSpacing + 2 * puzzleDeltaY);
+								makeCap = c == ".";
 							}
 						}
 
