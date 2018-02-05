@@ -9,7 +9,7 @@ $(document)
 					var puzzleDeltaX = 0;
 					var puzzleDeltaY = 40;
 					var puzzleLettersPerLine = 38;
-					var puzzleSpacing = 2.5;
+					var puzzleSpacing = 3;
 					
 					var selectionFont = "36pt courier";
 					var selectionDeltaX = 0;
@@ -480,9 +480,9 @@ $(document)
 						letter = l;
 					}
 					
-					function isSentanceEnding(c, line, i)
+					function isSentenceEnding(c, line, i)
 					{
-						if (c == "." || c == "?" || c == "!" || c == ":") {
+						if (c == "." || c == "?" || c == "!") {
 							return i + 1 == line.length || line[i+1] == " ";
 						}
 						return false;
@@ -513,7 +513,7 @@ $(document)
 												+ puzzleDeltaY);
 									}
 								}
-								makeCap = isSentanceEnding(c, line, j);
+								makeCap = isSentenceEnding(c, line, j);
 							}
 						}
 
@@ -615,7 +615,7 @@ $(document)
 								ctx.fillStyle = '#000000';
 								ctx.fillText(makeCap?c.toUpperCase():c, j * puzzleDeltaX + puzzleDeltaX / 2, i
 										* puzzleDeltaY * puzzleSpacing + 2 * puzzleDeltaY);
-								makeCap = isSentanceEnding(c, line, j);
+								makeCap = isSentenceEnding(c, line, j);
 							}
 						}
 
