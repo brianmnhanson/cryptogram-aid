@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title> Cryptogram Aid </title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<style>
+body {
+	display: grid;
+	justify-items: center;
+	background: #efefef;
+	grid-gap: 1em;
+}
+
+section {
+	display: grid;
+	justify-items: center;
+	align-items: center;
+	grid-template-rows: 1fr 1fr 1fr;
+	grid-template-columns: 1fr 1fr 1fr;
+	background: black;
+	grid-gap: 4px;
+	padding: 4px;
+}
+.zone {
+	display: grid;
+	grid-align-items: center;
+	grid-justify-items: center;
+	grid-template-rows: 50px 50px 50px;
+	grid-template-columns: 50px 50px 50px;
+	grid-gap: 2px;
+	background: grey;
+}
+.zone div {
+    font: 16pt courier;
+	padding: 15px;
+}
+.zone:nth-child(even) div {
+	background: lightblue;
+}
+.zone:nth-child(odd) div {
+	background: lightgreen;
+}
+a {
+    font: 12pt courier;
+}
+textarea {
+    font: 14pt courier;
+}
+table {
+    font: 14pt courier;
+}
+
+</style>
+</head>
+<body>
+	<h1> Sudoku Aid</h1>
+	<div id="entry">
+		<button id="dectitle">◀</button>
+		<input id="title" name="title" type="text">
+		<button id="inctitle">▶</button><br>
+	</div>
+    
+    <section id="setup" class="content">
+		<div class="zone">
+			<div>1</div><div>4</div><div></div>
+			<div></div><div>5</div><div>8</div>
+			<div>3</div><div></div><div>9</div>
+		</div>
+		<div class="zone">
+			<div></div><div>4</div><div>7</div>
+			<div>2</div><div></div><div>8</div>
+			<div>3</div><div>6</div><div></div>
+		</div>
+		<div class="zone">
+			<div>1</div><div></div><div>7</div>
+			<div>2</div><div>5</div><div></div>
+			<div></div><div>6</div><div>9</div>
+		</div>
+		<div class="zone">
+			<div>1</div><div>4</div><div>7</div>
+			<div>2</div><div>5</div><div>8</div>
+			<div>3</div><div>6</div><div>9</div>
+		</div>
+		<div class="zone">
+			<div>1</div><div>4</div><div>7</div>
+			<div>2</div><div>5</div><div>8</div>
+			<div>3</div><div>6</div><div>9</div>
+		</div>
+		<div class="zone">
+			<div>1</div><div>4</div><div>7</div>
+			<div>2</div><div>5</div><div>8</div>
+			<div>3</div><div>6</div><div>9</div>
+		</div>
+		<div class="zone">
+			<div>1</div><div>4</div><div>7</div>
+			<div>2</div><div>5</div><div>8</div>
+			<div>3</div><div>6</div><div>9</div>
+		</div>
+		<div class="zone">
+			<div>1</div><div>4</div><div>7</div>
+			<div>2</div><div>5</div><div>8</div>
+			<div>3</div><div>6</div><div>9</div>
+		</div>
+		<div class="zone">
+			<div>1</div><div>4</div><div>7</div>
+			<div>2</div><div>5</div><div>8</div>
+			<div>3</div><div>6</div><div>9</div>
+		</div>
+    </section>
+	<div class="menu">
+		<button name="new">New</button>
+		<button id="solve">Solve</button>
+		<button id="store" disabled="disabled">Store</button>
+		<button id="delete" disabled="disabled">Delete</button>
+		<button name="open">List</button>
+		<button id="exportone">Export</button>
+	</div>
+ 
+	<div id="debug"></div>
+
+</body></html>
