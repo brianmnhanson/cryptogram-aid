@@ -479,6 +479,14 @@ $(document)
 						}
 						letter = l;
 					}
+					
+					function isSentanceEnding(c, line, i)
+					{
+						if (c == "." || c == "?" || c == "!" || c == ":") {
+							return i + 1 == line.length || line[i+1] == " ";
+						}
+						return false;
+					}
 
 					/* Change the highlighted letter */
 					function changeSub(s, drops) {
@@ -505,7 +513,7 @@ $(document)
 												+ puzzleDeltaY);
 									}
 								}
-								makeCap = c == "." && (j + 1 == line.length || line[j+1] == " ");
+								makeCap = isSentanceEnding(c, line, j);
 							}
 						}
 
@@ -607,7 +615,7 @@ $(document)
 								ctx.fillStyle = '#000000';
 								ctx.fillText(makeCap?c.toUpperCase():c, j * puzzleDeltaX + puzzleDeltaX / 2, i
 										* puzzleDeltaY * puzzleSpacing + 2 * puzzleDeltaY);
-								makeCap = c == "." && (j + 1 == line.length || line[j+1] == " ");
+								makeCap = isSentanceEnding(c, line, j);
 							}
 						}
 
