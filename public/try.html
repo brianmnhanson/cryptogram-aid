@@ -7,13 +7,41 @@
 <style>
 body {
 	display: grid;
-	justify-items: center;
 	background: #efefef;
+	grid-template-columns: 1fr auto 1fr;
 	grid-gap: 1em;
+	grid-template-areas: 
+	    ". name ." 
+		"title puzzle choices" 
+		". menu .";
+}
+#entry {
+	justify-self: center;
+	grid-area: name;
+}
+#menu {
+	justify-self: center;
+	grid-area: menu;
+}
+#choices {
+	justify-self: left;
+	grid-area: choices;
+}
+#choices div {
+    font: 30pt courier;
+    padding-left: 20px;
+}
+h1 {
+	justify-self: right;
+	grid-area: title;
+	text-orientation: upright;
+	writing-mode: vertical-rl;
+	text-align:center;
 }
 
-section {
+#setup {
 	display: grid;
+	grid-area: puzzle;
 	justify-items: center;
 	align-items: center;
 	grid-template-rows: 1fr 1fr 1fr;
@@ -47,9 +75,6 @@ a {
 textarea {
     font: 14pt courier;
 }
-table {
-    font: 14pt courier;
-}
 
 </style>
 </head>
@@ -61,6 +86,18 @@ table {
 		<button id="inctitle">▶</button><br>
 	</div>
     
+	<div id="choices">
+		<div>1</div><div>4</div><div>7</div>
+		<div>2</div><div>5</div><div>8</div>
+		<div>3</div><div>6</div><div>9</div>
+	</div>
+	<div id="menu">
+		<button name="new">New</button>
+		<button id="solve">Solve</button>
+		<button id="store" disabled="disabled">Store</button>
+		<button id="delete" disabled="disabled">Delete</button>
+	</div>
+	
     <section id="setup" class="content">
 		<div class="zone">
 			<div>1</div><div>4</div><div></div>
@@ -108,14 +145,6 @@ table {
 			<div>3</div><div>6</div><div>9</div>
 		</div>
     </section>
-	<div class="menu">
-		<button name="new">New</button>
-		<button id="solve">Solve</button>
-		<button id="store" disabled="disabled">Store</button>
-		<button id="delete" disabled="disabled">Delete</button>
-		<button name="open">List</button>
-		<button id="exportone">Export</button>
-	</div>
  
 	<div id="debug"></div>
 
