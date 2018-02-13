@@ -34,6 +34,7 @@ $(document)
 
 					var letter = 'a';
 					var alphabet = "aeiou bcdfghjklmnpqrstvwxyz *";
+					var dayOfWeek = "Sunday Monday Tuesday Wednesday Thursday Friday Saturday".split(" ");
 					var dict = {};
 
 					function loadFromStorage() {
@@ -127,13 +128,11 @@ $(document)
 					}
 					
 					function inc_title(n) {
-						var v = /\w+ \d+ 20\d+$/g.exec(title_t.value);
+						var v = /\d+-\d+-\d+$/g.exec(title_t.value);
 						if (v) {
 							var d = new Date(v[0]);
 							d.setTime(d.getTime() + n * 24*3600000);
-							var date = d.toDateString();
-							date = date.substring(date.indexOf(" ") + 1);
-							title_t.value = title_t.value.substring(0, v.index) + date;
+							title_t.value = "STrib " + d.toISOString().split("T")[0];
 							delete_b.disabled = true;
 							store_b.disabled = false;
 							return;
@@ -231,6 +230,15 @@ $(document)
 						var link_a = document.getElementById("link");
 						link_a.href = document.URL.split("?")[0] + "?" + 
 							encodeURI(theQuip.name) + "&" + encodeURI(theQuip.value);
+						var mail_a = document.getElementById("mail");
+						if (mail_a != null) {
+							var day = dayOfWeek[new Date().getDay()];
+							var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
+							var mail = iOS ? "googlemail" : "mailto";
+							mail_a.href = mail + ":///co?"
+								+ "subject=" + encodeURIComponent(day+"'s quip")
+								+ "&body=" + encodeURIComponent(link_a.href);
+						}
 					}
 
 					// Check if the browser supports <canvas>
@@ -248,8 +256,10 @@ $(document)
 							title_t.value = decodeURI(query.substring(0, pos));
 						} else {
 							quip_ta.value = decodeURI(query);
+							title_t.value = "STrib " + new Date().toISOString().split("T")[0];
 						}
 						dict = {};
+						store();
 						saveDict();
 						updateLink();
 						localStorage["panel"] = "run";
@@ -258,9 +268,8 @@ $(document)
 					// Global actions
 					$('button[name^="new"]').click(function(e) {
 						var date = new Date().toDateString();
-						date = date.substring(date.indexOf(" ") + 1);
 						theQuip.value = "";
-						theQuip.name = "STrib " + date;
+						theQuip.name = "STrib " + new Date().toISOString().split("T")[0];
 						theQuip.key = "";
 
 						title_t.value = theQuip.name;
