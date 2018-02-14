@@ -234,8 +234,8 @@ $(document)
 						if (mail_a != null) {
 							var day = dayOfWeek[new Date().getDay()];
 							var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
-							var mail = iOS ? "googlegmail" : "mailto";
-							mail_a.href = mail + ":///co?"
+							var mail = iOS ? "googlegmail:///co" : "mailto:";
+							mail_a.href = mail + "?"
 								+ "subject=" + encodeURIComponent(day+"'s quip")
 								+ "&body=" + encodeURIComponent(link_a.href);
 						}
