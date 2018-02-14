@@ -2,70 +2,151 @@
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title> Sudoku </title>
-<script type="text/javascript" src="jquery.js"></script>
-<script type="text/javascript" src="sudoku.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
 <style>
-div {
-    font: 24pt courier;
+body {
+	display: grid;
+	background: #efefef;
+	grid-template-columns: 1fr auto 1fr;
+	grid-gap: 1em;
+	grid-template-areas: 
+	    ". name ." 
+		"title puzzle choices" 
+		". menu .";
+}
+#entry {
+	justify-self: center;
+	grid-area: name;
+}
+#menu {
+	justify-self: center;
+	grid-area: menu;
+}
+#choices {
+	justify-self: left;
+	align-self: center;
+	grid-area: choices;
+}
+#choices div {
+    font: 30pt courier;
+    padding-left: 20px;
+}
+h1 {
+	justify-self: right;
+	grid-area: title;
+	text-orientation: upright;
+	writing-mode: vertical-lr;
+	align-self: center;
+}
+
+#setup {
+	display: grid;
+	grid-area: puzzle;
+	justify-items: center;
+	align-items: center;
+	grid-template-rows: 1fr 1fr 1fr;
+	grid-template-columns: 1fr 1fr 1fr;
+	background: black;
+	grid-gap: 4px;
+	padding: 4px;
+}
+.zone {
+	display: grid;
+	grid-align-items: center;
+	grid-justify-items: center;
+	grid-template-rows: 50px 50px 50px;
+	grid-template-columns: 50px 50px 50px;
+	grid-gap: 2px;
+	background: grey;
+}
+.zone div {
+    font: 16pt courier;
+	padding: 15px;
+}
+.zone:nth-child(even) div {
+	background: lightblue;
+}
+.zone:nth-child(odd) div {
+	background: lightgreen;
+}
+a {
+    font: 12pt courier;
 }
 textarea {
     font: 14pt courier;
 }
-table {
-    font: 14pt courier;
-}
-canvas {
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-}
+
 </style>
 </head>
 <body>
-    <h1 align="Center"> Sudoku </h1>
-    <div id="setup" style="display: block;" align="Center">
-        <button id="dectitle">◀</button>
-        <input id="title" name="title" type="text">
-        <button id="inctitle">▶</button><br>
-        <textarea id="quip" rows="10" cols="50" autocorrect="off"></textarea>
-        <div>
-            <button name="new">New</button>
-            <button id="solve">Solve</button>
-            <button id="store" disabled="disabled">Store</button>
-            <button id="delete" disabled="disabled">Delete</button>
-            <button name="open">List</button>
-            <button id="exportone">Export</button>
-        </div>
-    </div>
-    <div id="choose" style="display: none" align="Center">
-        <div>
-            <button name="back">Edit</button>
-            <button id="hide" style="display: none">Hide ✓</button>
-            <button id="show">All</button>
-            <button name="new">New</button>
-            <button id="maint">Load</button>
-            <button id="exportlist">Export</button>
-        </div>
-        <table id="items">
-            <tbody><tr><th style="width:1em"></th><th style="width:12em">Date</th></tr>
-        </tbody></table>
-    </div>
-    <div id="load" style="display: none" align="Center">
-        <div>
-            <button id="import">Import</button>
-            <button name="open">List</button>
-        </div>
-        <textarea id="quips" rows="34" cols="80" autocorrect="off"></textarea>
-    </div>
-    <div id="run" style="display: none" align="Center">
-        <canvas id="selection" width="100" height="60"></canvas><br>
-        <canvas id="puzzle" width="100" height="500"></canvas>
-        <div>
-            <button name="back">Edit</button>
-            <button id="solved">Solved</button>
-            <button id="reset">Clear</button>
-            <button name="new">New</button>
-            <button name="open">List</button>
-        </div>
-    </div>
-
+	<h1> Sudoku Aid</h1>
+	<div id="entry">
+		<button id="dectitle">◀</button>
+		<input id="title" name="title" type="text">
+		<button id="inctitle">▶</button><br>
+	</div>
+    
+	<div id="choices">
+		<div>1</div><div>4</div><div>7</div>
+		<div>2</div><div>5</div><div>8</div>
+		<div>3</div><div>6</div><div>9</div>
+	</div>
+	<div id="menu">
+		<button name="new">New</button>
+		<button id="solve">Solve</button>
+		<button id="store" disabled="disabled">Store</button>
+		<button id="delete" disabled="disabled">Delete</button>
+	</div>
+	
+    <section id="setup" class="content">
+		<div class="zone">
+			<div>1</div><div>4</div><div></div>
+			<div></div><div>5</div><div>8</div>
+			<div>3</div><div></div><div>9</div>
+		</div>
+		<div class="zone">
+			<div></div><div>4</div><div>7</div>
+			<div>2</div><div></div><div>8</div>
+			<div>3</div><div>6</div><div></div>
+		</div>
+		<div class="zone">
+			<div>1</div><div></div><div>7</div>
+			<div>2</div><div>5</div><div></div>
+			<div></div><div>6</div><div>9</div>
+		</div>
+		<div class="zone">
+			<div>1</div><div>4</div><div>7</div>
+			<div>2</div><div>5</div><div>8</div>
+			<div>3</div><div>6</div><div>9</div>
+		</div>
+		<div class="zone">
+			<div>1</div><div>4</div><div>7</div>
+			<div>2</div><div>5</div><div>8</div>
+			<div>3</div><div>6</div><div>9</div>
+		</div>
+		<div class="zone">
+			<div>1</div><div>4</div><div>7</div>
+			<div>2</div><div>5</div><div>8</div>
+			<div>3</div><div>6</div><div>9</div>
+		</div>
+		<div class="zone">
+			<div>1</div><div>4</div><div>7</div>
+			<div>2</div><div>5</div><div>8</div>
+			<div>3</div><div>6</div><div>9</div>
+		</div>
+		<div class="zone">
+			<div>1</div><div>4</div><div>7</div>
+			<div>2</div><div>5</div><div>8</div>
+			<div>3</div><div>6</div><div>9</div>
+		</div>
+		<div class="zone">
+			<div>1</div><div>4</div><div>7</div>
+			<div>2</div><div>5</div><div>8</div>
+			<div>3</div><div>6</div><div>9</div>
+		</div>
+    </section>
+ 
+	<div id="debug"></div>
 
 </body></html>
