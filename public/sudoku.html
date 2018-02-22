@@ -3,6 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title> Sudoku </title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript" src="sudoku.js"></script>
 
 <style>
 body {
@@ -27,10 +28,10 @@ body {
 	justify-self: left;
 	align-self: center;
 	grid-area: choices;
+    list-style: none;
 }
-#choices div {
-    font: 30pt courier;
-    padding-left: 20px;
+#choices li {
+    font: 28pt courier;
 }
 h1 {
 	justify-self: right;
@@ -87,11 +88,9 @@ textarea {
 		<button id="inctitle">▶</button><br>
 	</div>
     
-	<div id="choices">
-		<div>1</div><div>4</div><div>7</div>
-		<div>2</div><div>5</div><div>8</div>
-		<div>3</div><div>6</div><div>9</div>
-	</div>
+	<ul id="choices">
+		<li>1<li>2<li>3<li>4<li>5<li>6<li>7<li>8<li>9<li>*
+	</ul>
 	<div id="menu">
 		<button name="new">New</button>
 		<button id="solve">Solve</button>
