@@ -161,6 +161,11 @@ $(document).ready(
 		
 		// Clear all the cells
 		$('div div').text('');
+		
+		// Assign an id for each cell 1-81 
+		$('section').children().each(function (i) {
+			$(this).children().each(function (j){ this.id = ""+(i*9+j+1)})
+		});
 
 		// Global actions
 		$('button[name^="new"]').click(function(e) {
