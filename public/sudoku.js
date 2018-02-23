@@ -138,6 +138,29 @@ $(document).ready(
 				store_b.disabled = quip_ta.value == "" || found && quip_ta.value == localStorage["keep " + title_t.value];
 			}
 		}
+		
+		var digit;
+
+		// select a digit
+		$('li').click(function(li) {
+			if (digit != null)
+				$(digit).removeClass('theDigit');
+			digit = li.target;
+			$(digit).addClass('theDigit');
+		});
+		
+		// Put the selected digit in the clicked cell
+		$('div div').click(function(div) {
+			if (digit == null)
+				return;
+			if (digit.innerText == '*')
+				$(div.target).text(' ');
+			else
+				$(div.target).text(digit.innerText);
+		});
+		
+		// Clear all the cells
+		$('div div').text('');
 
 		// Global actions
 		$('button[name^="new"]').click(function(e) {
@@ -162,7 +185,6 @@ $(document).ready(
 		$('button[name^="back"]').click(function(e) {
 			showPanel("setup");
 		});
-
 		// Setup panel actions
 		$("#solve").click(function(e) {
 			showPanel("run");
