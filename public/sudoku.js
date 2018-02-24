@@ -26,15 +26,6 @@ $(document).ready(
 		var hide;
 		
 		var mode;
-		
-		function is_play() {
-			return mode == 'play';
-		}
-		
-		function is_edit() {
-			return mode == 'edit';
-		}
-		
 		function setMode(m) {
 			if (mode != m) {
 				$('button').hide();
@@ -42,7 +33,10 @@ $(document).ready(
 				case 'edit': 
 					$('#new, #solve, #delete, #dectitle, #inctitle').show();
 					$('div div').css("color", "red");
-					$('div div').each(function(i) {$(this).text(theSudoku.value[i])})
+					$('div div').each(function(i) {
+						$(this).text(theSudoku.value[i])
+					});
+					change_digit(null);
 					break;
 				case 'play':
 					$('#new, #solved, #edit, #reset').show();
@@ -53,7 +47,8 @@ $(document).ready(
 						if (theSudoku.value[i] != ' ') {
 							$(this).css("color", "red");
 						}
-					})
+					});
+					change_cell(null);
 					break;
 				}
 				mode = m;
@@ -69,11 +64,6 @@ $(document).ready(
 				}
 			}
 
-			keys.sort();
-			for (k in keys) {
-				add(keys[k]);
-			}
-
 			if ("sudoku" in localStorage) {
 				try {
 					var q = JSON.parse(localStorage["sudoku"]);
@@ -84,7 +74,7 @@ $(document).ready(
 					theSudoku.name = "Sample";
 					theSudoku.value = empty.slice();
 					theSudoku.guess = empty.slice();
-					theSudoku.valid = true;
+					theSudoku.valid = false;
 				}
 				title_t.value = theSudoku.name;
 			}
@@ -94,6 +84,7 @@ $(document).ready(
 
 		function save() {
 			theSudoku.name = title_t.value;
+			theSudoku.valid = true;
 			localStorage["sudoku"] = JSON.stringify(theSudoku, 0, 1);
 		}
 
@@ -190,12 +181,12 @@ $(document).ready(
 		
 		function check_guess () {
 			for (var i=0; i<9; i++) {
-				if (is_bad(get_row(i)) || is_bad(get_column(i)) || is_bad(get_square(i)))
+				if (is_bad(get_row(i)) || is_bad(get_column(i)) || is_bad(get_square(i))) {
+					$('#solved').disable(true);
 					return false;
+				}
 			}
-			if (is_complete() == false) {
-				$('#solved').disable(false);
-			}
+			$('#solved').disable(is_complete() == false);
 		}
 
 		function select_row(e) {
@@ -227,36 +218,76 @@ $(document).ready(
 		}
 		
 		var digit;
-
+		var theCell;
+		function change_cell(c) {
+			if (theCell != null) $(theCell).css('background', theCell.save_background);
+			theCell = c;
+			if (c != null) $(c).css('background', 'lightgray');
+		}
+		function change_digit(d) {
+			if (digit != null) {
+				$(digit).removeClass('theDigit');
+				var v = get_digit(digit);
+				if (v != ' ') {
+					$('div div').each(function(i) {
+						if (theSudoku.guess[i] == v) $(this).css('background', this.save_background);
+					});
+				}
+			}
+			digit = d;
+			if (d != null) {
+				$(d).addClass('theDigit');
+				var v = get_digit(d);
+				if (v != ' ') {
+					$('div div').each(function(i) {
+						if (theSudoku.guess[i] == v) $(this).css('background', 'lightgray');
+					});
+				}
+			}
+		}
+		function get_digit(d) {
+			if (d == null)
+				return ' ';
+			var value = d.innerText;
+			if (value == '*') value = ' ';
+			return value;
+		}
+		
 		// select a digit
 		$('li').click(function(li) {
-			if (digit != null)
-				$(digit).removeClass('theDigit');
-			digit = li.target;
-			$(digit).addClass('theDigit');
+			if (mode == 'edit') {
+				if (theCell == null) return;
+				var value = get_digit(li.target);
+				$(theCell).text(value);
+				var id = theCell.id;
+				theSudoku.guess[id] = value;
+				theSudoku.value[id] = value;
+				change_cell(document.getElementById(parseInt(id)+1));
+			} else {
+				change_digit(li.target);
+			}
 		});
 		
 		// Put the selected digit in the clicked cell
 		$('div div').click(function(div) {
-			if (digit == null)
+			if (mode == 'edit') {
+				change_cell(div.target);
 				return;
-			var value = digit.innerText;
-			if (value == '*') {
-				value = ' ';
 			}
-			if (is_play() && theSudoku.value[div.target.id] != ' ')
-				return;
-			$(div.target).text(value);
-			theSudoku.guess[div.target.id] = value;
-			if (mode == 'edit')
-				theSudoku.value[div.target.id] = value;
+			if (theSudoku.value[div.target.id] == ' ' && digit != null) {
+				var value = get_digit(digit);
+				theSudoku.guess[div.target.id] = value;
+				$(div.target).text(value);
+			}
 		});
 		
 		// Clear all the cells
 		$('div div').text('');
 		
 		// Assign an id for each cell 1-81 
-		$('div div').each(function(i) {this.id = i})
+		$('div div').each(function(i) {
+			this.id = i; this.save_background = $(this).css('background')
+		})
 
 		// Global actions
 		$('#new').click(function(e) {
@@ -271,6 +302,7 @@ $(document).ready(
 		
 		// Edit mode actions
 		$("#solve").click(function(e) {
+			save();
 			setMode("play");
 		});
 		$("#delete").click(function(e) {
