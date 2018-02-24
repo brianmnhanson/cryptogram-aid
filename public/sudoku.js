@@ -233,21 +233,19 @@ $(document).ready(
 			for ( var i = localStorage.length; i > 0; --i) {
 				var s = localStorage.key(i-1);
 				if (s.startsWith("sk ")) {
-					add_list_item(s.substring(3), localStorage[s]);
+					var value = localStorage[s].split(";")[0];
+					var name = s.substring(3);
+					var solved = value.endsWith("Y") ? "&check;"	: "";
+					$("#items").append('<tr title="' + name + '"><td>' //
+							+ solved + '</td><td>' //
+							+ name + '</td><td>' //
+							+ value + '</td></tr>' //
+					);
+					$("tr:last").click(select_row);
+					if (hide && solved)
+						$("tr:last").hide();
 				}
 			}
-		}
-		
-		function add_list_item(name, value) {
-			var solved = value.endsWith("Y") ? "&check;"	: "";
-			$("#items").append('<tr title="' + name + '"><td>' //
-					+ solved + '</td><td>' //
-					+ name + '</td><td>' //
-					+ value + '</td></tr>' //
-			);
-			$("tr:last").click(select_row);
-			if (hide && solved)
-				$("tr:last").hide();
 		}
 		
 		var digit;

@@ -36,21 +36,28 @@ $(document)
 					var alphabet = "aeiou bcdfghjklmnpqrstvwxyz *";
 					var dayOfWeek = "Sunday Monday Tuesday Wednesday Thursday Friday Saturday".split(" ");
 					var dict = {};
-
-					function loadFromStorage() {
-						var keys = [];
-						for ( var i = 0; i < localStorage.length; i++) {
-							var s = localStorage.key(i);
-							if (s.indexOf("keep ") == 0) {
-								keys.push(s.substring(s.indexOf(" ") + 1));
+					
+					function build_list () {
+						$("tr").remove();
+						for ( var i = localStorage.length; i > 0; --i) {
+							var s = localStorage.key(i-1);
+							if (s.startsWith("keep ")) {
+								var name = s.substring(5);
+								var value = localStorage[s].split(";")[0];
+								var solved = value.endsWith("Y") ? "&check;"	: "";
+								$("#items").append('<tr title="' + name + '"><td>' //
+										+ solved + '</td><td>' //
+										+ name + '</td><td>' //
+										+ value.small() + '</td></tr>' //
+								);
+								$("tr:last").click(select_row);
+								if (hide && solved)
+									$("tr:last").hide();
 							}
 						}
+					}
 
-						keys.sort();
-						for (k in keys) {
-							add(keys[k]);
-						}
-
+					function loadFromStorage() {
 						if ("quip" in localStorage) {
 							try {
 								var q = JSON.parse(localStorage["quip"]);
@@ -120,7 +127,6 @@ $(document)
 						if (localStorage["keep " + theQuip.name] != theQuip.value) {
 							find(theQuip.name).remove();
 							localStorage["keep " + theQuip.name] = theQuip.value;
-							add(theQuip.name);
 						}
 
 						delete_b.disabled = false;
@@ -166,20 +172,6 @@ $(document)
 						updateLink();
 					}
 					
-					function add(name) {
-						var solved = localStorage["solved " + name] ? "&check;"
-								: "";
-						$("#items").append('<tr title="' + name + '"><td>' //
-								+ solved + '</td><td>' //
-								+ name + '</td><td>' //
-								+ localStorage["keep " + name].small() //
-								+ '</td></tr>' //
-						);
-						$("tr:last").click(select_row);
-						if (hide && solved)
-							$("tr:last").hide();
-					}
-					
 					function find(name) {
 						return $("tr").filter(function(i) {
 							return this.title == name;
@@ -203,12 +195,12 @@ $(document)
 							repaintPuzzle();
 							$("#run").show();
 						}  else if (p == "choose") {
+							build_list();
 							$("#choose").show();
 						} else  if (p == "load") {
 							quips_ta.value = "";
 							$("#load").show();
 						} else {
-							// must be setup
 							$("#setup").show();
 							setEditButtons(p);
 						}
@@ -353,7 +345,6 @@ $(document)
 					$("#solved").click(function(e) {
 						localStorage["solved " + theQuip.name] = "Y";
 						find(theQuip.name).remove();
-						add(theQuip.name);
 						showPanel("setup");
 					});
 					$("#reset").click(function(e) {
@@ -371,7 +362,6 @@ $(document)
 							if (map[name].s == "Y")
 								localStorage["solved " + name] = "Y";
 							find(name).remove();
-							add(name);
 						}
 					});
 
