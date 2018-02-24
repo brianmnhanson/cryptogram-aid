@@ -31,7 +31,7 @@ $(document).ready(
 				$('button, table, a').hide();
 				switch (m) {
 				case 'edit': 
-					$('#new, #solve, #delete, #dectitle, #inctitle, #list').show();
+					$('#setup, #choices, #new, #solve, #delete, #dectitle, #inctitle, #list').show();
 					$('div div').css("color", "red");
 					$('div div').each(function(i) {
 						$(this).text(theSudoku.value[i])
@@ -39,7 +39,7 @@ $(document).ready(
 					change_digit(null);
 					break;
 				case 'play':
-					$('#new, #solved, #edit, #reset, a').show();
+					$('#setup, #choices, #new, #solved, #edit, #reset, #list, a').show();
 					check_guess();
 					$('div div').css("color", "black");
 					$('div div').each(function(i) {
@@ -51,8 +51,10 @@ $(document).ready(
 					change_cell(null);
 					break;
 				case 'list':
+					$('#new, #solve, #edit').show();
 					$('#setup, #choices').hide();
 					$('table').show();
+					build_list();
 					break;
 				}
 				mode = m;
@@ -246,11 +248,12 @@ $(document).ready(
 			}
 			title_t.value = theSudoku.name;
 
-			setMode("run");
+			setMode("play");
 		}
 
 		function build_list () {
-			for ( var i = localStorage.length; i > localStorage.length; --i) {
+			$("tr").remove();
+			for ( var i = localStorage.length; i > 0; --i) {
 				var s = localStorage.key(i-1);
 				if (s.startsWith("sk ")) {
 					add_list_item(s.substring(3), localStorage[s]);
@@ -391,7 +394,6 @@ $(document).ready(
 			setMode("edit");
 		});
 		$("#list").click(function(e) {
-			build_list();
 			setMode("list");
 		});
 		
