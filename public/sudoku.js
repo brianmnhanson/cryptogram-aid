@@ -17,12 +17,9 @@ $(document).ready(
 			
 		var title_t = document.getElementById("title");
 
-		var empty = [];
-		for (var i=0; i<81; i++) {
-			empty[i]= ' ';
-		}
+		var empty = Array(81).fill(0);
 
-		var theSudoku = {value: empty.slice(), guess: empty.slice(), name: ''};
+		var theSudoku = {value: empty.slice(), guess: empty.slice(), name: '', solved: false};
 		var hide;
 		
 		var mode;
@@ -43,8 +40,8 @@ $(document).ready(
 					check_guess();
 					$('div div').css("color", "black");
 					$('div div').each(function(i) {
-						$(this).text(theSudoku.guess[i]);
-						if (theSudoku.value[i] != ' ') {
+						$(this).text(theSudoku.guess[i] != 0 ? theSudoku.guess[i] : ' ');
+						if (theSudoku.value[i] != 0) {
 							$(this).css("color", "red");
 						}
 					});
@@ -62,20 +59,11 @@ $(document).ready(
 		}
 		
 		function as_string(value, solved) {
-			var s = '';
-			for (var i=0; i<81; i++) {
-				s += value[i] == ' ' ? '0' : value[i];
-			}
-			return s + (solved?'Y':'N');
+			return value.join('') + (solved?'Y':'N');
 		}
 		
 		function from_string(s) {
-			var value = [];
-			for (var i=0; i<81; i++) {
-				value[i] = s.charAt(i);
-				if (value[i] == '0') value[i] = ' ';
-			}
-			return value;
+			return s.substr(0, 81).split('');
 		}
 
 		function loadFromStorage() {
@@ -123,7 +111,7 @@ $(document).ready(
 		}
 
 		function store() {
-			var value = as_string(theSudoku.value, theSudoku.solved);
+			var value = as_string(theSudoku.value, theSudoku.solved) + ";" + as_string(theSudoku.guess, false);
 			if (theSudoku.name != title_t.value) {
 				if (theSudoku.name != "" && localStorage["sk " + theSudoku.name] == value) {
 					delete localStorage["sk " + theSudoku.name];
@@ -157,57 +145,47 @@ $(document).ready(
 		}
 		
 		function get_row (n) {
-			var value = [];
+			var value = Array(10).fill(0);
 			var s = Math.floor(s/3)*3*9 + (n % 3) * 3;
 			for (i = 0; i<3; i++ ) {
 				for (j=0; j<3; j++) {
-					value.push(theSudoku.guess[s+i*9 + j]);
+					value[theSudoku.guess[s+i*9 + j]]+=1;
 				}
 			}
-			return value;
+			return value.slice(1);
 		}
 		
 		function get_column (n) {
-			var value = [];
+			var value = Array(10).fill(0);
 			var s = Math.floor(s/3)*9 + (n % 3) * 3;
 			for (i = 0; i<3; i++ ) {
 				for (j=0; j<3; j++) {
-					value.push(theSudoku.guess[s+i*9+j*3]);
+					value[theSudoku.guess[s+i*9+j*3]]+=1;
 				}
 			}
-			return value;
+			return value.slice(1);
 		}
 		
 		function get_square (n) {
-			var value = [];
+			var value = Array(10).fill(0);
 			for (i = 0; i<9; i++ ) {
-				value.push(theSudoku.guess[n*9 + i]);
+				value[theSudoku.guess[n*9 + i]]+=1;
 			}
-			return value;
+			return value.slice(1);
 		}
 		
 		function is_bad(v) {
-			var m = {};
-			for (i=0; i<v.length; i++) {
-				var c = v[i];
-				if (c != ' ' && m[c]) return true;
-				m[c] = true;
-			}
-			return false;
+			return v.find(n => n > 1) >= 0;
 		}
 		
 		function is_complete() {
-			for (var i=0; i<81; i++) {
-				if (theSudoku.guess[i] == ' ')
-					return false;
-			}
-			return true;
+			return theSudoku.guess.indexOf(0) < 0;
 		}
 		
 		function check_guess (n) {
 			theSudoku.solved = false;
 			if (n != null) {
-				if (theSudoku.guess[n] == ' ') {
+				if (theSudoku.guess[n] == 0) {
 					$('#solved').disable(true);
 					return;
 				} 
@@ -239,14 +217,16 @@ $(document).ready(
 		function select_row(e) {
 			var name = e.currentTarget.title;
 			try {
-				var q = from_string(localStorage["sk " + name]);
+				var q = localStorage["sk " + name].split(';');
 				theSudoku.name = name;
-				theSudoku.value = q;
-				theSudoku.guess = q.slice();
+				theSudoku.value = from_string(q[0]);
+				theSudoku.guess = q.length < 2 ? from_string(q[0]) : from_string(q[1]);
+				theSudoku.solved = q[0].endsWith('Y');
 			} catch (e) {
 				return;
 			}
 			title_t.value = theSudoku.name;
+			$('#solved').disable(theSudoku.solved == false);
 
 			setMode("play");
 		}
@@ -284,7 +264,7 @@ $(document).ready(
 			if (digit != null) {
 				$(digit).removeClass('theDigit');
 				var v = get_digit(digit);
-				if (v != ' ') {
+				if (v != 0) {
 					$('div div').each(function(i) {
 						if (theSudoku.guess[i] == v) $(this).css('background', this.save_background);
 					});
@@ -294,7 +274,7 @@ $(document).ready(
 			if (d != null) {
 				$(d).addClass('theDigit');
 				var v = get_digit(d);
-				if (v != ' ') {
+				if (v != 0) {
 					$('div div').each(function(i) {
 						if (theSudoku.guess[i] == v) $(this).css('background', 'lightgray');
 					});
@@ -303,9 +283,9 @@ $(document).ready(
 		}
 		function get_digit(d) {
 			if (d == null)
-				return ' ';
+				return 0;
 			var value = d.innerText;
-			if (value == '*') value = ' ';
+			if (value == '*') value = 0;
 			return value;
 		}
 		
@@ -330,11 +310,11 @@ $(document).ready(
 				change_cell(div.target);
 				return;
 			}
-			if (theSudoku.value[div.target.id] == ' ' && digit != null) {
+			if (theSudoku.value[div.target.id] == 0 && digit != null) {
 				var value = get_digit(digit);
 				theSudoku.guess[div.target.id] = value;
 				$(div.target).text(value);
-				if (value != ' ') $(div.target).css('background', 'lightgray')
+				if (value != 0) $(div.target).css('background', 'lightgray')
 				check_guess(div.target.id);
 			}
 		});
@@ -380,7 +360,8 @@ $(document).ready(
 		// Play mode actions
 		$("#solved").click(function(e) {
 			theSudoku.solved = true;
-			localStorage["sk " + theSudoku.name] = as_string(theSudoku.value, theSudoku.solved);
+			localStorage["sk " + theSudoku.name] = 
+				as_string(theSudoku.value, theSudoku.solved) + ";" + as_string(theSudoku.guess, false);
 			setMode("edit");
 		});
 		$("#reset").click(function(e) {
