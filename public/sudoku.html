@@ -64,6 +64,8 @@ h1 {
 .zone div {
     font: 16pt courier;
 	padding: 15px;
+	font-weight: bold;
+	color: black;
 }
 .zone:nth-child(even) div {
 	background: lightblue;
@@ -98,10 +100,11 @@ textarea {
 		<li>1<li>2<li>3<li>4<li>5<li>6<li>7<li>8<li>9<li>*
 	</ul>
 	<div id="menu">
-		<button name="new">New</button>
+		<button id="new">New</button>
 		<button id="solve">Solve</button>
-		<button id="store" disabled="disabled">Store</button>
-		<button id="delete" disabled="disabled">Delete</button>
+		<button id="solved">Solved</button>
+		<button id="edit">Edit</button>
+		<button id="reset">Reset</button>
 	</div>
 	
     <section id="setup" class="content">
