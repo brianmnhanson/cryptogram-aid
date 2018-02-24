@@ -59,12 +59,12 @@ $(document).ready(
 			}
 		}
 		
-		function as_string(value) {
+		function as_string(value, solved) {
 			var s = '';
 			for (var i=0; i<81; i++) {
 				s += value[i] == ' ' ? '0' : value[i];
 			}
-			return s;
+			return s + (solved?'Y':'N');
 		}
 		
 		function from_string(s) {
@@ -98,10 +98,12 @@ $(document).ready(
 		var dayOfWeek = "Sunday Monday Tuesday Wednesday Thursday Friday Saturday".split(" ");
 		function updateLink() {
 			var href = document.URL.split("?")[0] + "?" + 
-				encodeURI(theSudoku.name) + "&" + as_string(theSudoku.value);
+				encodeURI(theSudoku.name) + "&" + as_string(theSudoku.value, false);
 			var mail_a = document.getElementById("mail");
 			if (mail_a != null) {
-				var day = dayOfWeek[new Date().getDay()];
+				var v = /\d+-\d+-\d+$/g.exec(theSudoku.name);
+				var d = v ? new Date(v[0]).getUTCDay() : new Date().getDay();
+				var day = dayOfWeek[d];
 				var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
 				var mail = iOS ? "googlegmail:///co" : "mailto:";
 				mail_a.href = mail + "?"
@@ -119,20 +121,16 @@ $(document).ready(
 		}
 
 		function store() {
-			var value = as_string(theSudoku.value);
+			var value = as_string(theSudoku.value, theSudoku.solved);
 			if (theSudoku.name != title_t.value) {
-				if (theSudoku.name != "" && localStorage["keep " + theSudoku.name] == value) {
-					delete localStorage["keep " + theSudoku.name];
-					delete localStorage["solved " + theSudoku.name];
+				if (theSudoku.name != "" && localStorage["sk " + theSudoku.name] == value) {
+					delete localStorage["sk " + theSudoku.name];
 				}
 				theSudoku.name = title_t.value;
 			}
 
-			if (localStorage["keep " + theSudoku.name] != value) {
-				localStorage["keep " + theSudoku.name] = value;
-			}
-
-			$('#delete').disable(true);
+			localStorage["sk " + theSudoku.name] = value;
+			$('#delete').disable(false);
 		}
 		function inc_title(n) {
 			var v = /\d+-\d+-\d+$/g.exec(title_t.value);
@@ -205,15 +203,22 @@ $(document).ready(
 		}
 		
 		function check_guess (n) {
+			theSudoku.solved = false;
 			if (n != null) {
-				if (theSudoky.guess[n] == ' ') {
+				if (theSudoku.guess[n] == ' ') {
 					$('#solved').disable(true);
-				} else if (is_bad(get_row(Math.floor((n % 9)/3)+Math.floor(n/27)*3)) 
+					return;
+				} 
+				if (is_bad(get_row(Math.floor((n % 9)/3)+Math.floor(n/27)*3)) 
 						|| is_bad(get_column(n % 9)) 
 						|| is_bad(get_square(Math.floor(n/9)))) {
 					$('#solved').disable(true);
+					return;
 				}
-				return;
+				if (is_complete() == false)  {
+					$('#solved').disable(true);
+					return;
+				}
 			}
 			for (var i=0; i<9; i++) {
 				if (is_bad(get_row(i)) || is_bad(get_column(i)) || is_bad(get_square(i))) {
@@ -221,13 +226,18 @@ $(document).ready(
 					return;
 				}
 			}
-			$('#solved').disable(is_complete() == false);
+			if (is_complete() == false)  {
+				$('#solved').disable(true);
+				return;
+			}
+			theSudoku.solved = true;
+			$('#solved').disable(false);
 		}
 
 		function select_row(e) {
 			var name = e.currentTarget.title;
 			try {
-				var q = from_string(localStorage["keep " + name]);
+				var q = from_string(localStorage["sk " + name]);
 				theSudoku.name = name;
 				theSudoku.value = q;
 				theSudoku.guess = q.slice();
@@ -240,19 +250,20 @@ $(document).ready(
 		}
 
 		function build_list () {
-			for ( var i = 0; i < localStorage.length; i++) {
-				var s = localStorage.key(i);
-				if (s.indexOf("keep ") == 0) {
-					add_list_item(s.substring(s.indexOf(" ") + 1));
+			for ( var i = localStorage.length; i > localStorage.length; --i) {
+				var s = localStorage.key(i-1);
+				if (s.startsWith("sk ")) {
+					add_list_item(s.substring(3), localStorage[s]);
 				}
 			}
 		}
 		
-		function add_list_item(name) {
-			var solved = localStorage["solved " + name] ? "&check;"	: "";
+		function add_list_item(name, value) {
+			var solved = value.endsWith("Y") ? "&check;"	: "";
 			$("#items").append('<tr title="' + name + '"><td>' //
 					+ solved + '</td><td>' //
-					+ name + '</td></tr>' //
+					+ name + '</td><td>' //
+					+ value + '</td></tr>' //
 			);
 			$("tr:last").click(select_row);
 			if (hide && solved)
@@ -350,15 +361,14 @@ $(document).ready(
 			setMode("play");
 		});
 		$("#delete").click(function(e) {
-			delete localStorage["keep " + theSudoku.name];
-			delete localStorage["solved " + theSudoku.name];
+			delete localStorage["sk " + theSudoku.name];
 			this.disabled = true;
 		});
 		
 		$("#title").keyup(function (p) {
-			$('#store, #delete').disable(true);
+			$('#delete').disable(true);
 			if (title_t.value != "") {
-				$('#delete').disable("keep " + title_t.value in localStorage);
+				$('#delete').disable("sk " + title_t.value in localStorage);
 			}
 		});
 		$("#inctitle").click(function (e) {inc_title(1);});
@@ -366,11 +376,14 @@ $(document).ready(
 
 		// Play mode actions
 		$("#solved").click(function(e) {
-			localStorage["solved " + theSudoku.name] = "Y";
+			theSudoku.solved = true;
+			localStorage["sk " + theSudoku.name] = as_string(theSudoku.value, theSudoku.solved);
 			setMode("edit");
 		});
 		$("#reset").click(function(e) {
-			theSudoku.guess = theSudoku.value;
+			change_digit(null);
+			theSudoku.guess = theSudoku.value.slice();
+			theSudoku.solved = false;
 			mode = '';
 			setMode('play');
 		});
