@@ -23,6 +23,7 @@ $(document).ready(
 		var hide;
 		
 		var mode;
+		
 		function setMode(m) {
 			if (mode != m) {
 				$('button, table, a').hide();
@@ -31,7 +32,7 @@ $(document).ready(
 					$('#setup, #choices, #new, #solve, #delete, #dectitle, #inctitle, #list').show();
 					$('div div').css("color", "red");
 					$('div div').each(function(i) {
-						$(this).text(theSudoku.value[i])
+						$(this).text(theSudoku.guess[i] != 0 ? theSudoku.guess[i] : ' ');
 					});
 					change_digit(null);
 					break;
@@ -184,30 +185,26 @@ $(document).ready(
 		
 		function check_guess (n) {
 			theSudoku.solved = false;
+			$('#solved').disable(true);
 			if (n != null) {
 				if (theSudoku.guess[n] == 0) {
-					$('#solved').disable(true);
 					return;
 				} 
 				if (is_bad(get_row(Math.floor((n % 9)/3)+Math.floor(n/27)*3)) 
 						|| is_bad(get_column(n % 9)) 
 						|| is_bad(get_square(Math.floor(n/9)))) {
-					$('#solved').disable(true);
 					return;
 				}
 				if (is_complete() == false)  {
-					$('#solved').disable(true);
 					return;
 				}
 			}
 			for (var i=0; i<9; i++) {
 				if (is_bad(get_row(i)) || is_bad(get_column(i)) || is_bad(get_square(i))) {
-					$('#solved').disable(true);
 					return;
 				}
 			}
 			if (is_complete() == false)  {
-				$('#solved').disable(true);
 				return;
 			}
 			theSudoku.solved = true;
