@@ -58,6 +58,23 @@ $(document).ready(
 				mode = m;
 			}
 		}
+		
+		function as_string(value) {
+			var s = '';
+			for (var i=0; i<81; i++) {
+				s += value[i] == ' ' ? '0' : value[i];
+			}
+			return s;
+		}
+		
+		function from_string(s) {
+			var value = [];
+			for (var i=0; i<81; i++) {
+				value[i] = s.charAt(i);
+				if (value[i] == '0') value[i] = ' ';
+			}
+			return value;
+		}
 
 		function loadFromStorage() {
 			if ("sudoku" in localStorage) {
@@ -81,7 +98,7 @@ $(document).ready(
 		var dayOfWeek = "Sunday Monday Tuesday Wednesday Thursday Friday Saturday".split(" ");
 		function updateLink() {
 			var href = document.URL.split("?")[0] + "?" + 
-				encodeURI(theSudoku.name) + "&" + encodeURI(JSON.stringify(theSudoku.value));
+				encodeURI(theSudoku.name) + "&" + as_string(theSudoku.value);
 			var mail_a = document.getElementById("mail");
 			if (mail_a != null) {
 				var day = dayOfWeek[new Date().getDay()];
@@ -102,7 +119,7 @@ $(document).ready(
 		}
 
 		function store() {
-			var value = JSON.stringify(theSudoku.value);
+			var value = as_string(theSudoku.value);
 			if (theSudoku.name != title_t.value) {
 				if (theSudoku.name != "" && localStorage["keep " + theSudoku.name] == value) {
 					delete localStorage["keep " + theSudoku.name];
@@ -210,7 +227,7 @@ $(document).ready(
 		function select_row(e) {
 			var name = e.currentTarget.title;
 			try {
-				var q = JSON.parse(localStorage["keep " + name]);
+				var q = from_string(localStorage["keep " + name]);
 				theSudoku.name = name;
 				theSudoku.value = q;
 				theSudoku.guess = q.slice();
@@ -364,6 +381,21 @@ $(document).ready(
 			build_list();
 			setMode("list");
 		});
+		
+		// Initialize quip from URL query if present
+		if (document.URL.indexOf("?") > 0) {
+			var query = document.URL.substring(document.URL.indexOf("?")+1);
+			var pos = query.indexOf("&");
+			if (pos > 0) {
+				theSudoku.name = decodeURI(query.substring(0, pos));
+				theSudoku.value = from_string(query.substring(pos+1));
+				theSudoku.guess = theSudoku.value.slice();
+				title_t.value = theSudoku.name;
+				save();
+				setMode('play');
+				return;
+			}
+		}
 
 		setMode("edit");
 
