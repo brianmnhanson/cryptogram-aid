@@ -283,10 +283,10 @@ $(document).ready(
 			return value;
 		}
 		
-		function set_cell_value(theCell, digit) {
+		function set_cell_value(c, digit) {
 			var value = get_digit(digit);
-			$(theCell).text(value == 0 ? ' ' : value);
-			theSudoku.guess[theCell.id] = value;
+			$(c).text(value == 0 ? ' ' : value);
+			theSudoku.guess[c.id] = value;
 			return value;
 		}
 		
