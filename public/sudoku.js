@@ -26,7 +26,7 @@ $(document).ready(
 		
 		function setMode(m) {
 			if (mode != m) {
-				$('button, table, a').hide();
+				$('button, table, a, checkbox').hide();
 				switch (m) {
 				case 'edit': 
 					$('#setup, #choices, #new, #solve, #dectitle, #inctitle, #list').show();
@@ -49,7 +49,7 @@ $(document).ready(
 					change_cell(null);
 					break;
 				case 'list':
-					$('#new, #solve, #edit').show();
+					$('#new, #solve, #edit, #all').show();
 					$('#setup, #choices').hide();
 					$('table').show();
 					build_list();
@@ -228,7 +228,7 @@ $(document).ready(
 		}
 
 		function build_list () {
-			$("tr").remove();
+			$("tr:gt(0)").remove();
 			for ( var i = localStorage.length; i > 0; --i) {
 				var s = localStorage.key(i-1);
 				if (s.startsWith("sk ")) {
