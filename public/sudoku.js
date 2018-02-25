@@ -29,10 +29,10 @@ $(document).ready(
 				$('button, table, a').hide();
 				switch (m) {
 				case 'edit': 
-					$('#setup, #choices, #new, #solve, #delete, #dectitle, #inctitle, #list').show();
+					$('#setup, #choices, #new, #solve, #dectitle, #inctitle, #list').show();
 					$('div div').css("color", "red");
 					$('div div').each(function(i) {
-						$(this).text(theSudoku.guess[i] != 0 ? theSudoku.guess[i] : ' ');
+						$(this).text(theSudoku.value[i] == 0 ? ' ' : theSudoku.value[i]);
 					});
 					change_digit(null);
 					break;
@@ -41,7 +41,7 @@ $(document).ready(
 					check_guess();
 					$('div div').css("color", "black");
 					$('div div').each(function(i) {
-						$(this).text(theSudoku.guess[i] != 0 ? theSudoku.guess[i] : ' ');
+						$(this).text(theSudoku.guess[i] == 0 ? ' ' : theSudoku.guess[i]);
 						if (theSudoku.value[i] != 0) {
 							$(this).css("color", "red");
 						}
