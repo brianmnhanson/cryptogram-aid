@@ -38,7 +38,6 @@ $(document).ready(
 					break;
 				case 'play':
 					$('#setup, #choices, #new, #solved, #edit, #reset, #list, a').show();
-					check_guess();
 					$('div div').css("color", "black");
 					$('div div').each(function(i) {
 						$(this).text(theSudoku.guess[i] == 0 ? ' ' : theSudoku.guess[i]);
@@ -46,7 +45,8 @@ $(document).ready(
 							$(this).css("color", "red");
 						}
 					});
-					change_cell(null);
+					highlight_cell(null);
+					check_guess();
 					break;
 				case 'list':
 					$('#new, #solve, #edit, #all').show();
@@ -249,7 +249,7 @@ $(document).ready(
 		
 		var digit;
 		var theCell;
-		function change_cell(c) {
+		function highlight_cell(c) {
 			if (theCell != null) $(theCell).css('background', theCell.save_background);
 			theCell = c;
 			if (c != null) $(c).css('background', 'lightgray');
@@ -283,16 +283,19 @@ $(document).ready(
 			return value;
 		}
 		
+		function set_cell_value(theCell, digit) {
+			var value = get_digit(digit);
+			$(theCell).text(value == 0 ? ' ' : value);
+			theSudoku.guess[theCell.id] = value;
+			return value;
+		}
+		
 		// select a digit
 		$('li').click(function(li) {
 			if (mode == 'edit') {
 				if (theCell == null) return;
-				var value = get_digit(li.target);
-				$(theCell).text(value);
-				var id = theCell.id;
-				theSudoku.guess[id] = value;
-				theSudoku.value[id] = value;
-				change_cell(document.getElementById(parseInt(id)+1));
+				theSudoku.value[theCell.id] = set_cell_value(theCell, li.target);
+				highlight_cell(document.getElementById(parseInt(theCell.id)+1));
 			} else {
 				change_digit(li.target);
 			}
@@ -301,13 +304,9 @@ $(document).ready(
 		// Put the selected digit in the clicked cell
 		$('div div').click(function(div) {
 			if (mode == 'edit') {
-				change_cell(div.target);
-				return;
-			}
-			if (theSudoku.value[div.target.id] == 0 && digit != null) {
-				var value = get_digit(digit);
-				theSudoku.guess[div.target.id] = value;
-				$(div.target).text(value);
+				highlight_cell(div.target);
+			} else if (theSudoku.value[div.target.id] == 0 && digit != null) {
+				set_cell_value(div.target, digit);
 				if (value != 0) $(div.target).css('background', 'lightgray')
 				check_guess(div.target.id);
 			}
@@ -328,7 +327,6 @@ $(document).ready(
 			theSudoku.guess = empty.slice();
 
 			title_t.value = theSudoku.name;
-			check_guess();
 
 			setMode("edit");
 		});
@@ -382,7 +380,6 @@ $(document).ready(
 				theSudoku.guess = theSudoku.value.slice();
 				title_t.value = theSudoku.name;
 				save();
-				check_guess();
 				setMode('play');
 				return;
 			}
