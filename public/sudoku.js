@@ -64,7 +64,7 @@ $(document).ready(
 		}
 		
 		function from_string(s) {
-			return s.substr(0, 81).split('');
+			return s.substr(0, 81).replace(/ /g, '0').split('');
 		}
 
 		function loadFromStorage() {
@@ -81,10 +81,9 @@ $(document).ready(
 					theSudoku.valid = false;
 				}
 				title_t.value = theSudoku.name;
+				check_guess();
 			}
 		}
-
-		loadFromStorage();
 		
 		var dayOfWeek = "Sunday Monday Tuesday Wednesday Thursday Friday Saturday".split(" ");
 		function updateLink() {
@@ -180,12 +179,15 @@ $(document).ready(
 		}
 		
 		function is_complete() {
-			return theSudoku.guess.indexOf(0) < 0;
+			return theSudoku.guess.indexOf("0") < 0;
 		}
 		
 		function check_guess (n) {
 			theSudoku.solved = false;
 			$('#solved').disable(true);
+			if (is_complete() == false)  {
+				return;
+			}
 			if (n != null) {
 				if (theSudoku.guess[n] == 0) {
 					return;
@@ -204,9 +206,6 @@ $(document).ready(
 					return;
 				}
 			}
-			if (is_complete() == false)  {
-				return;
-			}
 			theSudoku.solved = true;
 			$('#solved').disable(false);
 		}
@@ -223,7 +222,7 @@ $(document).ready(
 				return;
 			}
 			title_t.value = theSudoku.name;
-			$('#solved').disable(theSudoku.solved == false);
+			check_guess();
 
 			setMode("play");
 		}
@@ -329,6 +328,7 @@ $(document).ready(
 			theSudoku.guess = empty.slice();
 
 			title_t.value = theSudoku.name;
+			check_guess();
 
 			setMode("edit");
 		});
@@ -354,16 +354,15 @@ $(document).ready(
 
 		// Play mode actions
 		$("#solved").click(function(e) {
-			theSudoku.solved = true;
 			localStorage["sk " + theSudoku.name] = 
 				as_string(theSudoku.value, theSudoku.solved) + ";" + as_string(theSudoku.guess, false);
-			setMode("edit");
+			setMode("list");
 		});
 		$("#reset").click(function(e) {
 			change_digit(null);
 			theSudoku.guess = theSudoku.value.slice();
-			theSudoku.solved = false;
 			mode = '';
+			check_guess();
 			setMode('play');
 		});
 		$("#edit").click(function(e) {
@@ -383,9 +382,12 @@ $(document).ready(
 				theSudoku.guess = theSudoku.value.slice();
 				title_t.value = theSudoku.name;
 				save();
+				check_guess();
 				setMode('play');
 				return;
 			}
+		} else {
+			loadFromStorage();
 		}
 
 		setMode("edit");
