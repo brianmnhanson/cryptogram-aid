@@ -38,14 +38,15 @@ $(document).ready(
 					break;
 				case 'play':
 					$('#setup, #choices, #new, #solved, #edit, #save, #reset, #list, a').show();
-					$('div div').css("color", "black");
+					// clear color and background from sudoku cells
+					$('div div').css({color: '', background: ''}).text(' ');
+					// put the digits in the cells and make the starting values red
 					$('div div').each(function(i) {
-						$(this).text(theSudoku.guess[i] == 0 ? ' ' : theSudoku.guess[i]);
-						if (theSudoku.value[i] != 0) {
-							$(this).css("color", "red");
-						}
+						if (theSudoku.guess[i] != 0)
+							$(this).text(theSudoku.guess[i]);
 					});
-					highlight_cell(null);
+					$('div div').filter(i => theSudoku.value[i] != 0).css("color", "red");
+					theCell = null;
 					check_guess();
 					break;
 				case 'list':
@@ -250,18 +251,17 @@ $(document).ready(
 		var digit;
 		var theCell;
 		function highlight_cell(c) {
-			if (theCell != null) $(theCell).css('background', theCell.save_background);
+			if (theCell != null) 
+				$(theCell).css('background', '');
+			if (c != null) 
+				$(c).css('background', 'lightgray');
 			theCell = c;
-			if (c != null) $(c).css('background', 'lightgray');
 		}
 		function change_digit(d) {
 			if (digit != null) {
 				$(digit).removeClass('theDigit');
-				var v = get_digit(digit);
-				if (v != 0) {
-					$('div div').each(function(i) {
-						if (theSudoku.guess[i] == v) $(this).css('background', this.save_background);
-					});
+				if (get_digit(digit) != 0) {
+					$('div div').css('background', '');
 				}
 			}
 			digit = d;
@@ -269,9 +269,7 @@ $(document).ready(
 				$(d).addClass('theDigit');
 				var v = get_digit(d);
 				if (v != 0) {
-					$('div div').each(function(i) {
-						if (theSudoku.guess[i] == v) $(this).css('background', 'lightgray');
-					});
+					$('div div').filter(i => theSudoku.guess[i] == v).css('background', 'lightgray');
 				}
 			}
 		}
@@ -307,7 +305,8 @@ $(document).ready(
 				highlight_cell(div.target);
 			} else if (theSudoku.value[div.target.id] == 0 && digit != null) {
 				var value = set_cell_value(div.target, digit);
-				if (value != 0) $(div.target).css('background', 'lightgray')
+				if (value != 0) 
+					$(div.target).css('background', 'lightgray')
 				check_guess(div.target.id);
 			}
 		});
@@ -316,9 +315,7 @@ $(document).ready(
 		$('div div').text('');
 		
 		// Assign an id for each cell 1-81 
-		$('div div').each(function(i) {
-			this.id = i; this.save_background = $(this).css('background')
-		})
+		$('div div').each(function(i) {	this.id = i })
 
 		// Global actions
 		$('#new').click(function(e) {
