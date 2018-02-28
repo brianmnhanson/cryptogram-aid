@@ -37,7 +37,7 @@ $(document).ready(
 					change_digit(null);
 					break;
 				case 'play':
-					$('#setup, #choices, #new, #solved, #edit, #reset, #list, a').show();
+					$('#setup, #choices, #new, #solved, #edit, #save, #reset, #list, a').show();
 					$('div div').css("color", "black");
 					$('div div').each(function(i) {
 						$(this).text(theSudoku.guess[i] == 0 ? ' ' : theSudoku.guess[i]);
@@ -306,7 +306,7 @@ $(document).ready(
 			if (mode == 'edit') {
 				highlight_cell(div.target);
 			} else if (theSudoku.value[div.target.id] == 0 && digit != null) {
-				set_cell_value(div.target, digit);
+				var value = set_cell_value(div.target, digit);
 				if (value != 0) $(div.target).css('background', 'lightgray')
 				check_guess(div.target.id);
 			}
@@ -332,7 +332,7 @@ $(document).ready(
 		});
 		
 		// Edit mode actions
-		$("#solve").click(function(e) {
+		$("#solve, #save").click(function(e) {
 			save();
 			setMode("play");
 		});

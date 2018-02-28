@@ -31,7 +31,7 @@ body {
     list-style: none;
 }
 #choices li {
-    font: 28pt courier;
+    font: 29pt Courier New;
 }
 h1 {
 	justify-self: right;
@@ -39,6 +39,7 @@ h1 {
 	text-orientation: upright;
 	writing-mode: vertical-lr;
 	align-self: center;
+    font: 32pt Georgia;
 }
 
 #setup {
@@ -54,15 +55,13 @@ h1 {
 }
 .zone {
 	display: grid;
-	grid-align-items: center;
-	grid-justify-items: center;
-	grid-template-rows: 50px 50px 50px;
-	grid-template-columns: 50px 50px 50px;
+	grid-template-rows: 52px 52px 52px;
+	grid-template-columns: 52px 52px 52px;
 	grid-gap: 2px;
 	background: grey;
 }
 .zone div {
-    font: 16pt courier;
+    font: 20pt Courier New;
 	padding: 15px;
 	font-weight: bold;
 	color: black;
@@ -74,7 +73,7 @@ h1 {
 	background: lightgreen;
 }
 a {
-    font: 12pt courier;
+    font: 12pt Georgia;
 }
 .theDigit {
 	background: lightblue;
@@ -110,9 +109,10 @@ th {
 		<button id="solve">Solve</button>
 		<button id="solved">Solved</button>
 		<button id="edit">Edit</button>
+		<button id="save">Save</button>
 		<button id="reset">Reset</button>
 		<button id="list">List</button>
-		<a id="mail" href="mailto:nobody">mail</a>
+		<a id="mail" href="mailto:nobody">Mail</a>
 	</div>
 	
     <section id="setup" class="content">
