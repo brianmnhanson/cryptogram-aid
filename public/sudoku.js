@@ -319,7 +319,10 @@ $(document).ready(
 
 		// Global actions
 		$('#new').click(function(e) {
-			theSudoku.name = "STrib " + new Date().toISOString().split("T")[0];
+			var today = new Date();
+			// remove the offset so that the ISO string will match the local date.
+			today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+			theSudoku.name = "STrib " + today.toISOString().slice(0, 10);
 			theSudoku.value = empty.slice();
 			theSudoku.guess = empty.slice();
 

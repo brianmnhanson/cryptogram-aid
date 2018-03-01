@@ -248,7 +248,10 @@ $(document)
 							title_t.value = decodeURI(query.substring(0, pos));
 						} else {
 							quip_ta.value = decodeURI(query);
-							title_t.value = "STrib " + new Date().toISOString().split("T")[0];
+							var today = new Date();
+							// remove the offset so that the ISO string will match the local date.
+							today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+							title_t.value = "STrib " + today.toISOString().slice(0, 10);
 						}
 						dict = {};
 						store();
