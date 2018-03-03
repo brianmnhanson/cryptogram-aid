@@ -6,7 +6,8 @@
         {
             "label": "deploy",
             "type": "shell",
-            "command": "deploy"
+            "command": "deploy",
+            "problemMatcher": []
         }
     ]
 }
