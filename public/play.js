@@ -36,6 +36,12 @@ $(document).ready(
 		var dayOfWeek = "Sunday Monday Tuesday Wednesday Thursday Friday Saturday".split(" ");
 		var dict = {};
 
+		// Check if the browser supports <canvas>
+		if (!puzzle.getContext) {
+			alert("This demo requires a browser that supports the <canvas> element.");
+			return;
+		}
+
 		function build_list() {
 			var keys = [];
 			for (var i = 0; i < localStorage.length; i++) {
@@ -49,8 +55,8 @@ $(document).ready(
 			for (var i = keys.length; i > 0; --i) {
 				var s = keys[i - 1];
 				var name = s.substring(5);
-				var value = localStorage[s].split(";")[0];
-				var solved = value.endsWith("Y") ? "&check;" : "";
+				var value = localStorage[s];
+				var solved = localStorage["solved " + name] ? "&check;" : "";
 				$("#items").append('<tr title="' + name + '"><td>' //
 					+ solved + '</td><td>' //
 					+ name + '</td><td>' //
@@ -63,7 +69,7 @@ $(document).ready(
 			}
 		}
 
-		function loadFromStorage() {
+		function restoreQuip() {
 			if ("quip" in localStorage) {
 				try {
 					var q = JSON.parse(localStorage["quip"]);
@@ -82,16 +88,7 @@ $(document).ready(
 			}
 		}
 
-		loadFromStorage();
-
-		function save() {
-			theQuip.value = quip_ta.value.toUpperCase();
-			theQuip.name = title_t.value;
-			localStorage["quip"] = JSON.stringify(theQuip, 0, 1);
-			quip_ta.value = theQuip.value;
-		}
-
-		function saveDict() {
+		function saveQuip() {
 			var key = letter;
 			for (var i = 0; i < alphabet.length; i++) {
 				var c = alphabet[i];
@@ -100,11 +97,15 @@ $(document).ready(
 				}
 			}
 			theQuip.key = key;
-			save();
+
+			theQuip.value = quip_ta.value.toUpperCase();
+			theQuip.name = title_t.value;
+			localStorage["quip"] = JSON.stringify(theQuip, 0, 1);
+			quip_ta.value = theQuip.value;
 		}
 
 		function setDictFromKey() {
-
+			dict = {};
 			if (theQuip.key.length > 1) {
 				var key = theQuip.key;
 				for (var i = 1; i < key.length; i += 2) {
@@ -191,13 +192,10 @@ $(document).ready(
 		}
 
 		function showPanel(p) {
-			$("#setup").hide();
-			$("#choose").hide();
-			$("#run").hide();
-			$("#load").hide();
+			$("body > div").hide();
 			if (p == "run") {
-				save();
 				setDictFromKey();
+				saveQuip();
 				repaintPuzzle();
 				$("#run").show();
 			} else if (p == "choose") {
@@ -239,33 +237,6 @@ $(document).ready(
 			}
 		}
 
-		// Check if the browser supports <canvas>
-		if (!puzzle.getContext) {
-			alert("This demo requires a browser that supports the <canvas> element.");
-			return;
-		}
-
-		// Initialize quip from URL query if present
-		if (document.URL.indexOf("?") > 0) {
-			var query = document.URL.substring(document.URL.indexOf("?") + 1);
-			var pos = query.indexOf("&");
-			if (pos > 0) {
-				quip_ta.value = decodeURI(query.substring(pos + 1));
-				title_t.value = decodeURI(query.substring(0, pos));
-			} else {
-				quip_ta.value = decodeURI(query);
-				var today = new Date();
-				// remove the offset so that the ISO string will match the local date.
-				today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
-				title_t.value = "STrib " + today.toISOString().slice(0, 10);
-			}
-			dict = {};
-			store();
-			saveDict();
-			updateLink();
-			localStorage["panel"] = "run";
-		}
-
 		// Global actions
 		$('button[name^="new"]').click(function (e) {
 			var date = new Date().toDateString();
@@ -277,7 +248,7 @@ $(document).ready(
 			quip_ta.value = theQuip.value;
 			dict = {};
 
-			saveDict();
+			saveQuip();
 			quip_ta.focus();
 			store_b.disabled = false;
 			showPanel("setup");
@@ -352,7 +323,7 @@ $(document).ready(
 		});
 		$("#reset").click(function (e) {
 			dict = {};
-			saveDict();
+			saveQuip();
 
 			repaintPuzzle();
 		});
@@ -385,7 +356,7 @@ $(document).ready(
 			char = lines[yField][xField];
 			if (char >= "A" && char <= "Z" && letter != char) {
 				updatePuzzle(char);
-				saveDict();
+				saveQuip();
 			}
 
 		});
@@ -415,7 +386,7 @@ $(document).ready(
 
 				dict[letter] = char;
 				dict[char] = letter;
-				saveDict();
+				saveQuip();
 				changeSub(char, drops);
 
 			} else if (char == "*") {
@@ -425,7 +396,7 @@ $(document).ready(
 					delete dict[dict[letter]];
 					delete dict[letter];
 				}
-				saveDict();
+				saveQuip();
 				changeSub(" ", drops);
 			}
 
@@ -620,6 +591,29 @@ $(document).ready(
 			}
 
 			$("#solved")[0].disabled = !complete();
+		}
+
+		// Initialize quip from URL query if present
+		if (document.URL.indexOf("?") > 0) {
+			var query = document.URL.substring(document.URL.indexOf("?") + 1);
+			var pos = query.indexOf("&");
+			if (pos > 0) {
+				quip_ta.value = decodeURI(query.substring(pos + 1));
+				title_t.value = decodeURI(query.substring(0, pos));
+			} else {
+				quip_ta.value = decodeURI(query);
+				var today = new Date();
+				// remove the offset so that the ISO string will match the local date.
+				today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+				title_t.value = "STrib " + today.toISOString().slice(0, 10);
+			}
+			dict = {};
+			saveQuip();
+			updateLink();
+			localStorage["panel"] = "run";
+
+		} else {
+			restoreQuip();
 		}
 
 		showPanel(localStorage["panel"]);

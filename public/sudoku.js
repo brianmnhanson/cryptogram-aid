@@ -31,16 +31,16 @@ $(document).ready(
 				switch (m) {
 					case 'edit':
 						$('#setup, #choices, #new, #solve, #dectitle, #inctitle, #list').show();
-						$('div div').css("color", "red");
-						$('div div').each(function (i) {
+						$("div > div").css("color", "red");
+						$("div > div").each(function (i) {
 							$(this).text(theSudoku.value[i] == 0 ? ' ' : theSudoku.value[i]);
 						});
 						change_digit(null);
 						break;
 					case 'play':
 						$('#setup, #choices, #new, #solved, #edit, #save, #reset, #list, a').show();
-						$('div div').css("color", "black");
-						$('div div').each(function (i) {
+						$("div > div").css("color", "black");
+						$("div > div").each(function (i) {
 							$(this).text(theSudoku.guess[i] == 0 ? ' ' : theSudoku.guess[i]);
 							if (theSudoku.value[i] != 0) {
 								$(this).css("color", "red");
@@ -284,7 +284,7 @@ $(document).ready(
 		function change_digit(d) {
 			if (digit == d)
 				return;
-				
+
 			$('.theDigit').removeClass('theDigit');
 			if (d != null) {
 				$(d).addClass('theDigit');
@@ -293,12 +293,12 @@ $(document).ready(
 			
 			var v = get_digit(digit);
 			if (v != 0) {
-				$('div div').each(function (i) {
+				$("div > div").each(function (i) {
 					$(this).css('background', theSudoku.guess[i] == v ? 'lightgray' : "");
 				});
 			}
 			else {
-				$('div div').css('background', '');
+				$("div > div").css('background', '');
 			}
 		}
 
@@ -310,7 +310,7 @@ $(document).ready(
 		}
 
 		// select a digit
-		$("#choices li").click(function (li) {
+		$("#choices > li").click(function (li) {
 			if (mode == 'edit') {
 				if (theCell == null) return;
 				theSudoku.value[theCell.id] = set_cell_value(theCell, li.target);
@@ -319,12 +319,12 @@ $(document).ready(
 				change_digit(li.target);
 			}
 		});
-		$("#choices li").each(function (i) {
+		$("#choices > li").each(function (i) {
 			this.id = "d" + this.innerText
 		});
 
 		// Put the selected digit in the clicked cell
-		$('div div').click(function (div) {
+		$("div > div").click(function (div) {
 			if (mode == 'edit') {
 				highlight_cell(div.target);
 			} else if (theSudoku.value[div.target.id] == 0 && digit != null) {
@@ -335,10 +335,10 @@ $(document).ready(
 		});
 
 		// Clear all the cells
-		$('div div').text('');
+		$("div > div").text('');
 
 		// Assign an id for each cell 1-81 
-		$('div div').each(function (i) { this.id = i })
+		$("div > div").each(function (i) { this.id = i })
 
 		// Global actions
 		$('#new').click(function (e) {
