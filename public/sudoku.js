@@ -65,7 +65,7 @@ $(document).ready(
 		}
 
 		function from_string(s) {
-			return s.substr(0, 81).replace(/ /g, '0').split('');
+			return s.substr(0, 81).replace(/ /g, '0').split('').map(c => parseInt(c));
 		}
 
 		function loadFromStorage() {
@@ -235,7 +235,7 @@ $(document).ready(
 			}
 			title_t.value = theSudoku.name;
 			check_guess();
-
+			change_digit(null);
 			setMode("play");
 		}
 
@@ -268,30 +268,9 @@ $(document).ready(
 		var digit;
 		var theCell;
 		function highlight_cell(c) {
-			if (theCell != null) $(theCell).css('background', theCell.save_background);
+			if (theCell != null) $(theCell).css('background', '');
 			theCell = c;
 			if (c != null) $(c).css('background', 'lightgray');
-		}
-		function change_digit(d) {
-			if (digit != null) {
-				$(digit).removeClass('theDigit');
-				var v = get_digit(digit);
-				if (v != 0) {
-					$('div div').each(function (i) {
-						if (theSudoku.guess[i] == v) $(this).css('background', this.save_background);
-					});
-				}
-			}
-			digit = d;
-			if (d != null) {
-				$(d).addClass('theDigit');
-				var v = get_digit(d);
-				if (v != 0) {
-					$('div div').each(function (i) {
-						if (theSudoku.guess[i] == v) $(this).css('background', 'lightgray');
-					});
-				}
-			}
 		}
 
 		function get_digit(d) {
@@ -300,6 +279,27 @@ $(document).ready(
 			var value = d.innerText;
 			if (value == '*') value = 0;
 			return value;
+		}
+
+		function change_digit(d) {
+			if (digit == d)
+				return;
+				
+			$('.theDigit').removeClass('theDigit');
+			if (d != null) {
+				$(d).addClass('theDigit');
+			}
+			digit = d;
+			
+			var v = get_digit(digit);
+			if (v != 0) {
+				$('div div').each(function (i) {
+					$(this).css('background', theSudoku.guess[i] == v ? 'lightgray' : "");
+				});
+			}
+			else {
+				$('div div').css('background', '');
+			}
 		}
 
 		function set_cell_value(c, digit) {
@@ -338,9 +338,7 @@ $(document).ready(
 		$('div div').text('');
 
 		// Assign an id for each cell 1-81 
-		$('div div').each(function (i) {
-			this.id = i; this.save_background = $(this).css('background')
-		})
+		$('div div').each(function (i) { this.id = i })
 
 		// Global actions
 		$('#new').click(function (e) {
