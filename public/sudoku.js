@@ -1,69 +1,69 @@
 jQuery.fn.extend({
-disable: function (state) {
-    return this.each(function () {
-        var $this = jQuery(this);
-        if ($this.is('input, button'))
-            this.disabled = state;
-        else if ($this.is('select') && state)
-            $this.attr('disabled', 'disabled');
-        else if ($this.is('select') && !state)
-            $this.removeAttr('disabled');
-        else
-            $this.toggleClass('disabled', state);
-    });
-}});
+	disable: function (state) {
+		return this.each(function () {
+			var $this = jQuery(this);
+			if ($this.is('input, button'))
+				this.disabled = state;
+			else if ($this.is('select') && state)
+				$this.attr('disabled', 'disabled');
+			else if ($this.is('select') && !state)
+				$this.removeAttr('disabled');
+			else
+				$this.toggleClass('disabled', state);
+		});
+	}
+});
 $(document).ready(
-	function() {
-			
+	function () {
+
 		var title_t = document.getElementById("title");
 
 		var empty = Array(81).fill(0);
 
-		var theSudoku = {value: empty.slice(), guess: empty.slice(), name: '', solved: false};
+		var theSudoku = { value: empty.slice(), guess: empty.slice(), name: '', solved: false };
 		var hide;
-		
+
 		var mode;
-		
+
 		function setMode(m) {
 			if (mode != m) {
 				$('button, table, a, checkbox').hide();
 				switch (m) {
-				case 'edit': 
-					$('#setup, #choices, #new, #solve, #dectitle, #inctitle, #list').show();
-					$('div div').css("color", "red");
-					$('div div').each(function(i) {
-						$(this).text(theSudoku.value[i] == 0 ? ' ' : theSudoku.value[i]);
-					});
-					change_digit(null);
-					break;
-				case 'play':
-					$('#setup, #choices, #new, #solved, #edit, #save, #reset, #list, a').show();
-					// clear color and background from sudoku cells
-					$('div div').css({color: '', background: ''}).text(' ');
-					// put the digits in the cells and make the starting values red
-					$('div div').each(function(i) {
-						if (theSudoku.guess[i] != 0)
-							$(this).text(theSudoku.guess[i]);
-					});
-					$('div div').filter(i => theSudoku.value[i] != 0).css("color", "red");
-					theCell = null;
-					check_guess();
-					break;
-				case 'list':
-					$('#new, #solve, #edit, #all').show();
-					$('#setup, #choices').hide();
-					$('table').show();
-					build_list();
-					break;
+					case 'edit':
+						$('#setup, #choices, #new, #solve, #dectitle, #inctitle, #list').show();
+						$('div div').css("color", "red");
+						$('div div').each(function (i) {
+							$(this).text(theSudoku.value[i] == 0 ? ' ' : theSudoku.value[i]);
+						});
+						change_digit(null);
+						break;
+					case 'play':
+						$('#setup, #choices, #new, #solved, #edit, #save, #reset, #list, a').show();
+						$('div div').css("color", "black");
+						$('div div').each(function (i) {
+							$(this).text(theSudoku.guess[i] == 0 ? ' ' : theSudoku.guess[i]);
+							if (theSudoku.value[i] != 0) {
+								$(this).css("color", "red");
+							}
+						});
+						highlight_cell(null);
+						check_guess();
+						break;
+					case 'list':
+						$('#new, #solve, #edit, #all').show();
+						$('#setup, #choices').hide();
+						$('table').show();
+						build_list();
+						break;
 				}
 				mode = m;
 			}
 		}
-		
+
 		function as_string(value, solved) {
-			return value.join('') + (solved?'Y':'N');
+			return value.join('') + (solved ? 'Y' : 'N');
 		}
-		
+
 		function from_string(s) {
 			return s.substr(0, 81).replace(/ /g, '0').split('');
 		}
@@ -85,10 +85,10 @@ $(document).ready(
 				check_guess();
 			}
 		}
-		
+
 		var dayOfWeek = "Sunday Monday Tuesday Wednesday Thursday Friday Saturday".split(" ");
 		function updateLink() {
-			var href = document.URL.split("?")[0] + "?" + 
+			var href = document.URL.split("?")[0] + "?" +
 				encodeURI(theSudoku.name) + "&" + as_string(theSudoku.value, false);
 			var mail_a = document.getElementById("mail");
 			if (mail_a != null) {
@@ -98,7 +98,7 @@ $(document).ready(
 				var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
 				var mail = iOS ? "googlegmail:///co" : "mailto:";
 				mail_a.href = mail + "?"
-					+ "subject=" + encodeURIComponent(day+"'s sudoku")
+					+ "subject=" + encodeURIComponent(day + "'s sudoku")
 					+ "&body=" + encodeURIComponent(href);
 			}
 		}
@@ -124,11 +124,12 @@ $(document).ready(
 			$('#delete').disable(false);
 		}
 		function inc_title(n) {
+
 			var v = /\d+-\d+-\d+$/g.exec(title_t.value);
 			if (v) {
 				var d = new Date(v[0]);
-				d.setTime(d.getTime() + n * 24*3600000);
-				title_t.value = "STrib " + d.toISOString().split("T")[0];
+				d.setTime(d.getTime() + n * 24 * 3600000);
+				title_t.value = "STrib " + d.toISOString().slice(0, 10);
 				$('#delete').disable(true);
 				return;
 			}
@@ -144,65 +145,75 @@ $(document).ready(
 				return;
 			}
 		}
-		
-		function get_row (n) {
+
+		function get_row(n) {
 			var value = Array(10).fill(0);
-			var s = Math.floor(s/3)*3*9 + (n % 3) * 3;
-			for (i = 0; i<3; i++ ) {
-				for (j=0; j<3; j++) {
-					value[theSudoku.guess[s+i*9 + j]]+=1;
+			var s = Math.floor(s / 3) * 3 * 9 + (n % 3) * 3;
+			for (i = 0; i < 3; i++) {
+				for (j = 0; j < 3; j++) {
+					value[theSudoku.guess[s + i * 9 + j]] += 1;
 				}
 			}
 			return value.slice(1);
 		}
-		
-		function get_column (n) {
+
+		function get_column(n) {
 			var value = Array(10).fill(0);
-			var s = Math.floor(s/3)*9 + (n % 3) * 3;
-			for (i = 0; i<3; i++ ) {
-				for (j=0; j<3; j++) {
-					value[theSudoku.guess[s+i*9+j*3]]+=1;
+			var s = Math.floor(s / 3) * 9 + (n % 3) * 3;
+			for (i = 0; i < 3; i++) {
+				for (j = 0; j < 3; j++) {
+					value[theSudoku.guess[s + i * 9 + j * 3]] += 1;
 				}
 			}
 			return value.slice(1);
 		}
-		
-		function get_square (n) {
+
+		function get_square(n) {
 			var value = Array(10).fill(0);
-			for (i = 0; i<9; i++ ) {
-				value[theSudoku.guess[n*9 + i]]+=1;
+			for (i = 0; i < 9; i++) {
+				value[theSudoku.guess[n * 9 + i]] += 1;
 			}
 			return value.slice(1);
 		}
-		
+
+		function found9(n) {
+			var count = 0;
+			for (i = 0; i < 81; i++) {
+				if (theSudoku.guess[i] == n) count += 1;
+			}
+			return count == 9;
+		}
+
+
 		function is_bad(v) {
 			return v.find(n => n > 1) >= 0;
 		}
-		
+
 		function is_complete() {
-			return theSudoku.guess.indexOf("0") < 0;
+			return theSudoku.guess.indexOf(0) < 0;
 		}
-		
-		function check_guess (n) {
+
+		function check_guess(n) {
 			theSudoku.solved = false;
 			$('#solved').disable(true);
-			if (is_complete() == false)  {
+			
+			var counts = Array(10).fill(0);
+			for (i = 0; i < 81; i++) {
+				counts[theSudoku.guess[i]]++;
+			}
+			for (i = 1; i < counts.length; i++) {
+				$("#d"+i).css("color", counts[i]>8 ? "red" : "")
+			}
+			if (counts[0] > 1)
 				return;
-			}
 			if (n != null) {
-				if (theSudoku.guess[n] == 0) {
-					return;
-				} 
-				if (is_bad(get_row(Math.floor((n % 9)/3)+Math.floor(n/27)*3)) 
-						|| is_bad(get_column(n % 9)) 
-						|| is_bad(get_square(Math.floor(n/9)))) {
-					return;
-				}
-				if (is_complete() == false)  {
+				if (is_bad(get_row(Math.floor((n % 9) / 3) + Math.floor(n / 27) * 3))
+					|| is_bad(get_column(n % 9))
+					|| is_bad(get_square(Math.floor(n / 9)))) {
 					return;
 				}
 			}
-			for (var i=0; i<9; i++) {
+			for (var i = 0; i < 9; i++) {
 				if (is_bad(get_row(i)) || is_bad(get_column(i)) || is_bad(get_square(i))) {
 					return;
 				}
@@ -228,40 +239,47 @@ $(document).ready(
 			setMode("play");
 		}
 
-		function build_list () {
+		function build_list() {
+			var keys = [];
+			for (var i = 0; i < localStorage.length; i++) {
+				var s = localStorage.key(i);
+				if (s.startsWith("sk ")) 
+					keys.push(s);
+			}
 			$("tr:gt(0)").remove();
-			for ( var i = localStorage.length; i > 0; --i) {
-				var s = localStorage.key(i-1);
-				if (s.startsWith("sk ")) {
-					var value = localStorage[s].split(";")[0];
-					var name = s.substring(3);
-					var solved = value.endsWith("Y") ? "&check;"	: "";
-					$("#items").append('<tr title="' + name + '"><td>' //
-							+ solved + '</td><td>' //
-							+ name + '</td><td>' //
-							+ value + '</td></tr>' //
-					);
-					$("tr:last").click(select_row);
-					if (hide && solved)
-						$("tr:last").hide();
+			keys = keys.sort();
+			for (var i = keys.length; i > 0; --i) {
+				var s = keys[i-1];
+				var value = localStorage[s].split(";")[0];
+				var name = s.substring(3);
+				var solved = value.endsWith("Y") ? "&check;" : "";
+				$("#items").append('<tr title="' + name + '"><td>' //
+					+ solved + '</td><td>' //
+					+ name + '</td><td>' //
+					+ value + '</td></tr>' //
+				)
+				$("tr:last").click(select_row);
+				if (hide && solved) {
+					$("tr:last").hide();
 				}
 			}
 		}
-		
+
 		var digit;
 		var theCell;
 		function highlight_cell(c) {
-			if (theCell != null) 
-				$(theCell).css('background', '');
-			if (c != null) 
-				$(c).css('background', 'lightgray');
+			if (theCell != null) $(theCell).css('background', theCell.save_background);
 			theCell = c;
+			if (c != null) $(c).css('background', 'lightgray');
 		}
 		function change_digit(d) {
 			if (digit != null) {
 				$(digit).removeClass('theDigit');
-				if (get_digit(digit) != 0) {
-					$('div div').css('background', '');
+				var v = get_digit(digit);
+				if (v != 0) {
+					$('div div').each(function (i) {
+						if (theSudoku.guess[i] == v) $(this).css('background', this.save_background);
+					});
 				}
 			}
 			digit = d;
@@ -269,10 +287,13 @@ $(document).ready(
 				$(d).addClass('theDigit');
 				var v = get_digit(d);
 				if (v != 0) {
-					$('div div').filter(i => theSudoku.guess[i] == v).css('background', 'lightgray');
+					$('div div').each(function (i) {
+						if (theSudoku.guess[i] == v) $(this).css('background', 'lightgray');
+					});
 				}
 			}
 		}
+
 		function get_digit(d) {
 			if (d == null)
 				return 0;
@@ -280,47 +301,50 @@ $(document).ready(
 			if (value == '*') value = 0;
 			return value;
 		}
-		
+
 		function set_cell_value(c, digit) {
 			var value = get_digit(digit);
 			$(c).text(value == 0 ? ' ' : value);
 			theSudoku.guess[c.id] = value;
 			return value;
 		}
-		
+
 		// select a digit
-		$('li').click(function(li) {
+		$("#choices li").click(function (li) {
 			if (mode == 'edit') {
 				if (theCell == null) return;
 				theSudoku.value[theCell.id] = set_cell_value(theCell, li.target);
-				highlight_cell(document.getElementById(parseInt(theCell.id)+1));
+				highlight_cell(document.getElementById(parseInt(theCell.id) + 1));
 			} else {
 				change_digit(li.target);
 			}
 		});
-		
+		$("#choices li").each(function (i) {
+			this.id = "d" + this.innerText
+		});
+
 		// Put the selected digit in the clicked cell
-		$('div div').click(function(div) {
+		$('div div').click(function (div) {
 			if (mode == 'edit') {
 				highlight_cell(div.target);
 			} else if (theSudoku.value[div.target.id] == 0 && digit != null) {
 				var value = set_cell_value(div.target, digit);
-				if (value != 0) 
-					$(div.target).css('background', 'lightgray')
+				if (value != 0) $(div.target).css('background', 'lightgray')
 				check_guess(div.target.id);
 			}
 		});
-		
+
 		// Clear all the cells
 		$('div div').text('');
-		
+
 		// Assign an id for each cell 1-81 
-		$('div div').each(function(i) {	this.id = i })
+		$('div div').each(function (i) {
+			this.id = i; this.save_background = $(this).css('background')
+		})
 
 		// Global actions
-		$('#new').click(function(e) {
+		$('#new').click(function (e) {
 			var today = new Date();
-			// remove the offset so that the ISO string will match the local date.
 			today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
 			theSudoku.name = "STrib " + today.toISOString().slice(0, 10);
 			theSudoku.value = empty.slice();
@@ -330,53 +354,49 @@ $(document).ready(
 
 			setMode("edit");
 		});
-		
+
 		// Edit mode actions
-		$("#solve, #save").click(function(e) {
+		$("#solve, #save").click(function (e) {
 			save();
 			setMode("play");
 		});
-		$("#delete").click(function(e) {
+		$("#delete").click(function (e) {
 			delete localStorage["sk " + theSudoku.name];
 			this.disabled = true;
 		});
-		
+
 		$("#title").keyup(function (p) {
 			$('#delete').disable(true);
 			if (title_t.value != "") {
 				$('#delete').disable("sk " + title_t.value in localStorage);
 			}
 		});
-		$("#inctitle").click(function (e) {inc_title(1);});
-		$("#dectitle").click(function (e) {inc_title(-1);});
+		$("#inctitle").click(e => inc_title(1));
+		$("#dectitle").click(e => inc_title(-1));
 
 		// Play mode actions
-		$("#solved").click(function(e) {
-			localStorage["sk " + theSudoku.name] = 
+		$("#solved").click(function (e) {
+			localStorage["sk " + theSudoku.name] =
 				as_string(theSudoku.value, theSudoku.solved) + ";" + as_string(theSudoku.guess, false);
 			setMode("list");
 		});
-		$("#reset").click(function(e) {
+		$("#reset").click(function (e) {
 			change_digit(null);
 			theSudoku.guess = theSudoku.value.slice();
 			mode = '';
 			check_guess();
 			setMode('play');
 		});
-		$("#edit").click(function(e) {
-			setMode("edit");
-		});
-		$("#list").click(function(e) {
-			setMode("list");
-		});
-		
+		$("#edit").click(e => setMode("edit"));
+		$("#list").click(e => setMode("list"));
+
 		// Initialize quip from URL query if present
 		if (document.URL.indexOf("?") > 0) {
-			var query = document.URL.substring(document.URL.indexOf("?")+1);
+			var query = document.URL.substring(document.URL.indexOf("?") + 1);
 			var pos = query.indexOf("&");
 			if (pos > 0) {
 				theSudoku.name = decodeURI(query.substring(0, pos));
-				theSudoku.value = from_string(query.substring(pos+1));
+				theSudoku.value = from_string(query.substring(pos + 1));
 				theSudoku.guess = theSudoku.value.slice();
 				title_t.value = theSudoku.name;
 				save();

@@ -1,71 +1,86 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title> Cryptogram Aid </title>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script type="text/javascript" src="play.js"></script>
-<style>
-body {
-	display: grid;
-	justify-items: center;
-	background: #efefef;
-}
-.content {
-	display: grid;
-}
-#puzzle {
-	background: white;
-	padding: 5px;
-}
-#setup {
-	justify-items: center;
-	align-items: center;
-	grid-template-rows: 1fr 4fr 1fr
-}
-#choose, #load {
-	justify-items: center;
-	align-items: center;
-	grid-template-rows: 1fr 6fr
-}
-#run {
-	justify-items: center;
-	align-items: center;
-	grid-template-rows: 1fr 3fr 1fr
-	grid-template-columns: 1fr;
-	grid-row-gap: 1em;
-}
-div {
-    font: 16pt courier;
-}
-a {
-    font: 12pt courier;
-}
-textarea {
-    font: 14pt courier;
-}
-table {
-    font: 14pt courier;
-}
-canvas {
-	display: block;
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-}
-selection {
-	height: 50px;
-}
+<html>
 
-</style>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title> Cryptogram Aid </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="play.js"></script>
+    <style>
+        body {
+            display: grid;
+            justify-items: center;
+            background: #efefef;
+        }
+
+        .content {
+            display: grid;
+        }
+
+        #puzzle {
+            background: white;
+            padding: 5px;
+        }
+
+        #setup {
+            justify-items: center;
+            align-items: center;
+            grid-template-rows: 1fr 4fr 1fr
+        }
+
+        #choose,
+        #load {
+            justify-items: center;
+            align-items: center;
+            grid-template-rows: 1fr 6fr
+        }
+
+        #run {
+            justify-items: center;
+            align-items: center;
+            grid-template-rows: 1fr 3fr 1fr;
+            grid-template-columns: 1fr;
+            grid-row-gap: 1em;
+        }
+
+        div {
+            font: 16pt courier;
+        }
+
+        a {
+            font: 12pt courier;
+        }
+
+        textarea {
+            font: 14pt courier;
+        }
+
+        table {
+            font: 14pt courier;
+        }
+
+        canvas {
+            display: block;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+
+        selection {
+            height: 50px;
+        }
+    </style>
 </head>
+
 <body>
-	<h1> Crypto-Quip Aid</h1>
-    
+    <h1> Crypto-Quip Aid</h1>
+
     <div id="setup" class="content">
-		<div id="entry">
-			<button id="dectitle">◀</button>
-			<input id="title" name="title" type="text">
-			<button id="inctitle">▶</button><br>
-		</div>
-		<textarea id="quip" rows="10" cols="50" autocorrect="off"></textarea>
+        <div id="entry">
+            <button id="dectitle">◀</button>
+            <input id="title" name="title" type="text">
+            <button id="inctitle">▶</button>
+            <br>
+        </div>
+        <textarea id="quip" rows="10" cols="50" autocorrect="off"></textarea>
         <div class="menu">
             <button name="new">New</button>
             <button id="solve">Solve</button>
@@ -85,8 +100,14 @@ selection {
             <button id="exportlist">Export</button>
         </div>
         <table id="items">
-            <tbody><tr><th style="width:1em"></th><th style="width:12em">Date</th><th>Puzzle</th></tr>
-        </tbody></table>
+            <tbody>
+                <tr>
+                    <th style="width:1em"></th>
+                    <th style="width:12em">Date</th>
+                    <th>Puzzle</th>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <div id="load" class="content">
         <div class="menu">
@@ -95,19 +116,21 @@ selection {
         </div>
         <textarea id="quips" rows="34" cols="80" autocorrect="off"></textarea>
     </div>
-    <div id="run"  class="content">
-		<canvas id="selection"></canvas>
-		<canvas id="puzzle"></canvas>
+    <div id="run" class="content">
+        <canvas id="selection"></canvas>
+        <canvas id="puzzle"></canvas>
         <div class="menu">
             <button name="back">Edit</button>
             <button id="solved">Solved</button>
             <button id="reset">Clear</button>
             <button name="new">New</button>
             <button name="open">List</button>
-			<a id="link" href="index.html">Link</a>
-			<a id="mail" href="mailto:nobody">mail</a>
+            <a id="link" href="index.html">Link</a>
+            <a id="mail" href="mailto:nobody">mail</a>
         </div>
     </div>
-	<div id="debug"></div>
+    <div id="debug"></div>
 
-</body></html>
+</body>
+
+</html>
