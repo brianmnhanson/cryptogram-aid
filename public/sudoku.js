@@ -196,27 +196,20 @@ $(document).ready(
 		function check_guess(n) {
 			theSudoku.solved = false;
 			$('#solved').disable(true);
-			
+
 			var counts = Array(10).fill(0);
 			for (i = 0; i < 81; i++) {
 				counts[theSudoku.guess[i]]++;
 			}
 			for (i = 1; i < counts.length; i++) {
-				$("#d"+i).css("color", counts[i]>8 ? "red" : "")
+				$("#d" + i).css("color", counts[i] > 8 ? "red" : "")
 			}
-			if (counts[0] > 1)
-				return;
-			if (n != null) {
-				if (is_bad(get_row(Math.floor((n % 9) / 3) + Math.floor(n / 27) * 3))
-					|| is_bad(get_column(n % 9))
-					|| is_bad(get_square(Math.floor(n / 9)))) {
-					return;
-				}
+			for (i = 1; i < counts.length; i++) {
+				if (counts[i] != 9) return;
 			}
 			for (var i = 0; i < 9; i++) {
-				if (is_bad(get_row(i)) || is_bad(get_column(i)) || is_bad(get_square(i))) {
+				if (is_bad(get_row(i)) || is_bad(get_column(i)) || is_bad(get_square(i)))
 					return;
-				}
 			}
 			theSudoku.solved = true;
 			$('#solved').disable(false);
@@ -243,13 +236,13 @@ $(document).ready(
 			var keys = [];
 			for (var i = 0; i < localStorage.length; i++) {
 				var s = localStorage.key(i);
-				if (s.startsWith("sk ")) 
+				if (s.startsWith("sk "))
 					keys.push(s);
 			}
 			$("tr:gt(0)").remove();
 			keys = keys.sort();
 			for (var i = keys.length; i > 0; --i) {
-				var s = keys[i-1];
+				var s = keys[i - 1];
 				var value = localStorage[s].split(";")[0];
 				var name = s.substring(3);
 				var solved = value.endsWith("Y") ? "&check;" : "";
@@ -290,7 +283,7 @@ $(document).ready(
 				$(d).addClass('theDigit');
 			}
 			digit = d;
-			
+
 			var v = get_digit(digit);
 			if (v != 0) {
 				$("div > div").each(function (i) {
