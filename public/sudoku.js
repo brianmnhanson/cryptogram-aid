@@ -17,46 +17,58 @@ $(document).ready(
 	function () {
 
 		var title_t = document.getElementById("title");
-
 		var empty = Array(81).fill(0);
-
 		var theSudoku = { value: empty.slice(), guess: empty.slice(), name: '', solved: false };
-		var hide;
-
+		var hide = true;
 		var mode;
 
 		function setMode(m) {
-			if (mode != m) {
-				$('button, table, a, checkbox').hide();
-				switch (m) {
-					case 'edit':
-						$('#setup, #choices, #new, #solve, #dectitle, #inctitle, #list').show();
-						$("div > div").css("color", "red");
-						$("div > div").each(function (i) {
-							$(this).text(theSudoku.value[i] == 0 ? ' ' : theSudoku.value[i]);
-						});
-						change_digit(null);
-						break;
-					case 'play':
-						$('#setup, #choices, #new, #solved, #edit, #save, #reset, #list, a').show();
-						$("div > div").css("color", "black");
-						$("div > div").each(function (i) {
-							$(this).text(theSudoku.guess[i] == 0 ? ' ' : theSudoku.guess[i]);
-							if (theSudoku.value[i] != 0) {
-								$(this).css("color", "red");
-							}
-						});
-						highlight_cell(null);
-						check_guess();
-						break;
-					case 'list':
-						$('#new, #solve, #edit, #all').show();
-						$('#setup, #choices').hide();
-						$('table').show();
-						build_list();
-						break;
-				}
-				mode = m;
+			$('button, table, a, checkbox').hide();
+			switch (m) {
+				case 'edit':
+					$('#setup, #choices, #new, #solve, #dectitle, #inctitle, #list, #delete').show();
+					$('#delete').disable(!("sk " + title_t.value) in localStorage);
+					$("#title").disable(false);
+					$("div > div").css("color", "red");
+					$("div > div").each(function (i) {
+						$(this).text(theSudoku.value[i] == 0 ? ' ' : theSudoku.value[i]);
+					});
+					change_digit(null);
+					break;
+				case 'play':
+					$('#setup, #choices, #new, #solved, #edit, #save, #reset, #list, a').show();
+					$("#title").disable(true);
+					$("div > div").css("color", "black");
+					$("div > div").each(function (i) {
+						$(this).text(theSudoku.guess[i] == 0 ? ' ' : theSudoku.guess[i]);
+						if (theSudoku.value[i] != 0) {
+							$(this).css("color", "red");
+						}
+					});
+					highlight_cell(null);
+					check_guess();
+					break;
+				case 'list':
+					$('#new, #solve, #edit, #items').show();
+					$('#setup, #choices').hide();
+					show_hide(hide);
+					build_list();
+					break;
+			}
+			mode = m;
+		}
+
+		function show_hide(h) {
+			hide = h;
+			if (hide) {
+				$("tr").has(":contains('✓')").hide();
+				$("#hide").hide();
+				$("#show").show();
+
+			} else {
+				$("tr").show();
+				$("#hide").show();
+				$("#show").hide();
 			}
 		}
 
@@ -66,24 +78,6 @@ $(document).ready(
 
 		function from_string(s) {
 			return s.substr(0, 81).replace(/ /g, '0').split('').map(c => parseInt(c));
-		}
-
-		function loadFromStorage() {
-			if ("sudoku" in localStorage) {
-				try {
-					var q = JSON.parse(localStorage["sudoku"]);
-					if (q.valid) {
-						theSudoku = q;
-					}
-				} catch (e) {
-					theSudoku.name = "Sample";
-					theSudoku.value = empty.slice();
-					theSudoku.guess = empty.slice();
-					theSudoku.valid = false;
-				}
-				title_t.value = theSudoku.name;
-				check_guess();
-			}
 		}
 
 		var dayOfWeek = "Sunday Monday Tuesday Wednesday Thursday Friday Saturday".split(" ");
@@ -111,6 +105,16 @@ $(document).ready(
 			updateLink();
 		}
 
+		function restoreSudoku() {
+			try {
+				var q = JSON.parse(localStorage["sudoku"]);
+				if (q.valid) {
+					theSudoku = q;
+					title_t.value = theSudoku.name;
+				}
+			} catch (e) { }
+		}
+
 		function store() {
 			var value = as_string(theSudoku.value, theSudoku.solved) + ";" + as_string(theSudoku.guess, false);
 			if (theSudoku.name != title_t.value) {
@@ -123,14 +127,19 @@ $(document).ready(
 			localStorage["sk " + theSudoku.name] = value;
 			$('#delete').disable(false);
 		}
-		function inc_title(n) {
 
+		function check_title() {
+			saved = ("sk " + title_t.value) in localStorage;
+			$('#delete').disable(!saved);
+		}
+
+		function inc_title(n) {
 			var v = /\d+-\d+-\d+$/g.exec(title_t.value);
 			if (v) {
 				var d = new Date(v[0]);
 				d.setTime(d.getTime() + n * 24 * 3600000);
 				title_t.value = "STrib " + d.toISOString().slice(0, 10);
-				$('#delete').disable(true);
+				check_title();
 				return;
 			}
 			v = /\d+$/g.exec(title_t.value);
@@ -141,7 +150,7 @@ $(document).ready(
 					str = "0" + str;
 				}
 				title_t.value = title_t.value.substring(0, v.index) + str;
-				$('#delete').disable(true);
+				check_title();
 				return;
 			}
 		}
@@ -271,6 +280,7 @@ $(document).ready(
 				return 0;
 			var value = d.innerText;
 			if (value == '*') value = 0;
+			else value = parseInt(value);
 			return value;
 		}
 
@@ -356,12 +366,7 @@ $(document).ready(
 			this.disabled = true;
 		});
 
-		$("#title").keyup(function (p) {
-			$('#delete').disable(true);
-			if (title_t.value != "") {
-				$('#delete').disable("sk " + title_t.value in localStorage);
-			}
-		});
+		$("#title").keyup(check_title);
 		$("#inctitle").click(e => inc_title(1));
 		$("#dectitle").click(e => inc_title(-1));
 
@@ -374,12 +379,15 @@ $(document).ready(
 		$("#reset").click(function (e) {
 			change_digit(null);
 			theSudoku.guess = theSudoku.value.slice();
-			mode = '';
 			check_guess();
-			setMode('play');
+			setMode("play");
 		});
 		$("#edit").click(e => setMode("edit"));
 		$("#list").click(e => setMode("list"));
+
+		// List panel actions
+		$("#hide").click(e => show_hide(true));
+		$("#show").click(e => show_hide(false));
 
 		// Initialize quip from URL query if present
 		if (document.URL.indexOf("?") > 0) {
@@ -392,12 +400,13 @@ $(document).ready(
 				title_t.value = theSudoku.name;
 				save();
 				setMode('play');
-				return;
-			}
-		} else {
-			loadFromStorage();
-		}
+				window.history.replaceState('', '', document.URL.substring(0, document.URL.indexOf("?")));
+			} else
+				setMode("edit");
 
-		setMode("edit");
+		} else {
+			restoreSudoku();
+			setMode("edit");
+		}
 
 	});

@@ -62,10 +62,22 @@ $(document).ready(
 					+ name + '</td><td>' //
 					+ value.small() + '</td></tr>' //
 				)
-				$("tr:last").click(select_row);
-				if (hide && solved) {
-					$("tr:last").hide();
-				}
+			}
+			$("tr:gt(0)").click(select_row);
+			show_hide(hide);
+		}
+
+		function show_hide(h) {
+			hide = h;
+			if (hide) {
+				$("tr").has(":contains('✓')").hide();
+				$("#hide").hide();
+				$("#show").show();
+
+			} else {
+				$("tr").show();
+				$("#hide").show();
+				$("#show").hide();
 			}
 		}
 
@@ -179,18 +191,6 @@ $(document).ready(
 			updateLink();
 		}
 
-		function find(name) {
-			return $("tr").filter(function (i) {
-				return this.title == name;
-			});
-		}
-
-		function findSolved() {
-			return $("tr").filter(function (i) {
-				return localStorage["solved " + this.title] == "Y";
-			});
-		}
-
 		function showPanel(p) {
 			$("body > div").hide();
 			if (p == "run") {
@@ -284,19 +284,9 @@ $(document).ready(
 		$("#inctitle").click(e => inc_title(1));
 		$("#dectitle").click(e => inc_title(-1));
 
-		// Choose panel actions
-		$("#hide").click(function (e) {
-			findSolved().hide();
-			$("#show").show();
-			$("#hide").hide();
-			hide = true;
-		});
-		$("#show").click(function (e) {
-			findSolved().show();
-			$("#hide").show();
-			$("#show").hide();
-			hide = false;
-		});
+		// List panel actions
+		$("#hide").click(e => show_hide(true));
+		$("#show").click(e => show_hide(false));
 		$("#maint").click(e => showPanel("load"));
 		$("#exportlist").click(function (e) {
 			showPanel("load");
