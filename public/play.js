@@ -590,17 +590,12 @@ $(document).ready(
 			if (pos > 0) {
 				quip_ta.value = decodeURI(query.substring(pos + 1));
 				title_t.value = decodeURI(query.substring(0, pos));
-			} else {
-				quip_ta.value = decodeURI(query);
-				var today = new Date();
-				// remove the offset so that the ISO string will match the local date.
-				today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
-				title_t.value = "STrib " + today.toISOString().slice(0, 10);
+				window.history.replaceState('', '', document.URL.substring(0, document.URL.indexOf("?")));
+				dict = {};
+				saveQuip();
+				updateLink();
+				localStorage["panel"] = "run";
 			}
-			dict = {};
-			saveQuip();
-			updateLink();
-			localStorage["panel"] = "run";
 
 		} else {
 			restoreQuip();

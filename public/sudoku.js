@@ -111,6 +111,7 @@ $(document).ready(
 				if (q.valid) {
 					theSudoku = q;
 					title_t.value = theSudoku.name;
+					updateLink();
 				}
 			} catch (e) { }
 		}
