@@ -34,6 +34,7 @@ $(document).ready(
 						$(this).text(theSudoku.value[i] == 0 ? ' ' : theSudoku.value[i]);
 					});
 					change_digit(null);
+					clean_url();
 					break;
 				case 'play':
 					$('#setup, #choices, #new, #solved, #edit, #save, #reset, #list, a').show();
@@ -53,9 +54,16 @@ $(document).ready(
 					$('#setup, #choices').hide();
 					show_hide(hide);
 					build_list();
+					clean_url();
 					break;
 			}
 			mode = m;
+		}
+
+		function clean_url () {
+			if (document.URL.indexOf("?") > 0) {
+				window.history.replaceState('', '', document.URL.substring(0, document.URL.indexOf("?")));
+			}
 		}
 
 		function show_hide(h) {
@@ -401,7 +409,6 @@ $(document).ready(
 				title_t.value = theSudoku.name;
 				save();
 				setMode('play');
-				window.history.replaceState('', '', document.URL.substring(0, document.URL.indexOf("?")));
 			} else
 				setMode("edit");
 

@@ -191,6 +191,12 @@ $(document).ready(
 			updateLink();
 		}
 
+		function clean_url () {
+			if (document.URL.indexOf("?") > 0) {
+				window.history.replaceState('', '', document.URL.substring(0, document.URL.indexOf("?")));
+			}
+		}
+
 		function showPanel(p) {
 			$("body > div").hide();
 			if (p == "run") {
@@ -207,6 +213,7 @@ $(document).ready(
 			} else {
 				$("#setup").show();
 				setEditButtons(p);
+				clean_url();
 			}
 			localStorage["panel"] = p;
 		}
@@ -590,7 +597,6 @@ $(document).ready(
 			if (pos > 0) {
 				quip_ta.value = decodeURI(query.substring(pos + 1));
 				title_t.value = decodeURI(query.substring(0, pos));
-				window.history.replaceState('', '', document.URL.substring(0, document.URL.indexOf("?")));
 				dict = {};
 				saveQuip();
 				updateLink();
