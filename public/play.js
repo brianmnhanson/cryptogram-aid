@@ -56,7 +56,7 @@ $(document).ready(
 				var s = keys[i - 1];
 				var name = s.substring(5);
 				var value = localStorage[s];
-				var solved = localStorage["solved " + name] ? "&check;" : "";
+				var solved = localStorage["solved " + name] == "Y" ? "&check;" : "";
 				$("#items").append('<tr title="' + name + '"><td>' //
 					+ solved + '</td><td>' //
 					+ name + '</td><td>' //
@@ -132,20 +132,16 @@ $(document).ready(
 
 		function store(e) {
 			var value = quip_ta.value.toUpperCase();
-			if (theQuip.name != title_t.value) {
-				if (theQuip.name != "" && theQuip.value == value) {
-					delete localStorage["keep " + theQuip.name];
-					delete localStorage["solved " + theQuip.name];
-					find(theQuip.name).remove();
-				}
-				theQuip.name = title_t.value;
+			if (theQuip.name != "" && theQuip.name != title_t.value && theQuip.value == value) {
+				delete localStorage["keep " + theQuip.name];
+				delete localStorage["solved " + theQuip.name];
 			}
+			theQuip.name = title_t.value;
 			theQuip.value = value;
-			quip_ta.value = theQuip.value;
+			quip_ta.value = value;
 
-			if (localStorage["keep " + theQuip.name] != theQuip.value) {
-				find(theQuip.name).remove();
-				localStorage["keep " + theQuip.name] = theQuip.value;
+			if (theQuip.name != "") {
+				localStorage["keep " + theQuip.name] = value;
 			}
 
 			delete_b.disabled = false;
@@ -191,7 +187,7 @@ $(document).ready(
 			updateLink();
 		}
 
-		function clean_url () {
+		function clean_url() {
 			if (document.URL.indexOf("?") > 0) {
 				window.history.replaceState('', '', document.URL.substring(0, document.URL.indexOf("?")));
 			}
@@ -211,9 +207,10 @@ $(document).ready(
 				quips_ta.value = "";
 				$("#load").show();
 			} else {
-				$("#setup").show();
 				setEditButtons(p);
 				clean_url();
+				quip_ta.focus();
+				$("#setup").show();
 			}
 			localStorage["panel"] = p;
 		}
@@ -246,9 +243,10 @@ $(document).ready(
 
 		// Global actions
 		$('button[name^="new"]').click(function (e) {
-			var date = new Date().toDateString();
+			var today = new Date();
+			today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+			theQuip.name = "STrib " + today.toISOString().slice(0, 10);
 			theQuip.value = "";
-			theQuip.name = "STrib " + new Date().toISOString().slice(0, 10);
 			theQuip.key = "";
 
 			title_t.value = theQuip.name;
@@ -261,8 +259,8 @@ $(document).ready(
 			showPanel("setup");
 			updateLink();
 		});
-		$('button[name^="open"]').click(e => showPanel("choose"));
-		$('button[name^="back"]').click(e => showPanel("setup"));
+		$('button[name^="list"]').click(e => showPanel("choose"));
+		$('button[name^="edit"]').click(e => showPanel("setup"));
 
 		// Setup panel actions
 		$("#solve").click(function (e) {
@@ -275,11 +273,9 @@ $(document).ready(
 		$("#delete").click(function (e) {
 			delete localStorage["keep " + theQuip.name];
 			delete localStorage["solved " + theQuip.name];
-			find(theQuip.name).remove();
 			this.disabled = true;
 		});
 		$("#exportone").click(function (e) {
-			showPanel("load");
 			var map = {};
 			var name = theQuip.name;
 			map[name] = {
@@ -287,6 +283,7 @@ $(document).ready(
 				s: localStorage["solved " + name]
 			};
 			quips_ta.value = JSON.stringify(map, 0, 1);
+			showPanel("load");
 		});
 		$("#inctitle").click(e => inc_title(1));
 		$("#dectitle").click(e => inc_title(-1));
@@ -296,7 +293,6 @@ $(document).ready(
 		$("#show").click(e => show_hide(false));
 		$("#maint").click(e => showPanel("load"));
 		$("#exportlist").click(function (e) {
-			showPanel("load");
 			var map = {};
 			for (var i = 0; i < localStorage.length; i++) {
 				var s = localStorage.key(i);
@@ -310,12 +306,12 @@ $(document).ready(
 			}
 
 			quips_ta.value = JSON.stringify(map, 0, 1);
+			showPanel("load");
 		});
 
 		// Solve panel actions
 		$("#solved").click(function (e) {
 			localStorage["solved " + theQuip.name] = "Y";
-			find(theQuip.name).remove();
 			showPanel("setup");
 		});
 		$("#reset").click(function (e) {
@@ -332,7 +328,6 @@ $(document).ready(
 				localStorage["keep " + name] = map[name].v;
 				if (map[name].s == "Y")
 					localStorage["solved " + name] = "Y";
-				find(name).remove();
 			}
 		});
 
@@ -599,6 +594,7 @@ $(document).ready(
 				title_t.value = decodeURI(query.substring(0, pos));
 				dict = {};
 				saveQuip();
+				store();
 				updateLink();
 				localStorage["panel"] = "run";
 			}
