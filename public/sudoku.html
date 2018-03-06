@@ -16,12 +16,12 @@
 			grid-template-areas: ". name ." "title puzzle choices" ". menu .";
 		}
 
-		#entry {
+		.entry {
 			justify-self: center;
 			grid-area: name;
 		}
 
-		#menu {
+		.menu {
 			justify-self: center;
 			grid-area: menu;
 		}
@@ -94,8 +94,7 @@
 		}
 
 		#items {
-			display: none;
-			grid-area: 2 / 2 / 3 / 2;
+			grid-area: puzzle / puzzle / puzzle / puzzle;
 		}
 
 		th {
@@ -106,7 +105,7 @@
 
 <body>
 	<h1> Sudoku Aid</h1>
-	<div id="entry">
+	<div id="entry" class="entry">
 		<button id="dectitle">◀</button>
 		<input id="title" name="title" type="text">
 		<button id="inctitle">▶</button>
@@ -125,7 +124,7 @@
 		<li>9</li>
 		<li>*</li>
 	</ul>
-	<div id="menu">
+	<div id="menu" class="menu">
 		<button id="new">New</button>
 		<button id="solve">Solve</button>
 		<button id="solved">Solved</button>
@@ -241,7 +240,6 @@
 		</div>
 	</section>
 
-	<div id="debug"></div>
 	<table id="items">
 		<tbody>
 			<tr>

@@ -23,10 +23,11 @@ $(document).ready(
 		var mode;
 
 		function setMode(m) {
-			$('button, table, a, checkbox').hide();
+			$('button, #items, #setup, #choices, #entry, a').hide();
+			$('#menu').css("grid-area", "");
 			switch (m) {
 				case 'edit':
-					$('#setup, #choices, #new, #solve, #dectitle, #inctitle, #list, #delete').show();
+					$('#setup, #choices, #entry, #new, #solve, #dectitle, #inctitle, #list, #delete').show();
 					$('#delete').disable(!("sk " + title_t.value) in localStorage);
 					$("#title").disable(false);
 					$("div > div").css("color", "red");
@@ -37,7 +38,7 @@ $(document).ready(
 					clean_url();
 					break;
 				case 'play':
-					$('#setup, #choices, #new, #solved, #edit, #save, #reset, #list, a').show();
+					$('#setup, #choices, #entry, #new, #solved, #edit, #save, #reset, #list, a').show();
 					$("#title").disable(true);
 					$("div > div").css("color", "black");
 					$("div > div").each(function (i) {
@@ -51,7 +52,7 @@ $(document).ready(
 					break;
 				case 'list':
 					$('#new, #solve, #edit, #items').show();
-					$('#setup, #choices').hide();
+					$('#menu').css("grid-area", "name");
 					show_hide(hide);
 					build_list();
 					clean_url();
