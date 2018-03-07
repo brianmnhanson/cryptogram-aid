@@ -96,7 +96,6 @@ $(document).ready(
 				}
 				quip_ta.value = theQuip.value;
 				title_t.value = theQuip.name;
-				updateLink();
 			}
 		}
 
@@ -184,7 +183,6 @@ $(document).ready(
 			delete_b.disabled = false;
 			store_b.disabled = false;
 			showPanel("run");
-			updateLink();
 		}
 
 		function clean_url() {
@@ -199,6 +197,7 @@ $(document).ready(
 				setDictFromKey();
 				saveQuip();
 				repaintPuzzle();
+				updateLink();
 				$("#run").show();
 			} else if (p == "choose") {
 				build_list();
@@ -227,17 +226,15 @@ $(document).ready(
 		}
 
 		function updateLink() {
-			var link_a = document.getElementById("link");
-			link_a.href = document.URL.split("?")[0] + "?" +
-				encodeURI(theQuip.name) + "&" + encodeURI(theQuip.value);
 			var mail_a = document.getElementById("mail");
 			if (mail_a != null) {
 				var day = dayOfWeek[new Date().getDay()];
 				var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
 				var mail = iOS ? "googlegmail:///co" : "mailto:";
+				var body = document.URL.split("?")[0] + "?" + encodeURI(theQuip.name) + "&" + encodeURI(theQuip.value);
 				mail_a.href = mail + "?"
 					+ "subject=" + encodeURIComponent(day + "'s quip")
-					+ "&body=" + encodeURIComponent(link_a.href);
+					+ "&body=" + encodeURIComponent(body);
 			}
 		}
 
@@ -257,14 +254,13 @@ $(document).ready(
 			quip_ta.focus();
 			store_b.disabled = false;
 			showPanel("setup");
-			updateLink();
 		});
 		$('button[name^="list"]').click(e => showPanel("choose"));
 		$('button[name^="edit"]').click(e => showPanel("setup"));
 
 		// Setup panel actions
 		$("#solve").click(function (e) {
-			updateLink();
+			store();
 			showPanel("run");
 		});
 		$("#title").keyup(setEditButtons);
@@ -595,7 +591,6 @@ $(document).ready(
 				dict = {};
 				saveQuip();
 				store();
-				updateLink();
 				localStorage["panel"] = "run";
 			}
 
