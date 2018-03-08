@@ -1,3 +1,18 @@
+jQuery.fn.extend({
+	disable: function (state) {
+		return this.each(function () {
+			var $this = jQuery(this);
+			if ($this.is('input, button'))
+				this.disabled = state;
+			else if ($this.is('select') && state)
+				$this.attr('disabled', 'disabled');
+			else if ($this.is('select') && !state)
+				$this.removeAttr('disabled');
+			else
+				$this.toggleClass('disabled', state);
+		});
+	}
+});
 $(document).ready(
 	function () {
 
@@ -18,8 +33,6 @@ $(document).ready(
 		var selection = document.getElementById("selection");
 		var quip_ta = document.getElementById("quip");
 		var quips_ta = document.getElementById("quips");
-		var delete_b = document.getElementById("delete");
-		var store_b = document.getElementById("store");
 		var title_t = document.getElementById("title");
 		var hide = true;
 
@@ -143,8 +156,8 @@ $(document).ready(
 				localStorage["keep " + theQuip.name] = value;
 			}
 
-			delete_b.disabled = false;
-			store_b.disabled = true;
+			$("#store").disable(true);
+			$("#delete").disable(false);
 		}
 
 		function inc_title(n) {
@@ -153,8 +166,8 @@ $(document).ready(
 				var d = new Date(v[0]);
 				d.setTime(d.getTime() + n * 24 * 3600000);
 				title_t.value = "STrib " + d.toISOString().slice(0, 10);
-				delete_b.disabled = true;
-				store_b.disabled = false;
+				$("#delete").disable(true);
+				$("#store").disable(false);
 				return;
 			}
 			v = /\d+$/g.exec(title_t.value);
@@ -165,8 +178,8 @@ $(document).ready(
 					str = "0" + str;
 				}
 				title_t.value = title_t.value.substring(0, v.index) + str;
-				delete_b.disabled = true;
-				store_b.disabled = false;
+				$("#delete").disable(true);
+				$("#store").disable(false);
 				return;
 			}
 		}
@@ -180,8 +193,9 @@ $(document).ready(
 			title_t.value = theQuip.name;
 			dict = {};
 
-			delete_b.disabled = false;
-			store_b.disabled = false;
+			$('button[name^="marge"]').disable(true);
+			$("#delete").disable(true);
+			$("#store").disable(false);
 			showPanel("run");
 		}
 
@@ -216,12 +230,13 @@ $(document).ready(
 
 		function setEditButtons(p) {
 			if (title_t.value == "") {
-				store_b.disabled = true;
-				delete_b.disabled = true;
+				$("#delete").disable(true);
+				$("#store").disable(true);
 			} else {
 				var found = "keep " + title_t.value in localStorage;
-				delete_b.disabled = !found;
-				store_b.disabled = quip_ta.value == "" || found && quip_ta.value == localStorage["keep " + title_t.value];
+				$("#delete").disable(!found);
+				$("#store").disable(quip_ta.value == ""
+					|| found && quip_ta.value == localStorage["keep " + title_t.value]);
 			}
 		}
 
@@ -252,7 +267,7 @@ $(document).ready(
 
 			saveQuip();
 			quip_ta.focus();
-			store_b.disabled = false;
+			$("#store").disable(false);
 			showPanel("setup");
 		});
 		$('button[name^="list"]').click(e => showPanel("choose"));
@@ -491,7 +506,7 @@ $(document).ready(
 				}
 			}
 
-			$("#solved")[0].disabled = !complete();
+			$("#solved").disable(!complete());
 		}
 
 		/*
@@ -578,7 +593,7 @@ $(document).ready(
 				}
 			}
 
-			$("#solved")[0].disabled = !complete();
+			$("#solved").disable(!complete());
 		}
 
 		// Initialize quip from URL query if present
