@@ -31,7 +31,7 @@ $(document).ready(
 					$('#setup, #choices, #entry, #new, #solve, #dectitle, #inctitle, #list, #delete').show();
 					$('#delete').disable(!("sk " + title_t.value) in localStorage);
 					$("#title").disable(false);
-					$("div > div").css("color", "red");
+					$("div > div").css({color: "red", background: ""});
 					$("div > div").each(function (i) {
 						$(this).text(theSudoku.value[i] == 0 ? ' ' : theSudoku.value[i]);
 					});
@@ -281,9 +281,9 @@ $(document).ready(
 		var digit;
 		var theCell;
 		function highlight_cell(c) {
-			if (theCell != null) $(theCell).css('background', '');
-			theCell = c;
-			if (c != null) $(c).css('background', 'lightgray');
+			if (theCell != null) $(theCell).css('background', '')
+			theCell = c
+			if (c != null) $(c).css('background', 'lightgray')
 		}
 
 		function get_digit(d) {
@@ -324,7 +324,7 @@ $(document).ready(
 			theSudoku.guess[c.id] = value
 			if (is_edit) {
 				theSudoku.value[theCell.id] = value
-				highlight_cell("#" + (parseInt(theCell.id) + 1))
+				highlight_cell(document.getElementById(parseInt(theCell.id) + 1))
 			} else $(c).css('background', value != 0 && value == get_digit(digit) ? 'lightgray' : '')
 		}
 
