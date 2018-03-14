@@ -21,6 +21,7 @@ $(document).ready(
 		var theSudoku = { value: empty.slice(), guess: empty.slice(), name: '', solved: false };
 		var hide = true;
 		var mode;
+		var undo = [];
 
 		function setMode(m) {
 			$('button, #items, #setup, #choices, #entry, a').hide();
@@ -38,7 +39,7 @@ $(document).ready(
 					clean_url();
 					break;
 				case 'play':
-					$('#setup, #choices, #entry, #new, #solved, #edit, #save, #reset, #list, a').show();
+					$('#setup, #choices, #entry, #new, #solved, #edit, #save, #clear, #list, a').show();
 					$("#title").disable(true);
 					$("div > div").css("color", "black");
 					$("div > div").each(function (i) {
@@ -386,7 +387,7 @@ $(document).ready(
 				as_string(theSudoku.value, theSudoku.solved) + ";" + as_string(theSudoku.guess, false);
 			setMode("list");
 		});
-		$("#reset").click(function (e) {
+		$("#clear").click(function (e) {
 			change_digit(null);
 			theSudoku.guess = theSudoku.value.slice();
 			check_guess();
