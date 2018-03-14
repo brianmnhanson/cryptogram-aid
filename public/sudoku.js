@@ -39,7 +39,7 @@ $(document).ready(
 					clean_url();
 					break;
 				case 'play':
-					$('#setup, #choices, #entry, #new, #solved, #edit, #save, #clear, #list, a').show();
+					$('#setup, #choices, #entry, #new, #solved, #edit, #save, #clear, #list, #undo, a').show();
 					$("#title").disable(true);
 					$("div > div").css("color", "black");
 					$("div > div").each(function (i) {
@@ -50,6 +50,7 @@ $(document).ready(
 					});
 					highlight_cell(null);
 					check_guess();
+					undo = [];
 					break;
 				case 'list':
 					$('#new, #solve, #edit, #items').show();
@@ -62,7 +63,7 @@ $(document).ready(
 			mode = m;
 		}
 
-		function clean_url () {
+		function clean_url() {
 			if (document.URL.indexOf("?") > 0) {
 				window.history.replaceState('', '', document.URL.substring(0, document.URL.indexOf("?")));
 			}
@@ -247,7 +248,6 @@ $(document).ready(
 				return;
 			}
 			title_t.value = theSudoku.name;
-			check_guess();
 			change_digit(null);
 			setMode("play");
 		}
@@ -287,12 +287,14 @@ $(document).ready(
 		}
 
 		function get_digit(d) {
-			if (d == null)
-				return 0;
-			var value = d.innerText;
-			if (value == '*') value = 0;
-			else value = parseInt(value);
-			return value;
+			switch (typeof (d)) {
+				case "object":
+					d = d.innerText
+				case "string":
+					d = (d == '*') ? 0 : parseInt(d)
+				case "number":
+			}
+			return d
 		}
 
 		function change_digit(d) {
@@ -316,21 +318,22 @@ $(document).ready(
 			}
 		}
 
-		function set_cell_value(c, digit) {
-			var value = get_digit(digit);
-			$(c).text(value == 0 ? ' ' : value);
-			theSudoku.guess[c.id] = value;
-			return value;
+		function set_cell_value(c, value, is_edit) {
+			value = get_digit(value)
+			$(c).text(value == 0 ? ' ' : value)
+			theSudoku.guess[c.id] = value
+			if (is_edit) {
+				theSudoku.value[theCell.id] = value
+				highlight_cell("#" + (parseInt(theCell.id) + 1))
+			} else $(c).css('background', value != 0 && value == get_digit(digit) ? 'lightgray' : '')
 		}
 
 		// select a digit
 		$("#choices > li").click(function (li) {
 			if (mode == 'edit') {
-				if (theCell == null) return;
-				theSudoku.value[theCell.id] = set_cell_value(theCell, li.target);
-				highlight_cell(document.getElementById(parseInt(theCell.id) + 1));
+				if (theCell != null) set_cell_value(theCell, li.target, true)
 			} else {
-				change_digit(li.target);
+				change_digit(li.target)
 			}
 		});
 		$("#choices > li").each(function (i) {
@@ -340,11 +343,11 @@ $(document).ready(
 		// Put the selected digit in the clicked cell
 		$("div > div").click(function (div) {
 			if (mode == 'edit') {
-				highlight_cell(div.target);
+				highlight_cell(div.target)
 			} else if (theSudoku.value[div.target.id] == 0 && digit != null) {
-				var value = set_cell_value(div.target, digit);
-				if (value != 0) $(div.target).css('background', 'lightgray')
-				check_guess(div.target.id);
+				undo.push("#" + div.target.id + ":" + theSudoku.guess[div.target.id])
+				set_cell_value(div.target, digit, false)
+				check_guess(div.target.id)
 			}
 		});
 
@@ -390,11 +393,16 @@ $(document).ready(
 		$("#clear").click(function (e) {
 			change_digit(null);
 			theSudoku.guess = theSudoku.value.slice();
-			check_guess();
 			setMode("play");
 		});
 		$("#edit").click(e => setMode("edit"));
 		$("#list").click(e => setMode("list"));
+
+		$("#undo").click(function (e) {
+			if (undo.length == 0) return
+			var last = undo.pop().split(":")
+			set_cell_value(last[0], last[1], false)
+		})
 
 		// List panel actions
 		$("#hide").click(e => show_hide(true));
