@@ -325,7 +325,7 @@ $(document).ready(
 			localStorage["solved " + theQuip.name] = "Y";
 			showPanel("setup");
 		});
-		$("#reset").click(function (e) {
+		$("#clear").click(function (e) {
 			dict = {};
 			saveQuip();
 
