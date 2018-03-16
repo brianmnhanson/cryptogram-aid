@@ -40,7 +40,7 @@ $(document).ready(
 					break;
 				case 'play':
 					$('#setup, #choices, #entry, #new, #solved, #edit, #save, #clear, #list, #undo, a').show();
-					$("#title").disable(true);
+					$("#title, #undo").disable(true);
 					$("div > div").css("color", "black");
 					$("div > div").each(function (i) {
 						$(this).text(theSudoku.guess[i] == 0 ? ' ' : theSudoku.guess[i]);
@@ -323,8 +323,8 @@ $(document).ready(
 			$(c).text(value == 0 ? ' ' : value)
 			theSudoku.guess[c.id] = value
 			if (is_edit) {
-				theSudoku.value[theCell.id] = value
-				highlight_cell(document.getElementById(parseInt(theCell.id) + 1))
+				theSudoku.value[c.id] = value
+				highlight_cell(document.getElementById(parseInt(c.id) + 1))
 			} else $(c).css('background', value != 0 && value == get_digit(digit) ? 'lightgray' : '')
 		}
 
@@ -348,6 +348,7 @@ $(document).ready(
 				undo.push("#" + div.target.id + ":" + theSudoku.guess[div.target.id])
 				set_cell_value(div.target, digit, false)
 				check_guess(div.target.id)
+				if (undo.length == 1) $("#undo").disable(false)
 			}
 		});
 
@@ -401,7 +402,8 @@ $(document).ready(
 		$("#undo").click(function (e) {
 			if (undo.length == 0) return
 			var last = undo.pop().split(":")
-			set_cell_value(last[0], last[1], false)
+			if (undo.length == 0) $("#undo").disable(true)
+			set_cell_value($(last[0])[0], last[1], false)
 		})
 
 		// List panel actions
