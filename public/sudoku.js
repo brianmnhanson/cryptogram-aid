@@ -115,7 +115,7 @@ $(document).ready(
 			localStorage["sudoku"] = JSON.stringify(theSudoku, 0, 1)
 		}
 
-		function restoreSudoku() {
+		function restore_sudoku() {
 			try {
 				var q = JSON.parse(localStorage["sudoku"]);
 				if (q.valid) {
@@ -130,6 +130,14 @@ $(document).ready(
 			var value = as_string(theSudoku.value, theSudoku.solved) + ";" + as_string(theSudoku.guess, false)
 			localStorage["sk " + theSudoku.name] = value
 			$('#delete').disable(false)
+		}
+
+		function fetch(name) {
+			var v = localStorage["sk " + name]
+			if (v == null) return null
+			var q = v.split(';')
+			if (q.length < 1) return null
+			return { name: name, value: from_string(q[0]), guess: from_string(q[q.length - 1]), solved: q[0].endsWith('Y') }
 		}
 
 		function check_title() {
@@ -226,16 +234,11 @@ $(document).ready(
 
 		function select_row(e) {
 			var name = e.currentTarget.title
-			try {
-				var q = localStorage["sk " + name].split(';')
-				theSudoku.name = name
-				theSudoku.value = from_string(q[0])
-				theSudoku.guess = q.length < 2 ? from_string(q[0]) : from_string(q[1])
-				theSudoku.solved = q[0].endsWith('Y')
-			} catch (e) {
-				return
-			}
-			title_t.value = theSudoku.name
+			var ts = fetch(name)
+			if (ts == null) return
+			theSudoku = ts
+			title_t.value = name
+			save()
 			change_digit(null)
 			setMode("play")
 		}
@@ -275,7 +278,7 @@ $(document).ready(
 			return d
 		}
 
-		function highlight_cells(c)	{
+		function highlight_cells(c) {
 			var v = get_digit(c);
 			if (v != 0) {
 				$("div > div").each(function (i) {
@@ -288,12 +291,13 @@ $(document).ready(
 		var digit;
 		var theCell;
 		function highlight_cell(c) {
-			highlight_cells(c);
+			$("div > div").css('background', '')
+			if (c != null) $(c).css('background', 'lightgray')
 			theCell = c
 		}
 
 		function change_digit(d) {
-			if (digit == d)	return
+			if (digit == d) return
 
 			$('.theDigit').removeClass('theDigit')
 			if (d != null) $(d).addClass('theDigit')
@@ -360,12 +364,7 @@ $(document).ready(
 
 		// Edit mode actions
 		$("#solve").click(function (e) {
-			if (theSudoku.name != title_t.value) {
-				if (theSudoku.name != "" && localStorage["sk " + theSudoku.name] == value) {
-					delete localStorage["sk " + theSudoku.name]
-				}
-				theSudoku.name = title_t.value
-			}
+			theSudoku.name = title_t.value
 			store()
 			setMode("play")
 		})
@@ -403,7 +402,7 @@ $(document).ready(
 		$("#hide").click(e => show_hide(true))
 		$("#show").click(e => show_hide(false))
 
-		restoreSudoku()
+		restore_sudoku()
 
 		// Initialize quip from URL query if present
 		if (document.URL.indexOf("?") > 0) {
@@ -417,7 +416,9 @@ $(document).ready(
 					theSudoku.value = from_string(value_string)
 					theSudoku.guess = theSudoku.value.slice()
 					title_t.value = theSudoku.name
-					save()
+					var v = fetch(name)
+					if (v == null || v.solved == false)	store()
+					else save()
 				}
 				setMode('play')
 			} else
