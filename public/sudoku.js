@@ -313,7 +313,7 @@ $(document).ready(
 				theSudoku.value[c.id] = value
 				highlight_cell(document.getElementById(parseInt(c.id) + 1))
 			} else {
-				$(c).css('background', value != 0 && value == get_digit(digit) ? 'lightgray' : '')
+				$(c).css('background', value != 0 && value == get_digit(digit) ? 'lightgray' : '').css("color", "black")
 				check_guess()
 			}
 		}
