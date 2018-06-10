@@ -39,8 +39,8 @@ $(document).ready(
 					clean_url()
 					break
 				case 'play':
-					$('#setup, #choices, #entry, #new, #solved, #edit, #save, #clear, #list, #undo, a').show()
-					$("#title, #undo").disable(true)
+					$('#setup, #choices, #entry, #undo, #mark, #edit, #solved, #save, #clear, a').show()
+					$("#title, #undo, #mark").disable(true)
 					$("div > div").css("color", "black")
 					$("div > div").each(function (i) {
 						$(this).text(theSudoku.guess[i] == 0 ? ' ' : theSudoku.guess[i])
@@ -337,7 +337,7 @@ $(document).ready(
 			} else if (theSudoku.value[div.target.id] == 0 && digit != null) {
 				undo.push("#" + div.target.id + ":" + theSudoku.guess[div.target.id])
 				set_cell_value(div.target, digit, false)
-				if (undo.length == 1) $("#undo").disable(false)
+				if (undo.length == 1) $("#undo, #mark").disable(false)
 				save()
 			}
 		})
@@ -394,8 +394,14 @@ $(document).ready(
 		$("#undo").click(function (e) {
 			if (undo.length == 0) return
 			var last = undo.pop().split(":")
-			if (undo.length == 0) $("#undo").disable(true)
+			if (undo.length == 0) $("#undo, #mark").disable(true)
 			set_cell_value($(last[0])[0], last[1], false)
+		})
+
+		$("#mark").click(function (e) {
+			if (undo.length == 0) return
+			var last = undo[undo.length-1].split(":")
+			$(last[0]).css("color", "gray")
 		})
 
 		// List panel actions
