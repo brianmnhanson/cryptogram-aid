@@ -22,6 +22,7 @@ $(document).ready(
 		var hide = true;
 		var mode;
 		var undo = [];
+		var marked = [];
 
 		function setMode(m) {
 			$('button, #items, #setup, #choices, #entry, a').hide()
@@ -35,6 +36,7 @@ $(document).ready(
 					$("div > div").each(function (i) {
 						$(this).text(theSudoku.value[i] == 0 ? ' ' : theSudoku.value[i])
 					})
+					$("#choices > li").css("color", "")
 					change_digit(null)
 					clean_url()
 					break
@@ -52,6 +54,7 @@ $(document).ready(
 					check_guess()
 					updateLink()
 					undo = []
+					marked = []
 					break
 				case 'list':
 					$('#new, #solve, #edit, #items').show()
@@ -393,7 +396,15 @@ $(document).ready(
 
 		$("#undo").click(function (e) {
 			if (undo.length == 0) return
-			var last = undo.pop().split(":")
+			var top = undo.pop()
+			var last = top.split(":")
+			if (marked.length > 0 && marked[marked.length - 1] == top) {
+				marked.pop()
+				if (marked.length == 0) {
+					$("#retry").hide()
+					$("#clear").show()
+				}
+			}
 			if (undo.length == 0) $("#undo, #mark").disable(true)
 			set_cell_value($(last[0])[0], last[1], false)
 		})
@@ -402,6 +413,16 @@ $(document).ready(
 			if (undo.length == 0) return
 			var last = undo[undo.length-1].split(":")
 			$(last[0]).css("color", "gray")
+			marked.push(undo[undo.length-1])
+			$("#retry").show()
+			$("#clear").hide()
+		})
+		$("#retry").click(function (e) {
+			while (undo.length  > 0 && marked.length > 0) {
+				if (marked[marked.length - 1] == undo[undo.length - 1]) return
+				var last = undo.pop().split(":")
+				set_cell_value($(last[0])[0], last[1], false)
+			}
 		})
 
 		// List panel actions
