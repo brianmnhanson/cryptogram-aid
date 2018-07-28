@@ -42,7 +42,8 @@ $(document).ready(
 					break
 				case 'play':
 					$('#setup, #choices, #entry, #undo, #mark, #edit, #solved, #save, #clear, a').show()
-					$("#title, #undo, #mark").disable(true)
+					$("#title").disable(true)
+					$("#undo, #mark").disable(undo.length == 0)
 					$("div > div").css("color", "black")
 					$("div > div").each(function (i) {
 						$(this).text(theSudoku.guess[i] == 0 ? ' ' : theSudoku.guess[i])
@@ -50,11 +51,14 @@ $(document).ready(
 							$(this).css("color", "red")
 						}
 					})
+					if (marked.length > 0) {
+						marked.forEach(e => $(e.split(":")[0]).css("color", "gray"))
+						$("#retry").show()
+						$("#clear").hide()
+					}
 					highlight_cell(null)
 					check_guess()
 					updateLink()
-					undo = []
-					marked = []
 					break
 				case 'list':
 					$('#new, #solve, #edit, #items').show()
@@ -124,6 +128,8 @@ $(document).ready(
 				if (q.valid) {
 					theSudoku = q
 					title_t.value = theSudoku.name
+					undo = []
+					marked = []
 				}
 			} catch (e) { }
 		}
@@ -207,7 +213,6 @@ $(document).ready(
 			}
 			return count == 9
 		}
-
 
 		function is_bad(v) {
 			return v.find(n => n > 1) >= 0
@@ -361,6 +366,8 @@ $(document).ready(
 			theSudoku.solved = false
 
 			title_t.value = theSudoku.name
+			undo = []
+			marked = []
 
 			setMode("edit")
 		})
@@ -388,6 +395,8 @@ $(document).ready(
 		$("#clear").click(function (e) {
 			change_digit(null)
 			theSudoku.guess = theSudoku.value.slice()
+			undo = []
+			marked = []
 			setMode("play")
 		})
 		$("#edit").click(e => setMode("edit"))
