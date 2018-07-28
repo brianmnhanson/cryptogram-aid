@@ -329,7 +329,11 @@ $(document).ready(
 		// select a digit
 		$("#choices > li").click(function (li) {
 			if (mode == 'edit') {
-				if (theCell != null) set_cell_value(theCell, li.target, true)
+				if (theCell != null) {
+					set_cell_value(theCell, li.target, true)
+					undo = []
+					marked = []
+				}
 			} else {
 				change_digit(li.target)
 			}
