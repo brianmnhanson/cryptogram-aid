@@ -119,6 +119,8 @@ $(document).ready(
 		function save() {
 			theSudoku.name = title_t.value
 			theSudoku.valid = true
+			theSudoku.undo = undo
+			theSudoku.marked = marked
 			localStorage["sudoku"] = JSON.stringify(theSudoku, 0, 1)
 		}
 
@@ -128,8 +130,8 @@ $(document).ready(
 				if (q.valid) {
 					theSudoku = q
 					title_t.value = theSudoku.name
-					undo = []
-					marked = []
+					undo = q.undo
+					marked = q.marked
 				}
 			} catch (e) { }
 		}
@@ -246,6 +248,8 @@ $(document).ready(
 			if (ts == null) return
 			theSudoku = ts
 			title_t.value = name
+			undo = []
+			marked = []
 			save()
 			change_digit(null)
 			setMode("play")
@@ -346,7 +350,9 @@ $(document).ready(
 		$("div > div").click(function (div) {
 			if (mode == 'edit') {
 				highlight_cell(div.target)
-			} else if (theSudoku.value[div.target.id] == 0 && digit != null) {
+			} else if (theSudoku.value[div.target.id] == 0  
+				&& digit != null
+				&& theSudoku.guess[div.target.id] != get_digit(digit)) {
 				undo.push("#" + div.target.id + ":" + theSudoku.guess[div.target.id])
 				set_cell_value(div.target, digit, false)
 				if (undo.length == 1) $("#undo, #mark").disable(false)
@@ -420,6 +426,7 @@ $(document).ready(
 			}
 			if (undo.length == 0) $("#undo, #mark").disable(true)
 			set_cell_value($(last[0])[0], last[1], false)
+			save()
 		})
 
 		$("#mark").click(function (e) {
@@ -427,15 +434,17 @@ $(document).ready(
 			var last = undo[undo.length-1].split(":")
 			$(last[0]).css("color", "gray")
 			marked.push(undo[undo.length-1])
+			save()
 			$("#retry").show()
 			$("#clear").hide()
 		})
 		$("#retry").click(function (e) {
 			while (undo.length  > 0 && marked.length > 0) {
-				if (marked[marked.length - 1] == undo[undo.length - 1]) return
+				if (marked[marked.length - 1] == undo[undo.length - 1]) break
 				var last = undo.pop().split(":")
 				set_cell_value($(last[0])[0], last[1], false)
 			}
+			save()
 		})
 
 		// List panel actions
@@ -460,6 +469,8 @@ $(document).ready(
 					if (v == null || v.solved == false)	store()
 					else save()
 				}
+				undo = []
+				marked = []
 				setMode('play')
 			} else
 				setMode("edit")
