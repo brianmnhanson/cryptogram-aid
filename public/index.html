@@ -3,6 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title> Cryptogram Aid </title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" src="play.js"></script>
@@ -22,6 +23,23 @@
                 margin: 10px auto 0px;
             }
         }
+        
+		@media screen and (orientation: portrait) {
+			#quip {
+                height: 10em;
+			}
+        }
+        
+		@media screen and (orientation: landscape) {
+			#quip {
+                height: 4em;
+			}
+        }
+
+        #quip {
+            width: 90%;
+            font: 16pt courier;
+        }
 
         #puzzle {
             background: white;
@@ -31,7 +49,8 @@
         #setup {
             justify-items: center;
             align-items: center;
-            grid-template-rows: 1fr 4fr 2em
+            grid-template-rows: 1fr 4fr 2em;
+            width: 100%;
         }
 
         #choose,
@@ -57,7 +76,7 @@
             font: 12pt courier;
         }
 
-        textarea {
+        #quips {
             font: 14pt courier;
         }
 
@@ -86,7 +105,7 @@
             <button id="inctitle">▶</button>
             <br>
         </div>
-        <textarea id="quip" rows="4" cols="80" autocorrect="off"></textarea>
+        <textarea id="quip" rows="4" cols="100" autocorrect="off"></textarea>
         <div class="menu">
             <button name="new">New</button>
             <button id="solve">Solve</button>
