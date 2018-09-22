@@ -220,7 +220,10 @@ $(document).ready(
 				quips_ta.value = "";
 				$("#load").show();
 			} else if (p == "export") {
-				quips_ta.value = stringifyExport();
+				quips_ta.value = exportAll();
+				$("#load").show();
+			} else if (p == "exportone") {
+				quips_ta.value = exportOne();
 				$("#load").show();
 			} else {
 				setEditButtons(p);
@@ -256,7 +259,7 @@ $(document).ready(
 			}
 		}
 
-		function stringifyExport() {
+		function exportAll() {
 			var map = {};
 			for (var i = 0; i < localStorage.length; i++) {
 				var s = localStorage.key(i);
@@ -268,7 +271,16 @@ $(document).ready(
 					};
 				}
 			}
+			return JSON.stringify(map, 0, 1);
+		}
 
+		function exportOne () {
+			var map = {};
+			var name = theQuip.name;
+			map[name] = {
+				v: localStorage["keep " + name],
+				s: localStorage["solved " + name]
+			};
 			return JSON.stringify(map, 0, 1);
 		}
 
@@ -305,16 +317,7 @@ $(document).ready(
 			delete localStorage["solved " + theQuip.name];
 			this.disabled = true;
 		});
-		$("#exportone").click(function (e) {
-			var map = {};
-			var name = theQuip.name;
-			map[name] = {
-				v: localStorage["keep " + name],
-				s: localStorage["solved " + name]
-			};
-			quips_ta.value = JSON.stringify(map, 0, 1);
-			showPanel("load");
-		});
+		$("#exportone").click(e => showPanel("exportone"));
 		$("#inctitle").click(e => inc_title(1));
 		$("#dectitle").click(e => inc_title(-1));
 
