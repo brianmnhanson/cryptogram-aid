@@ -219,6 +219,9 @@ $(document).ready(
 			} else if (p == "load") {
 				quips_ta.value = "";
 				$("#load").show();
+			} else if (p == "export") {
+				quips_ta.value = stringifyExport();
+				$("#load").show();
 			} else {
 				setEditButtons(p);
 				clean_url();
@@ -251,6 +254,22 @@ $(document).ready(
 					+ "subject=" + encodeURIComponent(day + "'s quip")
 					+ "&body=" + encodeURIComponent(body);
 			}
+		}
+
+		function stringifyExport() {
+			var map = {};
+			for (var i = 0; i < localStorage.length; i++) {
+				var s = localStorage.key(i);
+				if (s.indexOf("keep ") == 0) {
+					var name = s.substring(s.indexOf(" ") + 1);
+					map[name] = {
+						v: localStorage[s],
+						s: localStorage["solved " + name]
+					};
+				}
+			}
+
+			return JSON.stringify(map, 0, 1);
 		}
 
 		// Global actions
@@ -303,22 +322,7 @@ $(document).ready(
 		$("#hide").click(e => show_hide(true));
 		$("#show").click(e => show_hide(false));
 		$("#maint").click(e => showPanel("load"));
-		$("#exportlist").click(function (e) {
-			var map = {};
-			for (var i = 0; i < localStorage.length; i++) {
-				var s = localStorage.key(i);
-				if (s.indexOf("keep ") == 0) {
-					var name = s.substring(s.indexOf(" ") + 1);
-					map[name] = {
-						v: localStorage[s],
-						s: localStorage["solved " + name]
-					};
-				}
-			}
-
-			quips_ta.value = JSON.stringify(map, 0, 1);
-			showPanel("load");
-		});
+		$("#exportlist").click(e => showPanel("export"));
 
 		// Solve panel actions
 		$("#solved").click(function (e) {
