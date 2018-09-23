@@ -50,10 +50,10 @@ $(document).ready(
 		var dict = {};
 
 		// Check if the browser supports <canvas>
-		if (!puzzle.getContext) {
+		/*if (!puzzle.getContext) {
 			alert("This demo requires a browser that supports the <canvas> element.");
 			return;
-		}
+		}*/
 
 		function build_list() {
 			var keys = [];
@@ -261,15 +261,21 @@ $(document).ready(
 
 		function exportAll() {
 			var map = {};
+			var keys = [];
 			for (var i = 0; i < localStorage.length; i++) {
 				var s = localStorage.key(i);
-				if (s.indexOf("keep ") == 0) {
-					var name = s.substring(s.indexOf(" ") + 1);
-					map[name] = {
-						v: localStorage[s],
-						s: localStorage["solved " + name]
-					};
+				if (s.startsWith("keep ")) {
+					keys.push(s);
 				}
+			}
+			keys.sort();
+			for (var i = keys.length; i > 0; --i) {
+				var s = keys[i - 1];
+				var name = s.substring(s.indexOf(" ") + 1);
+				map[name] = {
+					v: localStorage[s],
+					s: localStorage["solved " + name]
+				};
 			}
 			return JSON.stringify(map, 0, 1);
 		}
@@ -347,6 +353,7 @@ $(document).ready(
 				if (map[name].s == "Y")
 					localStorage["solved " + name] = "Y";
 			}
+			showPanel("choose")
 		});
 
 		$(puzzle).click(function (e) {
