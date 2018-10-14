@@ -49,12 +49,6 @@ $(document).ready(
 		var dayOfWeek = "Sunday Monday Tuesday Wednesday Thursday Friday Saturday".split(" ");
 		var dict = {};
 
-		// Check if the browser supports <canvas>
-		/*if (!puzzle.getContext) {
-			alert("This demo requires a browser that supports the <canvas> element.");
-			return;
-		}*/
-
 		function build_list() {
 			var keys = [];
 			for (var i = 0; i < localStorage.length; i++) {
