@@ -9,17 +9,18 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script type="text/javascript" src="sudoku.js"></script>
 	<link rel="stylesheet" type="text/css" href="sudoku.css">
-
 </head>
 
 <body>
-	<header> Sudoku Aid</header>
+	<header> Sudoku Aid </header>
 
 	<div id="entry" class="entry">
-		<button id="dectitle">◀</button>
-		<input id="title" name="title" type="text">
-		<button id="inctitle">▶</button>
-		<br>
+		<div>
+			<button id="dectitle">◀</button>
+			<input id="title" name="title" type="text">
+			<button id="inctitle">▶</button>
+		</div>
+		<a id="mail" href="mailto:nobody">Mail</a>
 	</div>
 
 	<ul id="choices">
@@ -32,7 +33,9 @@
 		<li>7</li>
 		<li>8</li>
 		<li>9</li>
+		<li></li>
 		<li>*</li>
+		<li></li>
 	</ul>
 
 	<div id="menu" class="menu">
@@ -49,7 +52,6 @@
 		<button id="delete">Delete</button>
 		<button id="hide">Hide ✓</button>
 		<button id="show">Show ✓</button>
-		<a id="mail" href="mailto:nobody">Mail</a>
 	</div>
 
 	<section id="setup" class="content">

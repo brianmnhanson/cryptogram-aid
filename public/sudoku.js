@@ -25,15 +25,15 @@ $(document).ready(
 		var marked = [];
 
 		function setMode(m) {
-			$('button, #items, #setup, #choices, #entry, a').hide()
-			$('#menu').css("grid-area", "")
+			$('button, #items, #setup, #controls, #entry, a').hide()
+			$('#menu').css("grid-area", "menu")
 			switch (m) {
 				case 'edit':
-					$('#setup, #choices, #entry, #new, #solve, #dectitle, #inctitle, #list, #delete').show()
+					$('#setup, #controls, #entry, #new, #solve, #dectitle, #inctitle, #list, #delete').show()
 					$('#delete').disable(!("sk " + title_t.value) in localStorage)
 					$("#title").disable(false)
-					$("div > div").css({ color: "red", background: "" })
-					$("div > div").each(function (i) {
+					$("section > div > div").css({ color: "red", background: "" })
+					$("section > div > div").each(function (i) {
 						$(this).text(theSudoku.value[i] == 0 ? ' ' : theSudoku.value[i])
 					})
 					$("#choices > li").css("color", "")
@@ -41,11 +41,11 @@ $(document).ready(
 					clean_url()
 					break
 				case 'play':
-					$('#setup, #choices, #entry, #undo, #mark, #edit, #solved, #save, #clear, a').show()
+					$('#setup, #controls, #entry, #undo, #mark, #edit, #solved, #save, #clear, a').show()
 					$("#title").disable(true)
 					$("#undo, #mark").disable(undo.length == 0)
-					$("div > div").css("color", "black")
-					$("div > div").each(function (i) {
+					$("section > div > div").css("color", "black")
+					$("section > div > div").each(function (i) {
 						$(this).text(theSudoku.guess[i] == 0 ? ' ' : theSudoku.guess[i])
 						if (theSudoku.value[i] != 0) {
 							$(this).css("color", "red")
@@ -62,7 +62,7 @@ $(document).ready(
 					break
 				case 'list':
 					$('#new, #solve, #edit, #items').show()
-					$('#menu').css("grid-area", "name")
+					$('#menu').css("grid-area", "menu")
 					show_hide(hide)
 					build_list()
 					clean_url()
@@ -293,17 +293,17 @@ $(document).ready(
 		function highlight_cells(c) {
 			var v = get_digit(c);
 			if (v != 0) {
-				$("div > div").each(function (i) {
+				$("section > div > div").each(function (i) {
 					$(this).css('background', theSudoku.guess[i] == v ? 'lightgray' : "")
 				})
 			}
-			else $("div > div").css('background', '')
+			else $("section > div > div").css('background', '')
 		}
 
 		var digit;
 		var theCell;
 		function highlight_cell(c) {
-			$("div > div").css('background', '')
+			$("section > div > div").css('background', '')
 			if (c != null) $(c).css('background', 'lightgray')
 			theCell = c
 		}
@@ -347,7 +347,7 @@ $(document).ready(
 		})
 
 		// Put the selected digit in the clicked cell
-		$("div > div").click(function (div) {
+		$("section > div > div").click(function (div) {
 			if (mode == 'edit') {
 				highlight_cell(div.target)
 			} else if (theSudoku.value[div.target.id] == 0  
@@ -361,10 +361,10 @@ $(document).ready(
 		})
 
 		// Clear all the cells
-		$("div > div").text('')
+		$("section > div > div").text('')
 
 		// Assign an id for each cell 1-81 
-		$("div > div").each(function (i) { this.id = i })
+		$("section > div > div").each(function (i) { this.id = i })
 
 		// Global actions
 		$('#new').click(function (e) {
