@@ -1,0 +1,262 @@
+body {
+    display: grid;
+    background: #efefef;
+    grid-gap: 1em;
+}
+
+@media screen and (orientation: portrait) {
+    body {
+        grid-template-columns: 1fr;
+        grid-template-areas: "title" "choices" "puzzle" "name" "menu";
+    }
+
+    #choices {
+        justify-self: center;
+        padding: 0px;
+        display: grid;
+        grid-template-columns: repeat(10, 52px);
+    }
+
+    #choices li {
+        text-align: center;
+    }
+
+    .zone {
+        grid-template-rows: repeat(3, 52px);
+        grid-template-columns: repeat(3, 52px);
+    }
+}
+
+@media screen and (orientation: landscape) {
+    body {
+        grid-template-columns: 1fr auto 1fr;
+        grid-template-areas: ". name ." "title puzzle choices" ". menu .";
+    }
+
+    #choices {
+        justify-self: left;
+        display: grid;
+        grid-template-rows: repeat(10, 1fr);
+    }
+
+    header {
+        justify-self: right;
+        text-orientation: upright;
+        writing-mode: vertical-lr;
+    }
+
+    .zone {
+        grid-template-rows: repeat(3, 52px);
+        grid-template-columns: repeat(3, 52px);
+    }
+}
+
+#choices {
+    list-style: none;
+    grid-area: choices;
+}
+
+.entry {
+    justify-self: center;
+    grid-area: name;
+}
+
+.menu {
+    justify-self: center;
+    grid-area: menu;
+}
+
+#choices li {
+    font: 29pt Courier New;
+}
+
+header {
+    grid-area: title;
+    text-align: center;
+    font: 32pt Georgia;
+}
+
+#setup {
+    display: grid;
+    justify-self: center;
+    grid-area: puzzle;
+    justify-items: center;
+    align-items: center;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    background: black;
+    grid-gap: 4px;
+    padding: 4px;
+}
+
+.zone {
+    display: grid;
+    grid-gap: 2px;
+    background: grey;
+}
+
+.zone>div {
+    font: 20pt Courier New;
+    padding: 15px;
+    font-weight: bold;
+    color: black;
+}
+
+.zone:nth-child(even) div {
+    background: lightblue;
+}
+
+.zone:nth-child(odd) div {
+    background: lightgreen;
+}
+
+a {
+    font: 12pt Georgia;
+}
+
+.theDigit {
+    background: lightblue;
+}
+
+.theCell {
+    background: lightGray;
+}
+
+#items {
+    grid-area: puzzle / puzzle / puzzle / puzzle;
+}
+
+th {
+    text-align: left;
+}
+body {
+    display: grid;
+    background: #efefef;
+    grid-gap: 1em;
+}
+
+@media screen and (orientation: portrait) {
+    body {
+        grid-template-columns: 1fr;
+        grid-template-areas: "title" "choices" "puzzle" "name" "menu";
+    }
+
+    #choices {
+        justify-self: center;
+        padding: 0px;
+        display: grid;
+        grid-template-columns: repeat(10, 52px);
+    }
+
+    #choices li {
+        text-align: center;
+    }
+
+    .zone {
+        grid-template-rows: repeat(3, 52px);
+        grid-template-columns: repeat(3, 52px);
+    }
+}
+
+@media screen and (orientation: landscape) {
+    body {
+        grid-template-columns: 1fr auto 1fr;
+        grid-template-areas: ". name ." "title puzzle choices" ". menu .";
+    }
+
+    #choices {
+        justify-self: left;
+        display: grid;
+        grid-template-rows: repeat(10, 1fr);
+    }
+
+    header {
+        justify-self: right;
+        text-orientation: upright;
+        writing-mode: vertical-lr;
+    }
+
+    .zone {
+        grid-template-rows: repeat(3, 52px);
+        grid-template-columns: repeat(3, 52px);
+    }
+}
+
+#choices {
+    list-style: none;
+    grid-area: choices;
+}
+
+.entry {
+    justify-self: center;
+    grid-area: name;
+}
+
+.menu {
+    justify-self: center;
+    grid-area: menu;
+}
+
+#choices li {
+    font: 29pt Courier New;
+}
+
+header {
+    grid-area: title;
+    text-align: center;
+    font: 32pt Georgia;
+}
+
+#setup {
+    display: grid;
+    justify-self: center;
+    grid-area: puzzle;
+    justify-items: center;
+    align-items: center;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    background: black;
+    grid-gap: 4px;
+    padding: 4px;
+}
+
+.zone {
+    display: grid;
+    grid-gap: 2px;
+    background: grey;
+}
+
+.zone>div {
+    font: 20pt Courier New;
+    padding: 15px;
+    font-weight: bold;
+    color: black;
+}
+
+.zone:nth-child(even) div {
+    background: lightblue;
+}
+
+.zone:nth-child(odd) div {
+    background: lightgreen;
+}
+
+a {
+    font: 12pt Georgia;
+}
+
+.theDigit {
+    background: lightblue;
+}
+
+.theCell {
+    background: lightGray;
+}
+
+#items {
+    grid-area: puzzle / puzzle / puzzle / puzzle;
+}
+
+th {
+    text-align: left;
+}
