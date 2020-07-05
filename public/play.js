@@ -48,6 +48,7 @@ $(document).ready(
 		var alphabet = "aeiou bcdfghjklmnpqrstvwxyz *";
 		var dayOfWeek = "Sunday Monday Tuesday Wednesday Thursday Friday Saturday".split(" ");
 		var dict = {};
+		var undo = [];
 
 		function build_list() {
 			var keys = [];
@@ -198,6 +199,56 @@ $(document).ready(
 				window.history.replaceState('', '', document.URL.substring(0, document.URL.indexOf("?")));
 			}
 		}
+		
+		function updateQuip(letter, char) {
+			var actions = [];
+			if (char >= "a" && char <= "z") {
+				var drops = {};
+				if (letter in dict) {
+					if (dict[letter] == char) return actions;
+					actions.push( letter + dict[letter] );
+					drops[dict[letter]] = 1;
+					delete dict[dict[letter]];
+					delete dict[letter];
+				} else actions.push( letter + '*' );
+				if (char in dict) {
+					actions.push( dict[char] + char );
+					drops[dict[char]] = 1;
+					delete dict[dict[char]];
+					delete dict[char];
+				}
+
+				dict[letter] = char;
+				dict[char] = letter;
+				saveQuip();
+				changeSub(letter, char, drops);
+
+			} else if (char == "*") {
+				var drops = {};
+				if (letter in dict) {
+					actions.push( letter + dict[letter] );
+					drops[dict[letter]] = 1;
+					delete dict[dict[letter]];
+					delete dict[letter];
+				} else return actions;
+				saveQuip();
+				changeSub(letter, " ", drops);
+			}
+			return actions;
+		}
+
+		function undo_action() {
+			var action = undo.pop();
+			action.forEach(e => {
+				if (e.length == 1) {
+					updatePuzzle(e);
+				} else {
+					updateQuip(e.substring(0,1), e.substring(1,2));
+				}
+			});
+			
+			if (undo.length == 0) $("#undo").disable(true)
+		}
 
 		function showPanel(p) {
 			$("body > div").hide();
@@ -285,7 +336,7 @@ $(document).ready(
 		}
 
 		// Global actions
-		$('button[name^="new"]').click(function (e) {
+		$('button[name^="new"]').click(e => {
 			var today = new Date();
 			today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
 			theQuip.name = "STrib " + today.toISOString().slice(0, 10);
@@ -295,6 +346,7 @@ $(document).ready(
 			title_t.value = theQuip.name;
 			quip_ta.value = theQuip.value;
 			dict = {};
+			undo = [];
 
 			saveQuip();
 			quip_ta.focus();
@@ -305,14 +357,14 @@ $(document).ready(
 		$('button[name^="edit"]').click(e => showPanel("setup"));
 
 		// Setup panel actions
-		$("#solve").click(function (e) {
+		$("#solve").click(e => {
 			store();
 			showPanel("run");
 		});
 		$("#title").keyup(setEditButtons);
 		$("#quip").keyup(setEditButtons);
 		$("#store").click(store);
-		$("#delete").click(function (e) {
+		$("#delete").click(e => {
 			delete localStorage["keep " + theQuip.name];
 			delete localStorage["solved " + theQuip.name];
 			this.disabled = true;
@@ -328,13 +380,16 @@ $(document).ready(
 		$("#exportlist").click(e => showPanel("export"));
 
 		// Solve panel actions
+		$('#undo').click(e => undo_action()).disable(true);
 		$("#solved").click(function (e) {
 			localStorage["solved " + theQuip.name] = "Y";
 			showPanel("setup");
 		});
-		$("#clear").click(function (e) {
+		$("#clear").click(e => {
 			dict = {};
+			undo = [];
 			saveQuip();
+			$("#undo").disable(true)
 
 			repaintPuzzle();
 		});
@@ -366,6 +421,8 @@ $(document).ready(
 
 			char = lines[yField][xField];
 			if (char >= "A" && char <= "Z" && letter != char) {
+				undo.push([letter]);
+				if (undo.length == 1) $("#undo").disable(false);
 				updatePuzzle(char);
 				saveQuip();
 			}
@@ -382,44 +439,17 @@ $(document).ready(
 			var xField = Math.floor(ox / selectionDeltaX);
 
 			char = alphabet[xField];
-			if (char >= "a" && char <= "z") {
-				var drops = {};
-				if (char in dict) {
-					drops[dict[char]] = 1;
-					delete dict[dict[char]];
-					delete dict[char];
-				}
-				if (letter in dict) {
-					drops[dict[letter]] = 1;
-					delete dict[dict[letter]];
-					delete dict[letter];
-				}
-
-				dict[letter] = char;
-				dict[char] = letter;
-				saveQuip();
-				changeSub(char, drops);
-
-			} else if (char == "*") {
-				var drops = {};
-				if (letter in dict) {
-					drops[dict[letter]] = 1;
-					delete dict[dict[letter]];
-					delete dict[letter];
-				}
-				saveQuip();
-				changeSub(" ", drops);
+			var action = updateQuip(letter, char);
+			if (action.length > 0)  {
+				undo.push(action);
+				if (undo.length == 1) $("#undo").disable(false);
 			}
 
 		});
 
 		function decode(c) {
-			if (c < 'A' || c > 'Z') {
-				return c;
-			}
-			if (c in dict) {
-				return dict[c];
-			}
+			if (c < 'A' || c > 'Z')  return c;
+			if (c in dict) return dict[c];
 			return ' ';
 		}
 
@@ -471,7 +501,7 @@ $(document).ready(
 		}
 
 		/* Change the highlighted letter */
-		function changeSub(s, drops) {
+		function changeSub(target, s, drops) {
 			var ctx = puzzle.getContext("2d");
 			ctx.font = puzzleFont;
 			ctx.textAlign = "center";
@@ -486,11 +516,11 @@ $(document).ready(
 					if (c == " ") {
 						continue;
 					}
-					if (c == letter || c in drops) {
+					if (c == target || c in drops) {
 						var x = j * puzzleDeltaX;
 						var y = i * puzzleDeltaY * puzzleSpacing + puzzleDeltaY;
 						ctx.clearRect(x, y, puzzleDeltaX, puzzleDeltaY);
-						if (c == letter) {
+						if (c == target) {
 							ctx.fillText(makeCap ? s.toUpperCase() : s, x + puzzleDeltaX / 2, y
 								+ puzzleDeltaY);
 						}
