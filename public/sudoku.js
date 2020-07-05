@@ -403,11 +403,13 @@ $(document).ready(
 			setMode("list")
 		})
 		$("#clear").click(function (e) {
-			change_digit(null)
-			theSudoku.guess = theSudoku.value.slice()
-			undo = []
-			marked = []
-			setMode("play")
+			if (confirm("Are you sure you want to clear?")) {
+				change_digit(null)
+				theSudoku.guess = theSudoku.value.slice()
+				undo = []
+				marked = []
+				setMode("play")
+			}
 		})
 		$("#edit").click(e => setMode("edit"))
 		$("#list").click(e => setMode("list"))
