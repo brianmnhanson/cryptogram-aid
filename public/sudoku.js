@@ -62,7 +62,6 @@ $(document).ready(
 					break
 				case 'list':
 					$('#new, #solve, #edit, #items').show()
-					$('#menu').css("grid-area", "menu")
 					show_hide(hide)
 					build_list()
 					clean_url()
