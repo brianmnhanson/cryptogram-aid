@@ -1,0 +1,85 @@
+body {
+    display: grid;
+    justify-items: center;
+    background: #efefef;
+}
+
+.content {
+    display: grid;
+}
+
+@media screen and (max-height: 700px) {
+    h1 {
+        margin: 10px auto 0px;
+    }
+}
+
+@media screen and (orientation: portrait) {
+    #quip {
+        height: 10em;
+    }
+}
+
+@media screen and (orientation: landscape) {
+    #quip {
+        height: 4em;
+    }
+}
+
+#quip {
+    width: 90%;
+    font: 16pt courier;
+}
+
+#puzzle {
+    background: white;
+    padding: 5px;
+}
+
+#setup {
+    justify-items: center;
+    align-items: center;
+    grid-template-rows: 1fr 4fr 2em;
+    width: 100%;
+}
+
+#choose,
+#load {
+    justify-items: center;
+    align-items: center;
+    grid-template-rows: 2em 1fr
+}
+
+#run {
+    justify-items: center;
+    align-items: center;
+    grid-template-rows: 1fr 4fr 2em;
+    grid-template-columns: 1fr;
+    grid-row-gap: .5em;
+}
+
+div {
+    font: 16pt courier;
+}
+
+a {
+    font: 12pt courier;
+}
+
+#quips {
+    font: 10pt courier;
+    overflow: auto;
+}
+
+table {
+    font: 14pt courier;
+}
+
+canvas {
+    display: block;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+selection {
+    height: 50px;
+}
