@@ -43,7 +43,7 @@ $(document).ready(
 				case 'play':
 					$('#setup, #controls, #entry, #undo, #mark, #edit, #solved, #save, #clear, a').show()
 					$("#title").disable(true)
-					$("#undo, #mark").disable(undo.length == 0)
+					$("#undo, #mark, #clear").disable(undo.length == 0)
 					$("section > div > div").css("color", "black")
 					$("section > div > div").each(function (i) {
 						$(this).text(theSudoku.guess[i] == 0 ? ' ' : theSudoku.guess[i])
@@ -54,7 +54,7 @@ $(document).ready(
 					if (marked.length > 0) {
 						marked.forEach(e => $(e.split(":")[0]).css("color", "gray"))
 						$("#retry").show()
-						$("#clear").hide()
+						if (false) $("#clear").hide()
 					}
 					highlight_cell(null)
 					check_guess()
@@ -283,7 +283,7 @@ $(document).ready(
 				case "object":
 					d = d.innerText
 				case "string":
-					d = (d == '*') ? 0 : parseInt(d)
+					d = d.match(/\d/) ? parseInt(d) : 0
 				case "number":
 			}
 			return d
@@ -331,6 +331,7 @@ $(document).ready(
 
 		// select a digit
 		$("#choices > li").click(function (li) {
+			if (li.target.id == 'd') return
 			if (mode == 'edit') {
 				if (theCell != null) {
 					set_cell_value(theCell, li.target, true)
@@ -354,7 +355,7 @@ $(document).ready(
 				&& theSudoku.guess[div.target.id] != get_digit(digit)) {
 				undo.push("#" + div.target.id + ":" + theSudoku.guess[div.target.id])
 				set_cell_value(div.target, digit, false)
-				if (undo.length == 1) $("#undo, #mark").disable(false)
+				if (undo.length == 1) $("#undo, #mark, #clear").disable(false)
 				save()
 			}
 		})
@@ -418,14 +419,14 @@ $(document).ready(
 			if (undo.length == 0) return
 			var top = undo.pop()
 			var last = top.split(":")
-			if (marked.length > 0 && marked[marked.length - 1] == top) {
+			if (false && marked.length > 0 && marked[marked.length - 1] == top) {
 				marked.pop()
 				if (marked.length == 0) {
 					$("#retry").hide()
 					$("#clear").show()
 				}
 			}
-			if (undo.length == 0) $("#undo, #mark").disable(true)
+			if (undo.length == 0) $("#undo, #mark, #clear").disable(true)
 			set_cell_value($(last[0])[0], last[1], false)
 			save()
 		})
@@ -437,8 +438,9 @@ $(document).ready(
 			marked.push(undo[undo.length-1])
 			save()
 			$("#retry").show()
-			$("#clear").hide()
+			if (false) $("#clear").hide()
 		})
+
 		$("#retry").click(function (e) {
 			while (undo.length  > 0 && marked.length > 0) {
 				if (marked[marked.length - 1] == undo[undo.length - 1]) break

@@ -84,6 +84,16 @@ body {
         grid-template-columns: repeat(3, auto);
     }
 
+    .menu button {
+        width: 5em;
+        height: 30px;
+        margin: 5px;
+    }
+
+    a {
+        margin: 5px;
+    }
+
     .entry {
         justify-self: center;
     }
