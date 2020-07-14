@@ -249,6 +249,9 @@ $(document).ready(
 			} else {
 				quip_ta.value = decodeURI(query);
 			}
+			if (quip_ta.value.endsWith('$')) {
+				quip_ta.value = quip_ta.value.substring(0, quip_ta.value.length-2)
+			}
 			dict = {};
 			saveDict();
 			updateLink();

@@ -297,7 +297,7 @@ $(document).ready(
 				var day = dayOfWeek[new Date().getDay()];
 				var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
 				var mail = iOS ? "googlegmail:///co" : "mailto:";
-				var body = document.URL.split("?")[0] + "?" + encodeURI(theQuip.name) + "&" + encodeURI(theQuip.value) + ".";
+				var body = document.URL.split("?")[0] + "?" + encodeURI(theQuip.name) + "&" + encodeURI(theQuip.value) + "$";
 				mail_a.href = mail + "?"
 					+ "subject=" + encodeURIComponent(day + "'s quip")
 					+ "&body=" + encodeURIComponent(body);
@@ -639,6 +639,9 @@ $(document).ready(
 			var query = document.URL.substring(document.URL.indexOf("?") + 1);
 			var pos = query.indexOf("&");
 			if (pos > 0) {
+				if (query.endsWith('$')) {
+					query = query.substring(0, query.length-1)
+				}
 				quip_ta.value = decodeURI(query.substring(pos + 1));
 				title_t.value = decodeURI(query.substring(0, pos));
 				dict = {};
