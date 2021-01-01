@@ -41,7 +41,7 @@ $(document).ready(
 					clean_url()
 					break
 				case 'play':
-					$('#setup, #controls, #entry, #undo, #mark, #edit, #solved, #save, #clear, a').show()
+					$('#setup, #controls, #entry, #undo, #mark, #edit, #solved, #save, #clear, #retry, a').show()
 					$("#title").disable(true)
 					$("#undo, #mark, #clear").disable(undo.length == 0)
 					$("section > div > div").css("color", "black")
@@ -53,8 +53,9 @@ $(document).ready(
 					})
 					if (marked.length > 0) {
 						marked.forEach(e => $(e.split(":")[0]).css("color", "gray"))
-						$("#retry").show()
-						if (false) $("#clear").hide()
+						$("#retry").disable(false)
+					} else {
+						$("#retry").disable(true)
 					}
 					highlight_cell(null)
 					check_guess()
@@ -419,12 +420,9 @@ $(document).ready(
 			if (undo.length == 0) return
 			var top = undo.pop()
 			var last = top.split(":")
-			if (false && marked.length > 0 && marked[marked.length - 1] == top) {
+			if (marked.length > 0 && marked[marked.length - 1] == top) {
 				marked.pop()
-				if (marked.length == 0) {
-					$("#retry").hide()
-					$("#clear").show()
-				}
+				$("#retry").disable(marked.length == 0)
 			}
 			if (undo.length == 0) $("#undo, #mark, #clear").disable(true)
 			set_cell_value($(last[0])[0], last[1], false)
@@ -437,8 +435,7 @@ $(document).ready(
 			$(last[0]).css("color", "gray")
 			marked.push(undo[undo.length-1])
 			save()
-			$("#retry").show()
-			if (false) $("#clear").hide()
+			$("#retry").disable(false)
 		})
 
 		$("#retry").click(function (e) {

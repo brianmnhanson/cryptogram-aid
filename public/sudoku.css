@@ -1,4 +1,4 @@
-body {
+#body {
     display: grid;
     background: #efefef;
     grid-gap: 1em;
@@ -11,7 +11,7 @@ body {
 }
 
 @media screen and (orientation: portrait) {
-    body {
+    #body {
         grid-template-columns: 1fr;
         grid-template-areas: "title" "choices" "puzzle" "menu" "name";
     }
@@ -39,6 +39,12 @@ body {
 
 @media screen and (orientation: landscape) {
     body {
+        width: 1024px;
+        height: 768px;
+        padding: 2px;
+    }
+    #body {
+        background-color: white;
         grid-template-columns:  510px 15em 1fr;
         grid-template-areas: 
             "title title ."
