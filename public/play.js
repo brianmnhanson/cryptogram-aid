@@ -337,21 +337,23 @@ $(document).ready(
 
 		// Global actions
 		$('button[name^="new"]').click(e => {
-			var today = new Date();
-			today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
-			theQuip.name = "STrib " + today.toISOString().slice(0, 10);
-			theQuip.value = "";
-			theQuip.key = "";
+			if (complete() ||  confirm("You have not finished the cyrrent quip. Are you sure?")) {
+				var today = new Date();
+				today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+				theQuip.name = "STrib " + today.toISOString().slice(0, 10);
+				theQuip.value = "";
+				theQuip.key = "";
 
-			title_t.value = theQuip.name;
-			quip_ta.value = theQuip.value;
-			dict = {};
-			undo = [];
+				title_t.value = theQuip.name;
+				quip_ta.value = theQuip.value;
+				dict = {};
+				undo = [];
 
-			saveQuip();
-			quip_ta.focus();
-			$("#store").disable(false);
-			showPanel("setup");
+				saveQuip();
+				quip_ta.focus();
+				$("#store").disable(false);
+				showPanel("setup");
+			}
 		});
 		$('button[name^="list"]').click(e => showPanel("choose"));
 		$('button[name^="edit"]').click(e => showPanel("setup"));
@@ -386,11 +388,12 @@ $(document).ready(
 			showPanel("setup");
 		});
 		$("#clear").click(e => {
-			dict = {};
-			undo = [];
-			saveQuip();
-			$("#undo").disable(true)
-
+			if (confirm("Are you sure you want to clear?")) {
+				dict = {};
+				undo = [];
+				saveQuip();
+				$("#undo").disable(true)
+			}
 			repaintPuzzle();
 		});
 
