@@ -50,6 +50,20 @@ $(document).ready(
 		var dict = {};
 		var undo = [];
 
+		var audio_context =new AudioContext()
+
+		function beep(vol, freq, duration) {
+			var v=audio_context.createOscillator()
+			var u=audio_context.createGain()
+			v.connect(u)
+			v.frequency.value=freq
+			v.type="sine"
+			u.connect(audio_context.destination)
+			u.gain.value=vol*0.01
+			v.start(audio_context.currentTime)
+			v.stop(audio_context.currentTime+duration*0.001)
+		}
+
 		function build_list() {
 			var keys = [];
 			for (var i = 0; i < localStorage.length; i++) {
@@ -203,6 +217,7 @@ $(document).ready(
 		function updateQuip(letter, char) {
 			var actions = [];
 			if (char >= "a" && char <= "z") {
+				beep(20, 600, 60)
 				var drops = {};
 				if (letter in dict) {
 					if (dict[letter] == char) return actions;
@@ -224,6 +239,7 @@ $(document).ready(
 				changeSub(letter, char, drops);
 
 			} else if (char == "*") {
+				beep(20, 400, 60)
 				var drops = {};
 				if (letter in dict) {
 					actions.push( letter + dict[letter] );
@@ -428,6 +444,7 @@ $(document).ready(
 				if (undo.length == 1) $("#undo").disable(false);
 				updatePuzzle(char);
 				saveQuip();
+				beep(20, 500, 30)
 			}
 
 		});

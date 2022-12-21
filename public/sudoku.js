@@ -23,6 +23,20 @@ $(document).ready(
 		var mode;
 		var undo = [];
 		var marked = [];
+		
+		var audio_context =new AudioContext()
+
+		function beep(vol, freq, duration) {
+			var v=audio_context.createOscillator()
+			var u=audio_context.createGain()
+			v.connect(u)
+			v.frequency.value=freq
+			v.type="sine"
+			u.connect(audio_context.destination)
+			u.gain.value=vol*0.01
+			v.start(audio_context.currentTime)
+			v.stop(audio_context.currentTime+duration*0.001)
+		}
 
 		function setMode(m) {
 			$('button, #items, #setup, #controls, #entry, a').hide()
@@ -334,6 +348,7 @@ $(document).ready(
 		$("#choices > li").click(function (li) {
 			if (li.target.id == 'd') return
 			if (mode == 'edit') {
+				beep(20, 600 + 20 * get_digit(li.target), 60)
 				if (theCell != null) {
 					set_cell_value(theCell, li.target, true)
 					undo = []
