@@ -39,8 +39,9 @@ $(document).ready(
 		}
 
 		function setMode(m) {
-			$('button, #items, #setup, #controls, #entry, a').hide()
+			$('button, #the-list, #setup, #controls, #entry, a').hide()
 			$('#menu').css("grid-area", "menu")
+			$("#choices").show()
 			switch (m) {
 				case 'edit':
 					$('#setup, #controls, #entry, #new, #solve, #dectitle, #inctitle, #list, #delete').show()
@@ -76,7 +77,8 @@ $(document).ready(
 					updateLink()
 					break
 				case 'list':
-					$('#new, #solve, #edit, #items').show()
+					$('#new, #solve, #edit, #the-list').show()
+					$('#choices').hide()
 					show_hide(hide)
 					build_list()
 					clean_url()
@@ -194,10 +196,11 @@ $(document).ready(
 
 		function get_row(n) {
 			var value = Array(10).fill(0)
-			var s = Math.floor(s / 3) * 3 * 9 + (n % 3) * 3
-			for (i = 0; i < 3; i++) {
-				for (j = 0; j < 3; j++) {
-					value[theSudoku.guess[s + i * 9 + j]] += 1
+			var s = Math.floor(n / 3) * 27 + (n % 3) * 3
+			for (var i = 0; i < 3; i++) {
+				for (var j = 0; j < 3; j++) {
+					var v = theSudoku.guess[s + i * 9 + j]
+					value[v] += 1
 				}
 			}
 			return value.slice(1)
@@ -205,10 +208,11 @@ $(document).ready(
 
 		function get_column(n) {
 			var value = Array(10).fill(0)
-			var s = Math.floor(s / 3) * 9 + (n % 3) * 3
-			for (i = 0; i < 3; i++) {
-				for (j = 0; j < 3; j++) {
-					value[theSudoku.guess[s + i * 9 + j * 3]] += 1
+			var s = Math.floor(n / 3) * 9 + (n % 3)
+			for (var i = 0; i < 3; i++) {
+				for (var j = 0; j < 3; j++) {
+					var v = theSudoku.guess[s + (i * 9 + j) * 3]
+					value[v] += 1
 				}
 			}
 			return value.slice(1)

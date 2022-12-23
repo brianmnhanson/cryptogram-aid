@@ -10,10 +10,40 @@
     grid-area: choices;
 }
 
+#the-list {
+    grid-area: puzzle / puzzle / puzzle / puzzle;
+}
+
+#entry {
+    grid-area: name;
+}
+
+#dectitle {
+    grid-area: adec;
+}
+#title {
+    grid-area: atitle;
+}
+#inctitle {
+    grid-area: ainc;
+}
+
+.menu {
+    grid-area: menu;
+}
+
+header {
+    grid-area: header;
+}
+
+#setup {
+    grid-area: puzzle;
+}
+
 @media screen and (orientation: portrait) {
     #body {
         grid-template-columns: 1fr;
-        grid-template-areas: "title" "choices" "puzzle" "menu" "name";
+        grid-template-areas: "header" "choices" "puzzle" "menu" "name";
     }
 
     .zone {
@@ -35,23 +65,28 @@
         font: 29pt Courier New;
         text-align: center;
     }
+    
+    #entry {
+        justify-self: center;  
+    }
 }
 
 @media screen and (orientation: landscape) {
     body {
-        width: 1024px;
+        width: 800px;
         height: 768px;
         padding: 2px;
     }
+
     #body {
         background-color: white;
-        grid-template-columns:  510px 15em 1fr;
+        grid-template-columns:  510px 15em;
         grid-template-areas: 
-            "title title ."
-            "puzzle name ."
-            "puzzle choices ."
-            "puzzle menu ."
-            "puzzle . ."
+            "header header"
+            "puzzle name"
+            "puzzle choices"
+            "puzzle menu"
+            "puzzle . "
     }
 
     #choices {
@@ -100,16 +135,31 @@
         margin: 5px;
     }
 
-    .entry {
+    #entry {
+        display: grid;
         justify-self: center;
+        grid-template-areas: 
+            "atitle atitle atitle"
+            "adec . ainc";
+    }
+
+    #delete {
+        grid-area: "delbutton";
     }
 }
 
-.entry {
-    justify-self: center;
+#entry {
     grid-area: name;
-    display: grid;
-    grid-template-rows: auto auto 1fr;
+}
+
+#dectitle {
+    grid-area: adec;
+}
+#title {
+    grid-area: atitle;
+}
+#inctitle {
+    grid-area: ainc;
 }
 
 .menu {
@@ -117,7 +167,7 @@
 }
 
 header {
-    grid-area: title;
+    grid-area: header;
     text-align: center;
     font: 32pt Georgia;
 }
@@ -166,10 +216,6 @@ a {
 
 .theCell {
     background: lightGray;
-}
-
-#items {
-    grid-area: puzzle / puzzle / puzzle / puzzle;
 }
 
 th {
