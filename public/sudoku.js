@@ -44,7 +44,7 @@ $(document).ready(
 			$("#choices").show()
 			switch (m) {
 				case 'edit':
-					$('#setup, #controls, #entry, #new, #solve, #dectitle, #inctitle, #list, #delete').show()
+					$('#setup, #controls, #entry, #new, #solve, #dectitle, #inctitle, #list, #delete, a').show()
 					$('#delete').disable(!("sk " + title_t.value) in localStorage)
 					$("#title").disable(false)
 					$("section > div > div").css({ color: "red", background: "" })
@@ -56,7 +56,7 @@ $(document).ready(
 					clean_url()
 					break
 				case 'play':
-					$('#setup, #controls, #entry, #undo, #mark, #edit, #solved, #save, #clear, #retry, a').show()
+					$('#setup, #controls, #entry, #undo, #mark, #edit, #solved, #save, #clear, #retry').show()
 					$("#title").disable(true)
 					$("#undo, #mark, #clear").disable(undo.length == 0)
 					$("section > div > div").css("color", "black")

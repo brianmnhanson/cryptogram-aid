@@ -11,10 +11,9 @@
 }
 
 #the-list {
-    height: 500px;
+    height: 300px;
     width: 490px;
-    overflow-y: scroll;
-    overflow-x: hidden;
+    overflow: scroll;
     grid-area: puzzle / puzzle / puzzle / puzzle;
 }
 
