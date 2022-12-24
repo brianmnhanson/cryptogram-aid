@@ -39,12 +39,12 @@ $(document).ready(
 		}
 
 		function setMode(m) {
-			$('button, #the-list, #setup, #controls, #entry, a').hide()
+			$('button, #the-list, #setup, #entry, #mail').hide()
 			$('#menu').css("grid-area", "menu")
 			$("#choices").show()
 			switch (m) {
 				case 'edit':
-					$('#setup, #controls, #entry, #new, #solve, #dectitle, #inctitle, #list, #delete, a').show()
+					$('#setup, #entry, #new, #solve, #dectitle, #inctitle, #list, #delete').show()
 					$('#delete').disable(!("sk " + title_t.value) in localStorage)
 					$("#title").disable(false)
 					$("section > div > div").css({ color: "red", background: "" })
@@ -53,10 +53,11 @@ $(document).ready(
 					})
 					$("#choices > li").css("color", "")
 					change_digit(null)
+					enable_disable_solve()
 					clean_url()
 					break
 				case 'play':
-					$('#setup, #controls, #entry, #undo, #mark, #edit, #solved, #save, #clear, #retry').show()
+					$('#setup, #entry, #undo, #mark, #edit, #solved, #save, #clear, #retry, #mail').show()
 					$("#title").disable(true)
 					$("#undo, #mark, #clear").disable(undo.length == 0)
 					$("section > div > div").css("color", "black")
@@ -194,44 +195,36 @@ $(document).ready(
 			}
 		}
 
-		function get_row(n) {
+		function get_row(board, n) {
 			var value = Array(10).fill(0)
 			var s = Math.floor(n / 3) * 27 + (n % 3) * 3
 			for (var i = 0; i < 3; i++) {
 				for (var j = 0; j < 3; j++) {
-					var v = theSudoku.guess[s + i * 9 + j]
+					var v = board[s + i * 9 + j]
 					value[v] += 1
 				}
 			}
 			return value.slice(1)
 		}
 
-		function get_column(n) {
+		function get_column(board, n) {
 			var value = Array(10).fill(0)
 			var s = Math.floor(n / 3) * 9 + (n % 3)
 			for (var i = 0; i < 3; i++) {
 				for (var j = 0; j < 3; j++) {
-					var v = theSudoku.guess[s + (i * 9 + j) * 3]
+					var v = board[s + (i * 9 + j) * 3]
 					value[v] += 1
 				}
 			}
 			return value.slice(1)
 		}
 
-		function get_square(n) {
+		function get_square(board, n) {
 			var value = Array(10).fill(0)
 			for (i = 0; i < 9; i++) {
-				value[theSudoku.guess[n * 9 + i]] += 1
+				value[board[n * 9 + i]] += 1
 			}
 			return value.slice(1)
-		}
-
-		function found9(n) {
-			var count = 0
-			for (i = 0; i < 81; i++) {
-				if (theSudoku.guess[i] == n) count += 1
-			}
-			return count == 9
 		}
 
 		function is_bad(v) {
@@ -253,11 +246,19 @@ $(document).ready(
 				if (counts[i] != 9) return
 			}
 			for (var i = 0; i < 9; i++) {
-				if (is_bad(get_row(i)) || is_bad(get_column(i)) || is_bad(get_square(i)))
+				if (is_bad(get_row(theSudoku.guess, i)) || is_bad(get_column(theSudoku.guess, i)) || is_bad(get_square(theSudoku.guess, i)))
 					return
 			}
 			theSudoku.solved = true
 			$('#solved').disable(false)
+		}
+
+		function enable_disable_solve() {
+			var bad = theSudoku.value.filter(v => v == 0).length == 81
+			for (var i = 0; i < 9; i++) {
+				bad ||= is_bad(get_row(theSudoku.value, i)) || is_bad(get_column(theSudoku.value, i)) || is_bad(get_square(theSudoku.value, i));
+			}
+			$("#solve").disable(bad)
 		}
 
 		function select_row(e) {
@@ -268,6 +269,10 @@ $(document).ready(
 			title_t.value = name
 			undo = []
 			marked = []
+			for (i = 0; i<81; i++) {
+				if (theSudoku.value[i] == theSudoku.guess[i]) continue;
+				undo.push("#" + i + ":" + 0)
+			}
 			save()
 			change_digit(null)
 			setMode("play")
@@ -355,6 +360,7 @@ $(document).ready(
 				beep(20, 600 + 20 * get_digit(li.target), 60)
 				if (theCell != null) {
 					set_cell_value(theCell, li.target, true)
+					enable_disable_solve()
 					undo = []
 					marked = []
 				}
