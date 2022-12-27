@@ -353,7 +353,7 @@ $(document).ready(
 
 		// Global actions
 		$('button[name^="new"]').click(e => {
-			if (complete() ||  confirm("You have not finished the cyrrent quip. Are you sure?")) {
+			if (complete() || undo.length < 1 || confirm("You have not completed the current quip. Are you sure?")) {
 				var today = new Date();
 				today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
 				theQuip.name = "STrib " + today.toISOString().slice(0, 10);

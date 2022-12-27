@@ -394,18 +394,21 @@ $(document).ready(
 
 		// Global actions
 		$('#new').click(function (e) {
-			var today = new Date()
-			today.setMinutes(today.getMinutes() - today.getTimezoneOffset())
-			theSudoku.name = "STrib " + today.toISOString().slice(0, 10)
-			theSudoku.value = empty.slice()
-			theSudoku.guess = empty.slice()
-			theSudoku.solved = false
+			
+			if (theSudoku.solved || undo.length < 1 || confirm("You have not completed the current sudoku. Are you sure?")) {
+				var today = new Date()
+				today.setMinutes(today.getMinutes() - today.getTimezoneOffset())
+				theSudoku.name = "STrib " + today.toISOString().slice(0, 10)
+				theSudoku.value = empty.slice()
+				theSudoku.guess = empty.slice()
+				theSudoku.solved = false
 
-			title_t.value = theSudoku.name
-			undo = []
-			marked = []
+				title_t.value = theSudoku.name
+				undo = []
+				marked = []
 
-			setMode("edit")
+				setMode("edit")
+			}
 		})
 
 		// Edit mode actions
