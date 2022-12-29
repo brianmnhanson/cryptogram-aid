@@ -63,6 +63,9 @@ header {
     
     .menu {
         justify-self: center;
+        display: grid;
+        grid-template-columns: repeat(8, auto);
+        column-gap: 15px;
     }
 
     #choices {    
