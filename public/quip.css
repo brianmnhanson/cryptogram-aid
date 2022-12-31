@@ -2,6 +2,7 @@ body {
     display: grid;
     justify-items: center;
     background: #efefef;
+    border: 1px solid;
 }
 
 .content {

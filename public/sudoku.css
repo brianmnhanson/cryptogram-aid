@@ -1,9 +1,16 @@
 #body {
     display: grid;
-    background: #efefef;
     grid-gap: 1em;
+    border: 1px solid;
 }
 
+body {
+    background-image: linear-gradient(
+        to bottom right,
+        rgba(200, 200, 64, 0.5),
+        rgba(100, 100, 200, 0.5)
+    );
+}
 
 #choices {
     list-style: none;
@@ -92,7 +99,6 @@ header {
     }
 
     #body {
-        background-color: white;
         grid-template-columns:  510px 15em;
         grid-template-areas: 
             "header header"
