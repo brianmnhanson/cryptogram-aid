@@ -27,6 +27,8 @@ $(document).ready(
 		var audio_context =new AudioContext()
 
 		function beep(vol, freq, duration) {
+			if (duration == 0)
+				return
 			var v=audio_context.createOscillator()
 			var u=audio_context.createGain()
 			v.connect(u)
@@ -36,6 +38,10 @@ $(document).ready(
 			u.gain.value=vol*0.01
 			v.start(audio_context.currentTime)
 			v.stop(audio_context.currentTime+duration*0.001)
+		}
+
+		function do_beep(v, count) {
+			beep(20, 600 + v, count * 60)
 		}
 
 		function setMode(m) {
@@ -59,6 +65,8 @@ $(document).ready(
 				case 'play':
 					$('#setup, #entry, #undo, #mark, #edit, #solved, #save, #clear, #retry, #mail').show()
 					$("#title").disable(true)
+					if (undo.length == 0)
+						init_undo()
 					$("#undo, #mark, #clear").disable(undo.length == 0)
 					$("section > div > div").css("color", "black")
 					$("section > div > div").each(function (i) {
@@ -155,6 +163,7 @@ $(document).ready(
 
 		function store() {
 			save()
+			do_beep(300, 2)
 			var value = as_string(theSudoku.value, theSudoku.solved) + ";" + as_string(theSudoku.guess, false)
 			localStorage["sk " + theSudoku.name] = value
 			$('#delete').disable(false)
@@ -261,6 +270,13 @@ $(document).ready(
 			$("#solve").disable(bad)
 		}
 
+		function init_undo() {
+			for (i = 0; i<81; i++) {
+				if (theSudoku.value[i] == theSudoku.guess[i]) continue;
+				undo.push("#" + i + ":" + 0)
+			}
+		}
+
 		function select_row(e) {
 			var name = e.currentTarget.title
 			var ts = fetch(name)
@@ -269,10 +285,6 @@ $(document).ready(
 			title_t.value = name
 			undo = []
 			marked = []
-			for (i = 0; i<81; i++) {
-				if (theSudoku.value[i] == theSudoku.guess[i]) continue;
-				undo.push("#" + i + ":" + 0)
-			}
 			save()
 			change_digit(null)
 			setMode("play")
@@ -328,21 +340,26 @@ $(document).ready(
 		function highlight_cell(c) {
 			$("section > div > div").css('background', '')
 			if (c != null) $(c).css('background', 'lightgray')
+			var changed = theCell != c
 			theCell = c
+			return changed && c != null
 		}
 
 		function change_digit(d) {
-			if (digit == d) return
+			if (digit == d) return false
 
 			$('.theDigit').removeClass('theDigit')
 			if (d != null) $(d).addClass('theDigit')
+			var changed = digit != d;
 			digit = d
 			highlight_cells(d);
+			return changed;
 		}
 
 		function set_cell_value(c, value, is_edit) {
 			value = get_digit(value)
 			$(c).text(value == 0 ? ' ' : value)
+			var changed = theSudoku.guess[c.id] != value
 			theSudoku.guess[c.id] = value
 			if (is_edit) {
 				theSudoku.value[c.id] = value
@@ -351,21 +368,22 @@ $(document).ready(
 				$(c).css('background', value != 0 && value == get_digit(digit) ? 'lightgray' : '').css("color", "black")
 				check_guess()
 			}
+			return changed
 		}
 
 		// select a digit
 		$("#choices > li").click(function (li) {
 			if (li.target.id == 'd') return
 			if (mode == 'edit') {
-				beep(20, 600 + 20 * get_digit(li.target), 60)
+				do_beep(li.target.id == 'd*' ? 0 : 600, 1)
 				if (theCell != null) {
 					set_cell_value(theCell, li.target, true)
 					enable_disable_solve()
 					undo = []
 					marked = []
 				}
-			} else {
-				change_digit(li.target)
+			} else  if (change_digit(li.target)) {
+				do_beep(li.target.id == 'd*' ? 0 : 600, 1)
 			}
 		})
 		$("#choices > li").each(function (i) {
@@ -375,7 +393,8 @@ $(document).ready(
 		// Put the selected digit in the clicked cell
 		$("section > div > div").click(function (div) {
 			if (mode == 'edit') {
-				highlight_cell(div.target)
+				if (highlight_cell(div.target))
+					do_beep(200, 1)
 			} else if (theSudoku.value[div.target.id] == 0  
 				&& digit != null
 				&& theSudoku.guess[div.target.id] != get_digit(digit)) {
@@ -383,6 +402,7 @@ $(document).ready(
 				set_cell_value(div.target, digit, false)
 				if (undo.length == 1) $("#undo, #mark, #clear").disable(false)
 				save()
+				do_beep(200, 1)
 			}
 		})
 
@@ -439,6 +459,7 @@ $(document).ready(
 				marked = []
 				setMode("play")
 			}
+			do_beep(300, 1)
 		})
 		$("#edit").click(e => setMode("edit"))
 		$("#list").click(e => setMode("list"))
@@ -455,6 +476,7 @@ $(document).ready(
 			if (undo.length == 0) $("#undo, #mark, #clear").disable(true)
 			set_cell_value($(last[0])[0], last[1], false)
 			save()
+			do_beep(0, 1)
 		})
 
 		$("#mark").click(function (e) {
@@ -464,15 +486,19 @@ $(document).ready(
 			marked.push(undo[undo.length-1])
 			save()
 			$("#retry").disable(false)
+			do_beep(100, 1)
 		})
 
 		$("#retry").click(function (e) {
+			var n = 0;
 			while (undo.length  > 0 && marked.length > 0) {
 				if (marked[marked.length - 1] == undo[undo.length - 1]) break
 				var last = undo.pop().split(":")
 				set_cell_value($(last[0])[0], last[1], false)
+				n += 1;
 			}
 			save()
+			do_beep(0, n)
 		})
 
 		// List panel actions
