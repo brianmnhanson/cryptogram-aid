@@ -16,13 +16,14 @@ jQuery.fn.extend({
 $(document).ready(
 	function () {
 
-		var title_t = document.getElementById("title");
-		var empty = Array(81).fill(0);
-		var theSudoku = { value: empty.slice(), guess: empty.slice(), name: '', solved: false };
-		var hide = true;
-		var mode;
-		var undo = [];
-		var marked = [];
+		var title_t = document.getElementById("title")
+		var empty = Array(81).fill(0)
+		var theSudoku = { value: empty.slice(), guess: empty.slice(), name: '', solved: false }
+		var hide = true
+		var mode
+		var undo = []
+		var marked = []
+		var digits = []
 		
 		var audio_context =new AudioContext()
 
@@ -33,6 +34,9 @@ $(document).ready(
 			var u=audio_context.createGain()
 			v.connect(u)
 			v.frequency.value=freq
+			v.type="triangle"
+			v.type="sawtooth"
+			v.type="square"
 			v.type="sine"
 			u.connect(audio_context.destination)
 			u.gain.value=vol*0.01
@@ -63,6 +67,7 @@ $(document).ready(
 					clean_url()
 					break
 				case 'play':
+					audio_context = new AudioContext()
 					$('#setup, #entry, #undo, #mark, #edit, #solved, #save, #clear, #retry, #mail').show()
 					$("#title").disable(true)
 					if (undo.length == 0)
@@ -244,15 +249,16 @@ $(document).ready(
 			theSudoku.solved = false
 			$('#solved').disable(true)
 
-			var counts = Array(10).fill(0)
+			digits = Array(10).fill(0)
 			for (i = 0; i < 81; i++) {
-				counts[theSudoku.guess[i]]++
+				digits[theSudoku.guess[i]]++
 			}
-			for (i = 1; i < counts.length; i++) {
-				$("#d" + i).css("color", counts[i] > 8 ? "red" : "")
+			for (i = 1; i < digits.length; i++) {
+				var color = digits[i] > 8 ? "red" : ""
+				$("#d" + i).css("color", color)
 			}
-			for (i = 1; i < counts.length; i++) {
-				if (counts[i] != 9) return
+			for (i = 1; i < digits.length; i++) {
+				if (digits[i] != 9) return
 			}
 			for (var i = 0; i < 9; i++) {
 				if (is_bad(get_row(theSudoku.guess, i)) || is_bad(get_column(theSudoku.guess, i)) || is_bad(get_square(theSudoku.guess, i)))
@@ -359,16 +365,20 @@ $(document).ready(
 		function set_cell_value(c, value, is_edit) {
 			value = get_digit(value)
 			$(c).text(value == 0 ? ' ' : value)
-			var changed = theSudoku.guess[c.id] != value
+			var old_guess = theSudoku.guess[c.id]
 			theSudoku.guess[c.id] = value
 			if (is_edit) {
+				if (old_guess != 0 && theSudoku.value[c.id] == 0)  {
+					undo = []
+					marked = []
+				}
 				theSudoku.value[c.id] = value
 				highlight_cell(document.getElementById(parseInt(c.id) + 1))
 			} else {
 				$(c).css('background', value != 0 && value == get_digit(digit) ? 'lightgray' : '').css("color", "black")
 				check_guess()
 			}
-			return changed
+			return old_guess != value
 		}
 
 		// select a digit
@@ -379,8 +389,6 @@ $(document).ready(
 				if (theCell != null) {
 					set_cell_value(theCell, li.target, true)
 					enable_disable_solve()
-					undo = []
-					marked = []
 				}
 			} else  if (change_digit(li.target)) {
 				do_beep(li.target.id == 'd*' ? 0 : 600, 1)
@@ -402,7 +410,10 @@ $(document).ready(
 				set_cell_value(div.target, digit, false)
 				if (undo.length == 1) $("#undo, #mark, #clear").disable(false)
 				save()
-				do_beep(200, 1)
+				if (digits[get_digit(digit)] == 9)
+					do_beep(400, 3)
+				else
+					do_beep(200, 1)
 			}
 		})
 
