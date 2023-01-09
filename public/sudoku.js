@@ -27,9 +27,10 @@ $(document).ready(
 		
 		var audio_context =new AudioContext()
 
-		function beep(vol, freq, duration) {
+		function beep(vol, freq, duration, offset, type) {
 			if (duration == 0)
 				return
+			duration += offset;
 			var v=audio_context.createOscillator()
 			var u=audio_context.createGain()
 			v.connect(u)
@@ -38,14 +39,15 @@ $(document).ready(
 			v.type="sawtooth"
 			v.type="square"
 			v.type="sine"
+			v.type=type
 			u.connect(audio_context.destination)
 			u.gain.value=vol*0.01
-			v.start(audio_context.currentTime)
+			v.start(audio_context.currentTime+offset*0.001)
 			v.stop(audio_context.currentTime+duration*0.001)
 		}
 
 		function do_beep(v, count) {
-			beep(20, 600 + v, count * 60)
+			beep(10, 600 + v, count * 60, 0, "sine")
 		}
 
 		function setMode(m) {
@@ -410,10 +412,14 @@ $(document).ready(
 				set_cell_value(div.target, digit, false)
 				if (undo.length == 1) $("#undo, #mark, #clear").disable(false)
 				save()
-				if (digits[get_digit(digit)] == 9)
-					do_beep(400, 3)
-				else
-					do_beep(200, 1)
+				if (digits[get_digit(digit)] != 9)
+					do_beep(400, 1)
+				else {
+					if (theSudoku.solved) {
+						do_beep(200, 9)
+					} else 
+						do_beep(200, 3)
+				}
 			}
 		})
 
