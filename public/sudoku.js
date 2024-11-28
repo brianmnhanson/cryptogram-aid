@@ -22,7 +22,7 @@ $(document).ready(
 		var hide = true;
 		var mode;
 		var undo = [];
-		var marked = [];
+		var marked = new Set()
 		
 		var audio_context =new AudioContext()
 
@@ -42,6 +42,17 @@ $(document).ready(
 
 		function do_beep(v, count) {
 			beep(20, 600 + v, count * 60)
+		}
+
+		function highlight_marks() {
+			marked.forEach(v => {
+					var id = v.split(":")[0]
+					var item = undo.find(v => v.split(":")[0] == id)
+					if (item == v) 
+						$(id).css("color", "gray")
+				}
+			)
+			$("#retry").disable(marked.size < 1)
 		}
 
 		function setMode(m) {
@@ -75,12 +86,7 @@ $(document).ready(
 							$(this).css("color", "red")
 						}
 					})
-					if (marked.length > 0) {
-						marked.forEach(e => $(e.split(":")[0]).css("color", "gray"))
-						$("#retry").disable(false)
-					} else {
-						$("#retry").disable(true)
-					}
+					highlight_marks()
 					highlight_cell(null)
 					check_guess()
 					updateLink()
@@ -145,7 +151,8 @@ $(document).ready(
 			theSudoku.name = title_t.value
 			theSudoku.valid = true
 			theSudoku.undo = undo
-			theSudoku.marked = marked
+			theSudoku.marked = [...marked]
+			theSudoku.mode = mode
 			localStorage["sudoku"] = JSON.stringify(theSudoku, 0, 1)
 		}
 
@@ -156,7 +163,8 @@ $(document).ready(
 					theSudoku = q
 					title_t.value = theSudoku.name
 					undo = q.undo
-					marked = q.marked
+					marked = new Set(q.marked)
+					if (q.mode != mode) setMode(q.mode)
 				}
 			} catch (e) { }
 		}
@@ -284,7 +292,7 @@ $(document).ready(
 			theSudoku = ts
 			title_t.value = name
 			undo = []
-			marked = []
+			marked.clear()
 			save()
 			change_digit(null)
 			setMode("play")
@@ -380,7 +388,7 @@ $(document).ready(
 					set_cell_value(theCell, li.target, true)
 					enable_disable_solve()
 					undo = []
-					marked = []
+					marked.clear()
 				}
 			} else  if (change_digit(li.target)) {
 				do_beep(li.target.id == 'd*' ? 0 : 600, 1)
@@ -425,7 +433,7 @@ $(document).ready(
 
 				title_t.value = theSudoku.name
 				undo = []
-				marked = []
+				marked.clear()
 
 				setMode("edit")
 			}
@@ -456,7 +464,7 @@ $(document).ready(
 				change_digit(null)
 				theSudoku.guess = theSudoku.value.slice()
 				undo = []
-				marked = []
+				marked.clear()
 				setMode("play")
 			}
 			do_beep(300, 1)
@@ -468,13 +476,16 @@ $(document).ready(
 		$("#undo").click(function (e) {
 			if (undo.length == 0) return
 			var top = undo.pop()
-			var last = top.split(":")
-			if (marked.length > 0 && marked[marked.length - 1] == top) {
-				marked.pop()
-				$("#retry").disable(marked.length == 0)
+			if (marked.has(top)) {
+				marked.delete(top)
+				$("#retry").disable(marked.size < 1)
 			}
-			if (undo.length == 0) $("#undo, #mark, #clear").disable(true)
+			var last = top.split(":")
 			set_cell_value($(last[0])[0], last[1], false)
+			if (undo.length == 0) 
+				$("#undo, #mark, #clear").disable(true);
+			else
+				highlight_marks()
 			save()
 			do_beep(0, 1)
 		})
@@ -483,7 +494,7 @@ $(document).ready(
 			if (undo.length == 0) return
 			var last = undo[undo.length-1].split(":")
 			$(last[0]).css("color", "gray")
-			marked.push(undo[undo.length-1])
+			marked.add(undo[undo.length-1])
 			save()
 			$("#retry").disable(false)
 			do_beep(100, 1)
@@ -491,13 +502,14 @@ $(document).ready(
 
 		$("#retry").click(function (e) {
 			var n = 0;
-			while (undo.length  > 0 && marked.length > 0) {
-				if (marked[marked.length - 1] == undo[undo.length - 1]) break
+			while (undo.length  > 0 && marked.size > 0) {
+				if (marked.has(undo[undo.length - 1])) break
 				var last = undo.pop().split(":")
 				set_cell_value($(last[0])[0], last[1], false)
 				n += 1;
 			}
 			save()
+			highlight_marks()
 			do_beep(0, n)
 		})
 
@@ -505,9 +517,9 @@ $(document).ready(
 		$("#hide").click(e => show_hide(true))
 		$("#show").click(e => show_hide(false))
 
-		restore_sudoku()
-
 		// Initialize quip from URL query if present
+
+		setMode("edit")
 		if (document.URL.indexOf("?") > 0) {
 			var query = document.URL.substring(document.URL.indexOf("?") + 1)
 			var pos = query.indexOf("&")
@@ -524,13 +536,12 @@ $(document).ready(
 					else save()
 				}
 				undo = []
-				marked = []
+				marked.clear()
 				setMode('play')
-			} else
-				setMode("edit")
+			}
 
 		} else {
-			setMode("edit")
+			restore_sudoku()
 		}
 
 	});
