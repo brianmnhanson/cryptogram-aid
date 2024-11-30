@@ -25,12 +25,13 @@ $(document).ready(
 		var marked = new Set()
 		var digits = []
 		
-		var audio_context =new AudioContext()
+		var audio_context
 
 		function beep(vol, freq, duration, offset, type) {
 			if (duration == 0)
 				return
 			duration += offset;
+            if (typeof audio_context == "undefined")  audio_context = new AudioContext()
 			var v=audio_context.createOscillator()
 			var u=audio_context.createGain()
 			v.connect(u)
@@ -171,6 +172,7 @@ $(document).ready(
 					title_t.value = theSudoku.name
 					undo = q.undo
 					marked = new Set(q.marked)
+					if (typeof q.mode == "undefined") q.mode = "edit"
 					if (q.mode != mode) setMode(q.mode)
 				}
 			} catch (e) { }
@@ -520,12 +522,12 @@ $(document).ready(
 		})
 
 		$("#retry").click(function (e) {
-			var n = 0;
+			var n = 0
 			while (undo.length  > 0 && marked.size > 0) {
 				if (marked.has(undo[undo.length - 1])) break
 				var last = undo.pop().split(":")
 				set_cell_value($(last[0])[0], last[1], false)
-				n += 1;
+				n += 1
 			}
 			save()
 			highlight_marks()
@@ -539,8 +541,9 @@ $(document).ready(
 		// Initialize quip from URL query if present
 
 		setMode("edit")
-		if (document.URL.indexOf("?") > 0) {
-			var query = document.URL.substring(document.URL.indexOf("?") + 1)
+        var indexOfQ = document.URL.indexOf("?")
+		if (indexOfQ > 0) {
+			var query = document.URL.substring(indexOfQ + 1)
 			var pos = query.indexOf("&")
 			if (pos > 0) {
 				var name = decodeURI(query.substring(0, pos))
