@@ -20,12 +20,13 @@ $(document).ready(
 		var empty = Array(81).fill(0)
 		var theSudoku = { value: empty.slice(), guess: empty.slice(), name: '', solved: false }
 		var hide = true
-		var mode
+		var mode = ""
 		var undo = []
 		var marked = new Set()
 		var digits = []
 		
 		var audio_context
+		var starting_url = document.URL
 
 		function beep(vol, freq, duration, offset, type) {
 			if (duration == 0)
@@ -106,6 +107,7 @@ $(document).ready(
 					build_list()
 					clean_url()
 					break
+				default: 
 			}
 			mode = m
 		}
@@ -140,7 +142,7 @@ $(document).ready(
 
 		var dayOfWeek = "Sunday Monday Tuesday Wednesday Thursday Friday Saturday".split(" ")
 		function updateLink() {
-			var href = document.URL.split("?")[0] + "?" +
+			var href = starting_url.split("?")[0] + "?" +
 				encodeURI(theSudoku.name) + "&" + as_string(theSudoku.value, false)
 			var mail_a = document.getElementById("mail")
 			if (mail_a != null) {
@@ -540,10 +542,9 @@ $(document).ready(
 
 		// Initialize quip from URL query if present
 
-		setMode("edit")
-        var indexOfQ = document.URL.indexOf("?")
+		var indexOfQ = starting_url.indexOf("?")
 		if (indexOfQ > 0) {
-			var query = document.URL.substring(indexOfQ + 1)
+			var query = starting_url.substring(indexOfQ + 1)
 			var pos = query.indexOf("&")
 			if (pos > 0) {
 				var name = decodeURI(query.substring(0, pos))
@@ -565,5 +566,6 @@ $(document).ready(
 		} else {
 			restore_sudoku()
 		}
+		if (mode == "") setMode("edit")
 
 	});
