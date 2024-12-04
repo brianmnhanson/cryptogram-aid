@@ -259,10 +259,20 @@ $(document).ready(
 			return v.find(n => n > 1) >= 0
 		}
 
+		function sudoku_has_conflicts()
+        {
+			for (var i = 0; i < 9; i++) {
+				if (is_bad(get_row(theSudoku.guess, i)) || is_bad(get_column(theSudoku.guess, i)) || is_bad(get_square(theSudoku.guess, i)))
+					return true
+			}
+			return false
+		}
+
 		function check_guess() {
 			theSudoku.solved = false
 			$('#solved').disable(true)
 
+            // mark all digits with 9 entered values as red. If all digits occur 9 times then it might be solved
 			digits = Array(10).fill(0)
 			for (i = 0; i < 81; i++) {
 				digits[theSudoku.guess[i]]++
@@ -274,20 +284,18 @@ $(document).ready(
 			for (i = 1; i < digits.length; i++) {
 				if (digits[i] != 9) return
 			}
-			for (var i = 0; i < 9; i++) {
-				if (is_bad(get_row(theSudoku.guess, i)) || is_bad(get_column(theSudoku.guess, i)) || is_bad(get_square(theSudoku.guess, i)))
-					return
-			}
+
+            // Check for conflicts
+            if (sudoku_has_conflicts()) return
+
 			theSudoku.solved = true
 			$('#solved').disable(false)
 		}
 
 		function enable_disable_solve() {
 			var bad = theSudoku.value.filter(v => v == 0).length == 81
-			for (var i = 0; i < 9; i++) {
-				bad ||= is_bad(get_row(theSudoku.value, i)) || is_bad(get_column(theSudoku.value, i)) || is_bad(get_square(theSudoku.value, i));
-			}
-			$("#solve").disable(bad)
+            if (sudoku_has_conflicts()) return
+            $("#solve").disable(bad)
 		}
 
 		function init_undo() {
@@ -480,7 +488,8 @@ $(document).ready(
 		// Play mode actions
 		$("#solved").click(function (e) {
 			store()
-			setMode("list")
+			setMode("edit")
+			save()
 		})
 		$("#clear").click(function (e) {
 			if (confirm("Are you sure you want to clear?")) {
@@ -553,6 +562,7 @@ $(document).ready(
 					theSudoku.name = name
 					theSudoku.value = from_string(value_string)
 					theSudoku.guess = theSudoku.value.slice()
+                    theSudoku.solved = false
 					title_t.value = theSudoku.name
 					var v = fetch(name)
 					if (v == null || v.solved == false)	store()
