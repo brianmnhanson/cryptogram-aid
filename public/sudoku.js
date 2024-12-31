@@ -256,13 +256,15 @@ $(document).ready(
 		}
 
 		function is_bad(v) {
-			return v.find(n => n > 1) >= 0
+			return v.find(n => n > 1) > 1
 		}
 
 		function sudoku_has_conflicts()
         {
 			for (var i = 0; i < 9; i++) {
-				if (is_bad(get_row(theSudoku.guess, i)) || is_bad(get_column(theSudoku.guess, i)) || is_bad(get_square(theSudoku.guess, i)))
+				if (is_bad(get_row(theSudoku.guess, i)) 
+				|| is_bad(get_column(theSudoku.guess, i))
+				|| is_bad(get_square(theSudoku.guess, i)))
 					return true
 			}
 			return false
@@ -293,8 +295,8 @@ $(document).ready(
 		}
 
 		function enable_disable_solve() {
-			var bad = theSudoku.value.filter(v => v == 0).length == 81
-            if (sudoku_has_conflicts()) return
+			var bad = theSudoku.value.filter(v => v == 0).length == 81 ||
+            	sudoku_has_conflicts()
             $("#solve").disable(bad)
 		}
 
