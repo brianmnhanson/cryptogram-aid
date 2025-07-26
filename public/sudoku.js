@@ -73,9 +73,7 @@ $(document).ready(
 					$('#delete').disable(!("sk " + title_t.value) in localStorage)
 					$("#title").disable(false)
 					$("section > div > div").css({ color: "red", background: "" })
-					$("section > div > div").each(function (i) {
-						$(this).text(theSudoku.value[i] == 0 ? ' ' : theSudoku.value[i])
-					})
+					paint_board(theSudoku.value)
 					$("#choices > li").css("color", "")
 					change_digit(null)
 					enable_disable_solve()
@@ -89,12 +87,7 @@ $(document).ready(
 						init_undo()
 					$("#undo, #mark, #clear").disable(undo.length == 0)
 					$("section > div > div").css("color", "black")
-					$("section > div > div").each(function (i) {
-						$(this).text(theSudoku.guess[i] == 0 ? ' ' : theSudoku.guess[i])
-						if (theSudoku.value[i] != 0) {
-							$(this).css("color", "red")
-						}
-					})
+					paint_board(theSudoku.guess)
 					highlight_marks()
 					highlight_cell(null)
 					check_guess()
@@ -110,6 +103,15 @@ $(document).ready(
 				default: 
 			}
 			mode = m
+		}
+
+		function paint_board(board) {
+			$("section > div > div").each(function (i) {
+				$(this).text(board[i] == 0 ? ' ' : board[i])
+				if (theSudoku.value[i] != 0) {
+					$(this).css("color", "red")
+				}
+			})
 		}
 
 		function clean_url() {
@@ -259,12 +261,12 @@ $(document).ready(
 			return v.find(n => n > 1) > 1
 		}
 
-		function sudoku_has_conflicts()
+		function sudoku_has_conflicts(board)
         {
 			for (var i = 0; i < 9; i++) {
-				if (is_bad(get_row(theSudoku.guess, i)) 
-				|| is_bad(get_column(theSudoku.guess, i))
-				|| is_bad(get_square(theSudoku.guess, i)))
+				if (is_bad(get_row(board, i)) 
+				|| is_bad(get_column(board, i))
+				|| is_bad(get_square(board, i)))
 					return true
 			}
 			return false
@@ -288,7 +290,7 @@ $(document).ready(
 			}
 
             // Check for conflicts
-            if (sudoku_has_conflicts()) return
+            if (sudoku_has_conflicts(theSudoku.guess)) return
 
 			theSudoku.solved = true
 			$('#solved').disable(false)
@@ -296,7 +298,7 @@ $(document).ready(
 
 		function enable_disable_solve() {
 			var bad = theSudoku.value.filter(v => v == 0).length == 81 ||
-            	sudoku_has_conflicts()
+            	sudoku_has_conflicts(theSudoku.value)
             $("#solve").disable(bad)
 		}
 
