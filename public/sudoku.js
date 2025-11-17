@@ -26,7 +26,6 @@ $(document).ready(
 		var digits = []
 		
 		var audio_context
-		var starting_url = document.URL
 
 		function beep(vol, freq, duration, offset, type) {
 			if (duration == 0)
@@ -91,7 +90,7 @@ $(document).ready(
 					highlight_marks()
 					highlight_cell(null)
 					check_guess()
-					updateLink()
+					updateMailLink()
 					break
 				case 'list':
 					$('#new, #solve, #edit, #the-list').show()
@@ -143,8 +142,8 @@ $(document).ready(
 		}
 
 		var dayOfWeek = "Sunday Monday Tuesday Wednesday Thursday Friday Saturday".split(" ")
-		function updateLink() {
-			var href = starting_url.split("?")[0] + "?" +
+		function updateMailLink() {
+			var href = window.location.href + "?" +
 				encodeURI(theSudoku.name) + "&" + as_string(theSudoku.value, false)
 			var mail_a = document.getElementById("mail")
 			if (mail_a != null) {
@@ -555,9 +554,11 @@ $(document).ready(
 
 		// Initialize quip from URL query if present
 
-		var indexOfQ = starting_url.indexOf("?")
-		if (indexOfQ > 0) {
-			var query = starting_url.substring(indexOfQ + 1)
+		var search = window.location.search
+		if (search.length > 0) {
+			var query = search.substring(1)
+			window.history.replaceState({}, "Cryptogram AID", window.location.pathname);
+
 			var pos = query.indexOf("&")
 			if (pos > 0) {
 				var name = decodeURI(query.substring(0, pos))
