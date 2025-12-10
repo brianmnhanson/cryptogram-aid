@@ -207,20 +207,20 @@ $(document).ready(
 			if (v) {
 				var d = new Date(v[0])
 				d.setTime(d.getTime() + n * 24 * 3600000)
-				title_t.value = "STrib " + d.toISOString().slice(0, 10)
+				const formattedDate = d.toISOString().slice(0, 10)
+				title_t.value = title_t.value.substring(0, v.index) + formattedDate
 				check_title()
 				return
 			}
-			v = /\d+$/g.exec(title_t.value)
+			v = /\w{3} \d+,? \d+$/g.exec(title_t.value);
 			if (v) {
-				var num = parseInt(v[0]) + n
-				var str = num.toFixed(0)
-				while (str.length < v[0].length) {
-					str = "0" + str
-				}
-				title_t.value = title_t.value.substring(0, v.index) + str
+				var d = new Date(v[0])
+				d.setTime(d.getTime() + n * 24 * 3600000)
+				const options = { year: 'numeric', month: 'short', day: 'numeric' }
+				const formattedDate = new Intl.DateTimeFormat('en-US', options).format(d)
+				title_t.value = title_t.value.substring(0, v.index) + formattedDate
 				check_title()
-				return;
+				return
 			}
 		}
 
