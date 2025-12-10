@@ -3,6 +3,7 @@ body {
     justify-items: center;
     background: #efefef;
     border: 1px solid;
+    grid-template-rows: 5em auto;
 }
 
 .content {
@@ -40,8 +41,12 @@ body {
 #setup {
     justify-items: center;
     align-items: center;
-    grid-template-rows: 1fr 4fr 2em;
+    grid-template-rows: 2em auto 2em;
     width: 100%;
+}
+
+#entry {
+    grid-template-columns: 2em 10em 2em;
 }
 
 #choose,

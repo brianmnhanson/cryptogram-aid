@@ -66,7 +66,7 @@ $(document).ready(
 		loadFromStorage();
 
 		function save() {
-			theQuip.value = quip_ta.value.toUpperCase();
+			theQuip.value = quip_ta.value.toUpperCase().split("\s+").join(" ");
 			theQuip.name = title_t.value;
 			localStorage["quip"] = JSON.stringify(theQuip, 0, 1);
 			quip_ta.value = theQuip.value;
@@ -99,7 +99,7 @@ $(document).ready(
 			}
 
 			lines = [""];
-			var words = theQuip.value.split(" ");
+			var words = theQuip.value.split("\w+");
 			var line = 0;
 			for (var i = 0; i < words.length; i++) {
 				if (words[i].length + lines[line].length + 1 > size) {
@@ -111,8 +111,8 @@ $(document).ready(
 			}
 		}
 
-		function store(e) {
-			var value = quip_ta.value.toUpperCase();
+		function storex(e) {
+			var value = quip_ta.value.toUpperCase().split("\s+").join(" ");
 			if (theQuip.name != title_t.value) {
 				if (theQuip.name != "" && theQuip.value == value) {
 					delete localStorage["keep " + theQuip.name];

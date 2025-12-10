@@ -122,19 +122,20 @@ $(document).ready(
 		}
 
 		function saveQuip() {
-			var key = letter;
+			var key = letter
 			for (var i = 0; i < alphabet.length; i++) {
-				var c = alphabet[i];
+				var c = alphabet[i]
 				if (c in dict) {
-					key += c + dict[c];
+					key += c + dict[c]
 				}
 			}
-			theQuip.key = key;
+			theQuip.key = key
 
-			theQuip.value = quip_ta.value.toUpperCase();
-			theQuip.name = title_t.value;
-			localStorage["quip"] = JSON.stringify(theQuip, 0, 1);
-			quip_ta.value = theQuip.value;
+			var words = quip_ta.value.toUpperCase().split(/\s+/)
+			theQuip.value = words.join(" ")
+			theQuip.name = title_t.value
+			localStorage["quip"] = JSON.stringify(theQuip, 0, 1)
+			quip_ta.value = theQuip.value
 		}
 
 		function setDictFromKey() {
@@ -152,21 +153,21 @@ $(document).ready(
 		}
 
 		function store(e) {
-			var value = quip_ta.value.toUpperCase();
+			var value = quip_ta.value.toUpperCase().split(/\s+/).join(" ")
 			if (theQuip.name != "" && theQuip.name != title_t.value && theQuip.value == value) {
-				delete localStorage["keep " + theQuip.name];
-				delete localStorage["solved " + theQuip.name];
+				delete localStorage["keep " + theQuip.name]
+				delete localStorage["solved " + theQuip.name]
 			}
-			theQuip.name = title_t.value;
-			theQuip.value = value;
-			quip_ta.value = value;
+			theQuip.name = title_t.value
+			theQuip.value = value
+			quip_ta.value = value
 
 			if (theQuip.name != "") {
-				localStorage["keep " + theQuip.name] = value;
+				localStorage["keep " + theQuip.name] = value
 			}
 
-			$("#store").disable(true);
-			$("#delete").disable(false);
+			$("#store").disable(true)
+			$("#delete").disable(false)
 		}
 
 		function inc_title(n) {
@@ -174,7 +175,19 @@ $(document).ready(
 			if (v) {
 				var d = new Date(v[0]);
 				d.setTime(d.getTime() + n * 24 * 3600000);
-				title_t.value = "STrib " + d.toISOString().slice(0, 10);
+				title_t.value = title_t.value.substring(0, v.index) + d.toISOString().slice(0, 10);
+				$("#delete").disable(true);
+				$("#store").disable(false);
+				return;
+			}
+			v = /\w{3} \d+,? \d+$/g.exec(title_t.value);
+			if (v) {
+				var d = new Date(v[0]);
+				d.setTime(d.getTime() + n * 24 * 3600000);
+				const options = { year: 'numeric', month: 'short', day: 'numeric' };
+				const formattedDate = new Intl.DateTimeFormat('en-US', options).format(d);
+
+				title_t.value = title_t.value.substring(0, v.index) + formattedDate;
 				$("#delete").disable(true);
 				$("#store").disable(false);
 				return;
