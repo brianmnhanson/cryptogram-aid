@@ -10,6 +10,13 @@ body {
     display: grid;
 }
 
+.menu {
+    justify-self: center;
+    display: grid;
+    grid-template-columns: repeat(8, auto);
+    column-gap: 15px;
+}
+
 @media screen and (max-height: 700px) {
     h1 {
         margin: 10px auto 0px;
@@ -46,7 +53,7 @@ body {
 }
 
 #entry {
-    grid-template-columns: 2em 10em 2em;
+    grid-template-columns: repeat(3, auto);
 }
 
 #choose,

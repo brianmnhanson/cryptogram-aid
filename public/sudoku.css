@@ -7,7 +7,7 @@
 body {
     background-image: linear-gradient(
         to bottom right,
-        rgba(200, 200, 64, 0.5),
+        rgba(217, 217, 102, 0.5),
         rgba(100, 100, 200, 0.5)
     );
 }
@@ -64,8 +64,8 @@ header {
     }
 
     .zone {
-        grid-template-rows: repeat(3, 52px);
-        grid-template-columns: repeat(3, 52px);
+        grid-template-rows: repeat(3, 48px);
+        grid-template-columns: repeat(3, 48px);
     }
     
     .menu {
@@ -78,7 +78,7 @@ header {
     #choices {    
         justify-self: center;  
         display: grid;
-        grid-template-columns: repeat(12, 48px);
+        grid-template-columns: repeat(12, 42px);
     }
 
     #choices li {
@@ -92,14 +92,14 @@ header {
 }
 
 @media screen and (orientation: landscape) {
-    body {
-        width: 800px;
-        height: 768px;
+    xbody {
+        width: 770px;
+        height: 730px;
         padding: 2px;
     }
 
     #body {
-        grid-template-columns:  510px 15em;
+        grid-template-columns:  476px 15em;
         grid-template-areas: 
             "header header"
             "puzzle menu"
@@ -111,8 +111,8 @@ header {
     #choices {
         justify-self: center;
         display: grid;
-        grid-template-rows: repeat(3, 52px);
-        grid-template-columns: repeat(3, 52px);
+        grid-template-rows: repeat(3, 48px);
+        grid-template-columns: repeat(3, 48px);
         background: gray;
         gap: 2px;
         padding: 2px;
@@ -134,8 +134,8 @@ header {
     }
 
     .zone {
-        grid-template-rows: repeat(3, 52px);
-        grid-template-columns: repeat(3, 52px);
+        grid-template-rows: repeat(3, 48px);
+        grid-template-columns: repeat(3, 48px);
     }
     
     .menu {
