@@ -3,7 +3,7 @@ body {
     justify-items: center;
     background: #efefef;
     border: 1px solid;
-    grid-template-rows: 5em auto;
+    grid-template-rows: auto 1fr auto;
 }
 
 .content {
@@ -48,7 +48,8 @@ body {
 #setup {
     justify-items: center;
     align-items: center;
-    grid-template-rows: 2em auto 2em;
+    grid-template-rows: auto 1fr auto;
+    row-gap: 10px;
     width: 100%;
 }
 
@@ -66,9 +67,10 @@ body {
 #run {
     justify-items: center;
     align-items: center;
-    grid-template-rows: 1fr 4fr 2em;
+    grid-template-rows: auto 1fr auto;
     grid-template-columns: 1fr;
     grid-row-gap: .5em;
+    row-gap: 20px;
 }
 
 div {
