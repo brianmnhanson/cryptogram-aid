@@ -389,9 +389,11 @@ $(document).ready(
 		$("#quip").keyup(setEditButtons);
 		$("#store").click(store);
 		$("#delete").click(e => {
-			delete localStorage["keep " + theQuip.name];
-			delete localStorage["solved " + theQuip.name];
-			this.disabled = true;
+			if (confirm("Delete '" + theQuip.name + "'?")) {
+				delete localStorage["keep " + theQuip.name]
+				delete localStorage["solved " + theQuip.name]
+				this.disabled = true
+			}
 		});
 		$("#exportone").click(e => showPanel("exportone"));
 		$("#inctitle").click(e => inc_title(1));
