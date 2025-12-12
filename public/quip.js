@@ -355,21 +355,26 @@ $(document).ready(
 		// Global actions
 		$('button[name^="new"]').click(e => {
 			if (complete() || undo.length < 1 || confirm("You have not completed the current quip. Are you sure?")) {
-				var today = new Date();
-				today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
-				theQuip.name = "STrib " + today.toISOString().slice(0, 10);
-				theQuip.value = "";
-				theQuip.key = "";
+				var today = new Date()
+				today.setMinutes(today.getMinutes() - today.getTimezoneOffset())
+				
+				var title = "STrib " + today.toISOString().slice(0, 10)
+				if (theQuip.name == title && confirm("Do you want to reenter today's quip?") == false) {
+					return
+				}
+				theQuip.name = title
+				theQuip.value = ""
+				theQuip.key = ""
 
-				title_t.value = theQuip.name;
-				quip_ta.value = theQuip.value;
-				dict = {};
-				undo = [];
+				title_t.value = theQuip.name
+				quip_ta.value = theQuip.value
+				dict = {}
+				undo = []
 
-				saveQuip();
-				quip_ta.focus();
-				$("#store").disable(false);
-				showPanel("edit");
+				saveQuip()
+				quip_ta.focus()
+				$("#store").disable(false)
+				showPanel("edit")
 			}
 		});
 		$('button[name^="list"]').click(e => showPanel("choose"));
