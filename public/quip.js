@@ -291,7 +291,7 @@ $(document).ready(
 				setEditButtons(p);
 				clean_url();
 				quip_ta.focus();
-				$("#setup").show();
+				$("#edit").show();
 			}
 			localStorage["panel"] = p;
 		}
@@ -369,13 +369,13 @@ $(document).ready(
 				saveQuip();
 				quip_ta.focus();
 				$("#store").disable(false);
-				showPanel("setup");
+				showPanel("edit");
 			}
 		});
 		$('button[name^="list"]').click(e => showPanel("choose"));
-		$('button[name^="edit"]').click(e => showPanel("setup"));
+		$('button[name^="edit"]').click(e => showPanel("edit"));
 
-		// Setup panel actions
+		// Edit panel actions
 		$("#solve").click(e => {
 			store();
 			showPanel("run");

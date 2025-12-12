@@ -45,7 +45,7 @@ body {
     padding: 5px;
 }
 
-#setup {
+#edit {
     justify-items: center;
     align-items: center;
     grid-template-rows: auto 1fr auto;
