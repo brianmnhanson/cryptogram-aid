@@ -6,22 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
     <title> Cryptogram Aid </title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script type="text/javascript" src="quip.js?v=4"></script>
 	<link rel="stylesheet" type="text/css" href="quip.css">
 </head>
 
 <body>
-    <h1> Cryptogram Aid</h1>
-
-    <div id="edit" class="content">
+    <h1> Cryptogram Aid
         <div id="entry" class="menu">
             <button id="dectitle">◀</button>
             <input id="title" name="title" type="text">
             <button id="inctitle">▶</button>
         </div>
-        <textarea id="quip" rows="10" cols="100" autocorrect="off"></textarea>
-        <div class="menu">
+    </h1>
+
+    <div id="edit" class="content">
+        <div class="menu" id="edit-menu">
             <button id="solve">Solve</button>
             <button name="new"><img src="images/plus-16.png" alt="New"></button>
             <button name="list">List</button>
@@ -29,9 +29,10 @@
             <button id="exportone">Export</button>
             <a href="sudoku.html">Sudoku</a>
         </div>
+        <textarea id="quip" rows="10" cols="100" autocorrect="off"></textarea>
     </div>
     <div id="choose" class="content">
-        <div class="menu">
+        <div class="menu" name="id-menu">
             <button name="new"><img src="images/plus-16.png" alt="New"></button>
 		    <button name="edit"><img src="images/edit-211-16.png" alt="Edit"></button>
             <button id="hide" style="display: none">Hide ✓</button>
@@ -50,24 +51,25 @@
         </table>
     </div>
     <div id="load" class="content">
-        <div class="menu">
+        <div class="menu" id="load-menu">
+            <button name="new"><img src="images/plus-16.png" alt="New"></button>
+		    <button name="edit"><img src="images/edit-211-16.png" alt="Edit"></button>
             <button id="import">Import</button>
             <button name="list">List</button>
         </div>
         <textarea id="quips" rows="30" cols="80" autocorrect="off"></textarea>
     </div>
     <div id="run" class="content">
-        <canvas id="selection"></canvas>
-        <canvas id="puzzle"></canvas>
-        <div class="menu">
+        <div class="menu" id="run-menu">
             <button id="undo"><img src="images/undo-27-16.png" alt="Undo"></button>
 		    <button name="edit"><img src="images/edit-211-16.png" alt="Edit"></button>
             <button id="solved">Solved</button>
             <button id="clear">Clear</button>
             <a id="mail" href="mailto:nobody"><img src="images/envelope-16.png" alt="mail"></a>
         </div>
+        <canvas id="selection"></canvas>
+        <canvas id="puzzle"></canvas>
     </div>
-    
     <br/>
 
 </body>

@@ -71,7 +71,7 @@ header {
     .menu {
         justify-self: center;
         display: grid;
-        grid-template-columns: repeat(8, auto);
+        grid-template-columns: repeat(9, auto);
         column-gap: 15px;
     }
 
@@ -102,9 +102,9 @@ header {
         grid-template-columns:  476px 15em;
         grid-template-areas: 
             "header header"
-            "puzzle menu"
-            "puzzle choices"
             "puzzle name"
+            "puzzle choices"
+            "puzzle menu"
             "puzzle . "
     }
 
@@ -152,10 +152,6 @@ header {
 
     a {
         margin: 5px;
-    }
-
-    #mail {
-        grid-area: mail;
     }
 
     #entry {

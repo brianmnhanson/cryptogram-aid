@@ -151,8 +151,8 @@ $(document).ready(
 				var d = v ? new Date(v[0]).getUTCDay() : new Date().getDay()
 				var day = dayOfWeek[d]
 				var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform)
-				var mail = iOS ? "googlegmail:///co" : "mailto:"
-				mail_a.href = mail + "?"
+				var mailAction = iOS ? "googlegmail:///co" : "mailto:"
+				mail_a.href = mailAction + "?"
 					+ "subject=" + encodeURIComponent(day + "'s sudoku")
 					+ "&body=" + encodeURIComponent(href)
 			}

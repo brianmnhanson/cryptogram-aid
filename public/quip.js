@@ -258,23 +258,30 @@ $(document).ready(
 			var action = undo.pop();
 			action.forEach(e => {
 				if (e.length == 1) {
-					updatePuzzle(e);
+					updatePuzzle(e)
 				} else {
-					updateQuip(e.substring(0,1), e.substring(1,2));
+					updateQuip(e.substring(0,1), e.substring(1,2))
 				}
 			});
 			
 			if (undo.length == 0) $("#undo").disable(true)
 		}
 
+		function disableTitle(yes) {
+			$("#title").disable(yes)
+			$("#dectitle").disable(yes)
+			$("#inctitle").disable(yes)
+		}
+
 		function showPanel(p) {
-			$("body > div").hide();
+			$("body > div").hide()
+			disableTitle(true)
 			if (p == "run") {
-				setDictFromKey();
-				saveQuip();
-				repaintPuzzle();
-				updateLink();
-				$("#run").show();
+				setDictFromKey()
+				saveQuip()
+				repaintPuzzle()
+				updateLink()
+				$("#run").show()
 			} else if (p == "choose") {
 				build_list();
 				$("#choose").show();
@@ -288,6 +295,7 @@ $(document).ready(
 				quips_ta.value = exportOne();
 				$("#load").show();
 			} else {
+				disableTitle(false)
 				setEditButtons(p);
 				clean_url();
 				quip_ta.focus();

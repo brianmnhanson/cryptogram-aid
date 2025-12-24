@@ -13,8 +13,16 @@ body {
 .menu {
     justify-self: center;
     display: grid;
-    grid-template-columns: repeat(8, auto);
+    grid-template-columns: repeat(6, auto);
     column-gap: 15px;
+}
+
+#run-menu {
+    grid-template-columns: repeat(5, auto);
+}
+
+#load-menu {
+    grid-template-columns: repeat(4, auto);
 }
 
 @media screen and (max-height: 700px) {
@@ -54,7 +62,7 @@ body {
 }
 
 #entry {
-    grid-template-columns: repeat(3, auto);
+    grid-template-columns: auto 1fr auto;
 }
 
 #choose,
